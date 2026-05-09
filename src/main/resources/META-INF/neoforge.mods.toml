@@ -1,0 +1,126 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="${mod_authors}"
+credits="${mod_credits}"
+description='''${mod_description}'''
+enumExtensions="META-INF/enumextensions.json"
+
+[[mixins]]
+config="scguns.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="${neo_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="framework"
+type="required"
+reason="Required for Scorched Guns networking and synced data support."
+versionRange="[0.13.9,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="curios"
+type="required"
+reason="Required for Scorched Guns equipment and item integration."
+versionRange="[9.4.1,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="geckolib"
+type="required"
+reason="Animated guns, armor and entities hard-load GeckoLib classes during startup."
+versionRange="[4.8.4,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="controllable"
+type="optional"
+reason="Enables optional controller integration when installed."
+ordering="AFTER"
+side="CLIENT"
+
+[[dependencies.${mod_id}]]
+modId="backpacked"
+type="optional"
+reason="Enables optional Backpacked integration when installed."
+ordering="AFTER"
+side="CLIENT"
+
+[[dependencies.${mod_id}]]
+modId="jei"
+type="optional"
+reason="Enables optional recipe viewer integration when installed."
+ordering="AFTER"
+side="CLIENT"
+
+[[dependencies.${mod_id}]]
+modId="create"
+type="optional"
+reason="Enables optional Create integration when installed."
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="farmersdelight"
+type="optional"
+reason="Enables optional Farmer's Delight integration when installed."
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="immersiveengineering"
+type="optional"
+reason="Enables optional Immersive Engineering integration when installed."
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="sculkhorde"
+type="optional"
+reason="Enables optional Sculk Horde integration when installed."
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="valkyrienskies"
+type="optional"
+reason="Enables optional Valkyrien Skies integration when installed."
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="mekanism"
+type="optional"
+reason="Enables optional Mekanism recipe integration when installed."
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="playerrevive"
+type="optional"
+reason="Enables optional PlayerRevive integration when installed."
+ordering="AFTER"
+side="BOTH"

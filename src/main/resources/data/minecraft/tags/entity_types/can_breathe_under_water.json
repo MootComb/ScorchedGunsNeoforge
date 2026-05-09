@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "scguns:cog_knight",
+    "scguns:cog_minion",
+    "scguns:supply_scamp",
+    "scguns:trauma_unit"
+  ]
+}

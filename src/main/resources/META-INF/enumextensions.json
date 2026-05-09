@@ -1,0 +1,67 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SCGUNS_OCEANIC",
+      "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+      "parameters": {
+        "class": "top/ribs/scguns/util/RarityEnumParams",
+        "field": "OCEANIC"
+      }
+    },
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SCGUNS_UNIQUE",
+      "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+      "parameters": {
+        "class": "top/ribs/scguns/util/RarityEnumParams",
+        "field": "UNIQUE"
+      }
+    },
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SCGUNS_PIGLISH",
+      "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+      "parameters": {
+        "class": "top/ribs/scguns/util/RarityEnumParams",
+        "field": "PIGLISH"
+      }
+    },
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SCGUNS_SCORCHED",
+      "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+      "parameters": {
+        "class": "top/ribs/scguns/util/RarityEnumParams",
+        "field": "SCORCHED"
+      }
+    },
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SCGUNS_DEEP_DARK",
+      "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+      "parameters": {
+        "class": "top/ribs/scguns/util/RarityEnumParams",
+        "field": "DEEP_DARK"
+      }
+    },
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SCGUNS_ENDISH",
+      "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+      "parameters": {
+        "class": "top/ribs/scguns/util/RarityEnumParams",
+        "field": "ENDISH"
+      }
+    },
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SCGUNS_BIZARRE",
+      "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+      "parameters": {
+        "class": "top/ribs/scguns/util/RarityEnumParams",
+        "field": "BIZARRE"
+      }
+    }
+  ]
+}

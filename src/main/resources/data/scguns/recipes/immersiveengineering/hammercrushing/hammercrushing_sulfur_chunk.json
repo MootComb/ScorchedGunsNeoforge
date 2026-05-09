@@ -1,0 +1,16 @@
+{
+  "type": "immersiveengineering:hammer_crushing",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "immersiveengineering"
+    }
+  ],
+  "input": {
+    "item": "scguns:sulfur_chunk"
+  },
+  "result": {
+    "item": "immersiveengineering:dust_sulfur",
+    "count": 2
+  }
+}

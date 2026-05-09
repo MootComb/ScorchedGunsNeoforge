@@ -1,0 +1,180 @@
+﻿plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.141'
+    id 'idea'
+    id 'eclipse'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_archives_name
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+    exclude 'META-INF/mods.toml'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "CurseMaven"
+        url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name = "BlameJared"
+        url = "https://maven.blamejared.com/"
+        content {
+            includeGroup "mezz.jei"
+        }
+    }
+    maven {
+        name = "Sponge"
+        url = "https://repo.spongepowered.org/maven"
+        content {
+            includeGroup "org.spongepowered"
+        }
+    }
+}
+
+neoForge {
+    version = neo_version
+
+    parchment {
+        minecraftVersion = parchment_minecraft_version
+        mappingsVersion = parchment_mappings_version
+    }
+
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run')
+            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+            systemProperty 'mixin.env.disableRefMap', 'true'
+        }
+
+        server {
+            server()
+            gameDirectory = project.file('run')
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+            systemProperty 'mixin.env.disableRefMap', 'true'
+        }
+
+        data {
+            data()
+            gameDirectory = project.file('run')
+            systemProperty 'mixin.env.disableRefMap', 'true'
+            programArguments.addAll '--mod', mod_id, '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    annotationProcessor 'org.spongepowered:mixin:0.8.7:processor'
+
+    compileOnly "maven.modrinth:geckolib:${geckolib_version}"
+    compileOnly "curse.maven:framework-549225:7530361"
+    compileOnly "maven.modrinth:curios:${curios_version}"
+    compileOnly "curse.maven:controllable-317269:${controllable_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    localRuntime "maven.modrinth:geckolib:${geckolib_version}"
+    localRuntime "curse.maven:framework-549225:7530361"
+    localRuntime "maven.modrinth:curios:${curios_version}"
+}
+
+def replaceProperties = [
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: minecraft_version_range,
+        neo_version            : neo_version,
+        neo_version_range      : neo_version_range,
+        loader_version_range   : loader_version_range,
+        mod_id                 : mod_id,
+        mod_name               : mod_name,
+        mod_license            : mod_license,
+        mod_version            : mod_version,
+        mod_authors            : mod_authors,
+        mod_credits            : mod_credits,
+        mod_description        : mod_description
+]
+
+tasks.named('processResources', ProcessResources).configure {
+    inputs.properties replaceProperties
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand replaceProperties
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : "Scorched Guns",
+                "Specification-Vendor"    : "ribs",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : "Scorched Guns",
+                "Implementation-Version"  : project.version,
+                "Implementation-Vendor"   : "ribs",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConfigs"            : "scguns.mixins.json"
+        ])
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+

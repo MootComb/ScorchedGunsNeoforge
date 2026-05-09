@@ -1,0 +1,15 @@
+{
+    "type": "immersiveengineering:hammer_crushing",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "immersiveengineering"
+    }
+  ],
+    "input": {
+        "item": "scguns:anthralite_ore"
+    },
+    "result": {
+        "item": "scguns:anthralite_dust"
+    }
+}

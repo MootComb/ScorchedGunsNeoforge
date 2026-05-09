@@ -1,0 +1,20 @@
+{
+  "type": "create_new_age:energising",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create_new_age"
+    }
+  ],
+  "energy_needed": 1200,
+  "ingredients": [
+    {
+      "item": "scguns:empty_cell"
+    }
+  ],
+  "results": [
+    {
+      "item": "scguns:shock_cell"
+    }
+  ]
+}
