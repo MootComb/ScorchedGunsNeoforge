@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import top.ribs.scguns.blockentity.VentCollectorBlockEntity;
-import top.ribs.scguns.init.ModTags;
+import top.ribs.scguns.config.VentDataConfig;
 
 import java.util.Objects;
 
@@ -21,7 +21,7 @@ public class VentCollectorMenu extends AbstractContainerMenu {
     public VentCollectorMenu(int windowId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(windowId, playerInventory,
                 (VentCollectorBlockEntity) Objects.requireNonNull(Minecraft.getInstance().level.getBlockEntity(extraData.readBlockPos())),
-                new SimpleContainerData(1));
+                new SimpleContainerData(2));
     }
 
     public VentCollectorMenu(int windowId, Inventory playerInventory, VentCollectorBlockEntity entity, ContainerData data) {
@@ -35,7 +35,7 @@ public class VentCollectorMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(itemHandler, 0, 80, 53) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.is(ModTags.Items.WEAK_FILTER) || stack.is(ModTags.Items.STRONG_FILTER);
+                return VentDataConfig.isFilterItem(stack);
             }
         });
 
@@ -76,6 +76,10 @@ public class VentCollectorMenu extends AbstractContainerMenu {
 
     public int getFilterCharge() {
         return data.get(0);
+    }
+
+    public int getMaxFilterCharge() {
+        return data.get(1);
     }
 
     @Override

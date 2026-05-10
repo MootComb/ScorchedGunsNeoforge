@@ -203,6 +203,7 @@ public class Config
         public final Network network;
         public final AggroMobs aggroMobs;
         public final FleeingMobs fleeingMobs;
+        public final GunnerMobs gunnerMobs;
         public final Rockets rockets;
         public final Grenades grenades;
         public final StunGrenades stunGrenades;
@@ -219,6 +220,7 @@ public class Config
                 this.network = new Network(builder);
                 this.aggroMobs = new AggroMobs(builder);
                 this.fleeingMobs = new FleeingMobs(builder);
+                this.gunnerMobs = new GunnerMobs(builder);
                 this.rockets = new Rockets(builder);
                 this.grenades = new Grenades(builder);
                 this.stunGrenades = new StunGrenades(builder);
@@ -422,6 +424,38 @@ public class Config
             builder.comment("Properties relating to grenades").push("grenades");
             {
                 this.explosionRadius = builder.comment("The max distance which the explosion is effective to").defineInRange("explosionRadius", 5.0, 0.0, Double.MAX_VALUE);
+            }
+            builder.pop();
+        }
+    }
+
+    /**
+     * Gunner mob related config options
+     */
+    public static class GunnerMobs {
+        public final ModConfigSpec.BooleanValue gunnerMobSpawning;
+        public final ModConfigSpec.DoubleValue gunnerSpawnChance;
+        public final ModConfigSpec.BooleanValue scaleToDifficulty;
+        public final ModConfigSpec.BooleanValue eliteSpawning;
+        public final ModConfigSpec.DoubleValue eliteChance;
+
+        public GunnerMobs(ModConfigSpec.Builder builder) {
+            builder.comment("Gun Mob Spawning Configuration").push("gunner_config");
+            {
+                this.gunnerMobSpawning = builder.comment("If enabled, mobs will have a chance to spawn with guns.").define("gunnerMobSpawning", true);
+                this.gunnerSpawnChance = builder.comment(
+                        "Base chance for progression-based gunner mobs to spawn (0.0 = never, 1.0 = always).",
+                        "This is the spawn chance on NORMAL difficulty. Thematic mobs use their own config."
+                ).defineInRange("gunnerSpawnChance", 0.3, 0.0, 1.0);
+                this.scaleToDifficulty = builder.comment(
+                        "If enabled, spawn chances scale with game difficulty.",
+                        "PEACEFUL: 50% of base chance, EASY: 75%, NORMAL: 100%, HARD: 150%"
+                ).define("scaleToDifficulty", true);
+                this.eliteSpawning = builder.comment("If enabled, gunner mobs will have a chance to spawn as Elites with better armor.").define("eliteSpawning", true);
+                this.eliteChance = builder.comment(
+                        "Base chance for Elite Gunners to spawn (0.0 = never, 1.0 = always).",
+                        "This is the spawn chance on NORMAL difficulty."
+                ).defineInRange("eliteChance", 0.2, 0.0, 1.0);
             }
             builder.pop();
         }

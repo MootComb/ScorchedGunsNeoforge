@@ -49,6 +49,7 @@ import software.bernie.geckolib.util.RenderUtil;
 import top.ribs.scguns.Config;
 import top.ribs.scguns.Reference;
 import top.ribs.scguns.client.GunRenderType;
+import top.ribs.scguns.client.compat.OptionalClientCompat;
 import top.ribs.scguns.client.handler.*;
 import top.ribs.scguns.client.render.gun.IOverrideModel;
 import top.ribs.scguns.client.render.gun.ModelOverrides;
@@ -564,6 +565,11 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
     private void renderRightArm(PoseStack poseStack, PlayerModel<AbstractClientPlayer> playerEntityModel,
                                 ResourceLocation playerSkin, GeoBone bone,
                                 int packedLight, int packedOverlay) {
+        if (Minecraft.getInstance().player != null && OptionalClientCompat.renderCleanAnimatedArm(
+                Minecraft.getInstance().player, HumanoidArm.RIGHT, poseStack, this.bufferSource, playerSkin, bone, packedLight, packedOverlay)) {
+            return;
+        }
+
         poseStack.scale(0.66F, 0.78F, 0.66F);
         poseStack.translate(0.25, -0.1, 0.1625);
 
@@ -579,6 +585,11 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
     private void renderLeftArm(PoseStack poseStack, PlayerModel<AbstractClientPlayer> playerEntityModel,
                                ResourceLocation playerSkin, GeoBone bone,
                                int packedLight, int packedOverlay, Player player, AnimatedGunItem animatable) {
+        if (player instanceof LocalPlayer localPlayer && OptionalClientCompat.renderCleanAnimatedArm(
+                localPlayer, HumanoidArm.LEFT, poseStack, this.bufferSource, playerSkin, bone, packedLight, packedOverlay)) {
+            return;
+        }
+
         Gun modifiedGun = ((GunItem) this.currentItemStack.getItem()).getModifiedGun(this.currentItemStack);
         modifiedGun.determineGripType(this.currentItemStack);
 

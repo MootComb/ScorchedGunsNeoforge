@@ -4,6 +4,64 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ## Unreleased
 
+No unreleased changes.
+
+## 1.2.5 - 2026-05-11
+
+### Added
+
+- Restored the Scorched Guns gunner mob system: eligible hostile mobs can spawn with Scorched Guns weapons, tier progression controls which weapon tiers can appear, and elite gunner variants can equip stronger gear.
+- Backported upstream gunner mob weapon drop chance support, including separate configured drop chances for illager, piglin, and Hornlin gunners.
+- Restored the existing Blunderer raid reinforcement hook through explicit runtime event registration.
+- Restored data-driven Vent Collector settings and sulfur/geothermal vent output definitions from upstream.
+- Added weighted vent outputs, including rare blaze powder production from sulfur vents.
+- Restored bat guano as a placeable/fertilizer item with layer stacking and dropped-item layer formation.
+- Restored guano candles, including flint-and-steel lighting, crouch empty-hand extinguishing, sulfur dust ambience, and bat attraction/spawn behavior.
+- Restored bat guano recipes for guano candles, smoked phosphor dust, and Farmer's Delight organic compost when Farmer's Delight is installed.
+- Restored phosphor dust as an upstream fertilizer item that can also place and stack phosphor layers.
+- Added phosphor layer block assets, loot behavior and localization.
+- Restored Vicious Acid as an upstream fluid slice, including the acid bucket, fluid block, acid cauldron, acid bubble particles, crafting recipe, and localized names.
+- Restored upstream Vicious Acid world reactions with water, lava, and fire.
+- Restored Mine Unit as a grenade-loaded proximity trap, including priming behavior, stored grenade drops, model assets, recipe, loot table and entity ignore tag.
+- Restored Shock Coil as an energy-powered defensive block with data-driven zap settings, redstone disabling, adjacent turret targeting module support, recipe, loot table, assets and localized tooltips.
+- Restored Metal Detector as a durability-based tool that pulls the player toward nearby metal-detectable blocks and highlights the detected target.
+- Added the upstream Turret Platform support item required by the Shock Coil recipe.
+
+### Fixed
+
+- Fixed ADS mouse sensitivity not being reduced while aiming, especially with high-zoom scopes.
+- Fixed gunner mob tier progression so high-tier weapons are recognized through restored item tier tags and progression spawns skip empty weapon tiers.
+- Fixed ExoSuit upgrade visuals not appearing on the armor model when the client cannot resolve ExoSuit upgrade metadata from the datapack reload manager.
+- Fixed bat guano and phosphor layers not dropping their source items when broken normally.
+- Fixed Vent Collector weak filter data so wool is accepted as the low-tier filter configured by upstream vent data.
+- Fixed Mine Unit follow-up placement behavior by preventing non-living helper entities from triggering armed mines.
+
+### Changed
+
+- Raised the public version to `1.2.5`.
+
+## 1.2.0 - 2026-05-10
+
+### Added
+
+- Integrated optional first-person compatibility handling for Punchy and Fresh Animations: Player Extensions / Entity Model Features, so separate Scorched Guns compat jars are no longer needed for those client-side arm-render fixes.
+
+### Changed
+
+- Raised the public version to `1.2.0`.
+
+## 1.1.1 - 2026-05-10
+
+### Fixed
+
+- Fixed ExoSuit power core energy drain so powered upgrades spend and persist FE from the installed core instead of only mutating a temporary upgrade-stack copy.
+- Fixed ExoSuit power cooldown gating so powered modules drain at their intended intervals, and moved jetpack drain to the server-side flight tick instead of relying on client-local item changes.
+- Fixed Minecraft 1.21.1 registry tag folder paths for item, block, and entity type tags so Scorched Guns recipe ingredients no longer appear as empty tags in recipe viewers.
+
+### Changed
+
+- Raised the public hotfix version to `1.1.1`.
+
 ## 1.1.0 - 2026-05-10
 
 ### Fixed

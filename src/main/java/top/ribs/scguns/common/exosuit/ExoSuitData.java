@@ -74,6 +74,47 @@ public class ExoSuitData {
         return ItemStack.EMPTY;
     }
 
+    /**
+     * Stores an upgrade item back into a specific slot on an exosuit piece.
+     */
+    public static void setUpgradeInSlot(ItemStack exosuitPiece, int slot, ItemStack upgradeStack) {
+        if (exosuitPiece.isEmpty()) {
+            return;
+        }
+
+        CompoundTag upgradeData = getUpgradeData(exosuitPiece);
+        ListTag oldUpgradeList = upgradeData.contains("Upgrades")
+                ? upgradeData.getList("Upgrades", 10)
+                : new ListTag();
+        ListTag newUpgradeList = new ListTag();
+        boolean updatedSlot = false;
+
+        for (int i = 0; i < oldUpgradeList.size(); i++) {
+            CompoundTag slotTag = oldUpgradeList.getCompound(i);
+            if (slotTag.getInt("Slot") == slot) {
+                updatedSlot = true;
+                if (!upgradeStack.isEmpty()) {
+                    CompoundTag newSlotTag = new CompoundTag();
+                    newSlotTag.putInt("Slot", slot);
+                    newSlotTag.put("Item", upgradeStack.save(Gun.builtInRegistryProvider(), new CompoundTag()));
+                    newUpgradeList.add(newSlotTag);
+                }
+            } else {
+                newUpgradeList.add(slotTag.copy());
+            }
+        }
+
+        if (!updatedSlot && !upgradeStack.isEmpty()) {
+            CompoundTag newSlotTag = new CompoundTag();
+            newSlotTag.putInt("Slot", slot);
+            newSlotTag.put("Item", upgradeStack.save(Gun.builtInRegistryProvider(), new CompoundTag()));
+            newUpgradeList.add(newSlotTag);
+        }
+
+        upgradeData.put("Upgrades", newUpgradeList);
+        setUpgradeData(exosuitPiece, upgradeData);
+    }
+
     private static CompoundTag getCustomData(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
         return data != null ? data.copyTag() : new CompoundTag();

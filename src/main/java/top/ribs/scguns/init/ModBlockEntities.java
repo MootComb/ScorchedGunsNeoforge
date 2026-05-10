@@ -36,6 +36,14 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("charged_amethyst_relay", () ->
                     BlockEntityType.Builder.of(ChargedAmethystRelayBlockEntity::new,
                             ModBlocks.CHARGED_AMETHYST_RELAY.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ShockCoilBlockEntity>> SHOCK_COIL =
+            BLOCK_ENTITIES.register("shock_coil", () ->
+                    BlockEntityType.Builder.of(ShockCoilBlockEntity::new,
+                            ModBlocks.SHOCK_COIL.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MineUnitBlockEntity>> MINE_UNIT =
+            BLOCK_ENTITIES.register("mine_unit", () ->
+                    BlockEntityType.Builder.of(MineUnitBlockEntity::new,
+                            ModBlocks.MINE_UNIT.get()).build(null));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GunBenchBlockEntity>> GUN_BENCH =
             BLOCK_ENTITIES.register("gun_bench", () ->

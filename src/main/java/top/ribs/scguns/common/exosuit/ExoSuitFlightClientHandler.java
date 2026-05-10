@@ -115,7 +115,7 @@ public class ExoSuitFlightClientHandler {
 
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastEnergyConsumptionTime >= ENERGY_CONSUMPTION_INTERVAL) {
-            if (!ExoSuitFlightHandler.consumeJetpackEnergy(player)) {
+            if (!ExoSuitPowerManager.canUpgradeFunction(player, "utility")) {
                 disableFlightAndStopSounds(player);
                 jetpackActive = false;
 

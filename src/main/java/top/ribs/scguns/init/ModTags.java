@@ -22,6 +22,7 @@ public class ModTags
         public static final TagKey<Block> FRAGILE = tag("fragile");
         public static final TagKey<Block> SCULK_BLOCKS = tag("sculk_blocks");
         public static final TagKey<Block> TANK_BREAKABLE = tag("tank_breakable");
+        public static final TagKey<Block> METAL_DETECTABLE = tag("metal_detectable");
         private static TagKey<Block> tag(String name)
         {
             return BlockTags.create(Reference.id(name));
@@ -54,6 +55,19 @@ public class ModTags
         public static final TagKey<Item> GEOTHERMAL_VENT_OUTPUT = tag("geothermal_vent_output");
         public static final TagKey<Item> SULFUR_VENT_OUTPUT = tag("sulfur_vent_output");
         public static final TagKey<Item> MINING_GUN = tag("mining_gun");
+        public static final TagKey<Item> ANTIQUE_GUN_TIER = tag("antique_gun_tier");
+        public static final TagKey<Item> FRONTIER_GUN_TIER = tag("frontier_gun_tier");
+        public static final TagKey<Item> COPPER_GUN_TIER = tag("copper_gun_tier");
+        public static final TagKey<Item> IRON_GUN_TIER = tag("iron_gun_tier");
+        public static final TagKey<Item> WRECKER_GUN_TIER = tag("wrecker_gun_tier");
+        public static final TagKey<Item> OCEAN_GUN_TIER = tag("ocean_gun_tier");
+        public static final TagKey<Item> DIAMOND_STEEL_GUN_TIER = tag("diamond_steel_gun_tier");
+        public static final TagKey<Item> TREATED_BRASS_GUN_TIER = tag("treated_brass_gun_tier");
+        public static final TagKey<Item> PIGLIN_GUN_TIER = tag("piglin_gun_tier");
+        public static final TagKey<Item> DEEP_DARK_GUN_TIER = tag("deep_dark_gun_tier");
+        public static final TagKey<Item> END_GUN_TIER = tag("end_gun_tier");
+        public static final TagKey<Item> SCORCHED_GUN_TIER = tag("scorched_gun_tier");
+        public static final TagKey<Item> GRENADES = tag("grenades");
 
         private static TagKey<Item> tag(String name)
         {
@@ -87,6 +101,8 @@ public class ModTags
         public static final TagKey<EntityType<?>> BOT = tag("bot");
         public static final TagKey<EntityType<?>> WATER = tag("water");
         public static final TagKey<EntityType<?>> TURRET_BLACKLIST = tag("turret_blacklist");
+        public static final TagKey<EntityType<?>> GUNNER = tag("gunner");
+        public static final TagKey<EntityType<?>> IGNORES_MINE_UNITS = tag("ignores_mine_units");
 
         public static TagKey<EntityType<?>> tag(String name)
         {

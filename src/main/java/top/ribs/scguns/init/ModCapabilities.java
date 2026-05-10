@@ -75,6 +75,11 @@ public class ModCapabilities {
                 (blockEntity, side) -> blockEntity.getEnergyStorage(side)
         );
         event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                ModBlockEntities.SHOCK_COIL.get(),
+                (blockEntity, side) -> blockEntity.getEnergyStorage(side)
+        );
+        event.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK,
                 ModBlockEntities.AUTO_TURRET.get(),
                 (blockEntity, side) -> side != Direction.UP ? blockEntity.getItemStackHandler() : null

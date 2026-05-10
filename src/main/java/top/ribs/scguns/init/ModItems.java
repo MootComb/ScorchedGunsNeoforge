@@ -1416,12 +1416,13 @@ public class ModItems {
     );
 
 
-   public static final DeferredItem<PickaxeItem> ANTHRALITE_PICKAXE = REGISTER.register("anthralite_pickaxe", () -> new PickaxeItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(PickaxeItem.createAttributes(ModTiers.ANTHRALITE, 1.0F, -2.8F))));
+    public static final DeferredItem<PickaxeItem> ANTHRALITE_PICKAXE = REGISTER.register("anthralite_pickaxe", () -> new PickaxeItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(PickaxeItem.createAttributes(ModTiers.ANTHRALITE, 1.0F, -2.8F))));
     public static final DeferredItem<SwordItem> ANTHRALITE_SWORD = REGISTER.register("anthralite_sword", () -> new SwordItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(SwordItem.createAttributes(ModTiers.ANTHRALITE, 3, -2.4F))));
     public static final DeferredItem<AxeItem> ANTHRALITE_AXE = REGISTER.register("anthralite_axe", () -> new AxeItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(AxeItem.createAttributes(ModTiers.ANTHRALITE, 5.0F, -3.0F))));
     public static final DeferredItem<ShovelItem> ANTHRALITE_SHOVEL = REGISTER.register("anthralite_shovel", () -> new ShovelItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(ShovelItem.createAttributes(ModTiers.ANTHRALITE, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> ANTHRALITE_HOE = REGISTER.register("anthralite_hoe", () -> new HoeItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(HoeItem.createAttributes(ModTiers.ANTHRALITE, -3.0F, -3.0F))));
     public static final DeferredItem<Item> RANGE_FINDER = REGISTER.register("range_finder", () -> new RangeFinderItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<Item> METAL_DETECTOR = REGISTER.register("metal_detector", () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(128).rarity(Rarity.RARE)));
     public static final DeferredItem<Item> ANTHRALITE_HELMET = REGISTER.register("anthralite_helmet", () -> new AnthraliteArmorItem(ModArmorMaterials.ANTHRALITE, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> ANTHRALITE_CHESTPLATE = REGISTER.register("anthralite_chestplate", () -> new AnthraliteArmorItem(ModArmorMaterials.ANTHRALITE, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final DeferredItem<Item> ANTHRALITE_LEGGINGS = REGISTER.register("anthralite_leggings", () -> new AnthraliteArmorItem(ModArmorMaterials.ANTHRALITE, ArmorItem.Type.LEGGINGS, new Item.Properties()));
@@ -1511,6 +1512,7 @@ public class ModItems {
     public static final DeferredItem<Item> NITRO_POWDER = REGISTER.register("nitro_powder", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> NITRO_POWDER_DUST = REGISTER.register("nitro_powder_dust", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> NITER_DUST = REGISTER.register("niter_dust", () -> new NiterDustItem(new Item.Properties()));
+    public static final DeferredItem<Item> BAT_GUANO = REGISTER.register("bat_guano", () -> new BatGuanoItem(new Item.Properties()));
     public static final DeferredItem<Item> SHEOL = REGISTER.register("sheol", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> PEAL = REGISTER.register("peal", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> PEAL_DUST = REGISTER.register("peal_dust", () -> new Item(new Item.Properties()));
@@ -1519,7 +1521,9 @@ public class ModItems {
     public static final DeferredItem<Item> SULFUR_CHUNK = REGISTER.register("sulfur_chunk", () -> new FuelItem(new Item.Properties(), 800));
     public static final DeferredItem<Item> COMPOSITE_FILTER = REGISTER.register("composite_filter", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> SULFUR_DUST = REGISTER.register("sulfur_dust", () -> new SulfurDustItem(new Item.Properties()));
-    public static final DeferredItem<Item> PHOSPHOR_DUST = REGISTER.register("phosphor_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> PHOSPHOR_DUST = REGISTER.register("phosphor_dust", () -> new PhosphorItem(new Item.Properties()));
+    public static final DeferredItem<Item> VICIOUS_ACID_BUCKET = REGISTER.register("vicious_acid_bucket",
+            () -> new BucketItem(ModFluids.VICIOUS_ACID_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final DeferredItem<Item> BUCKSHOT = REGISTER.register("buckshot", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> FLECHETTE = REGISTER.register("flechette", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> NITRO_BUCKSHOT = REGISTER.register("nitro_buckshot", () -> new Item(new Item.Properties()));
@@ -1729,6 +1733,7 @@ public class ModItems {
     public static final DeferredItem<Item> PLUS_P_MAG = REGISTER.register("plus_p_mag", () -> new MagazineItem(Magazine.create(GunModifiers.INCREASED_DAMAGE, GunModifiers.PLUS_P_MAG), new Item.Properties().stacksTo(1).durability(1400)));
     //ITEMS
     public static final DeferredItem<Item> REPAIR_KIT = REGISTER.register("repair_kit", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> TURRET_PLATFORM = REGISTER.register("turret_platform", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<Item> SCAMP_PACKAGE = REGISTER.register("scamp_package", () -> new ScampPackageItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<Item> COG_LOCATOR = REGISTER.register("cog_locator", () -> new CogLocatorItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<Item> THE_PACT = REGISTER.register("the_pact", () -> new ThePactItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));

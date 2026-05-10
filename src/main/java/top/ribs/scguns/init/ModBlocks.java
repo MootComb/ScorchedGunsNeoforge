@@ -72,6 +72,17 @@ public class ModBlocks {
             () -> new ChargedAmethystRelayBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.REPEATER)
                     .strength(0.0F)
                     .noOcclusion()));
+    public static final DeferredBlock<Block> SHOCK_COIL = register("shock_coil",
+            () -> new ShockCoilBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops()
+                    .instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .strength(4.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> MINE_UNIT = register("mine_unit",
+            () -> new MineUnitBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops()
+                    .strength(2.0F)
+                    .noOcclusion()));
 
     public static final DeferredBlock<Block> AUTO_TURRET = register("auto_turret",
             () -> new AutoTurretBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
@@ -243,8 +254,24 @@ public class ModBlocks {
     public static final DeferredBlock<Block> SULFUR_LAYER = register("sulfur",
             () -> new SulfurLayerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SAND)));
 
+    public static final DeferredBlock<Block> BAT_GUANO_LAYER = register("bat_guano_layer",
+            () -> new BatGuanoLayerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SAND)), null);
+
+    public static final DeferredBlock<Block> PHOSPHOR_LAYER = register("phosphor_layer",
+            () -> new PhosphorLayerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SAND)), null);
+
+    public static final DeferredBlock<ViciousAcidBlock> VICIOUS_ACID_BLOCK = register("vicious_acid_block",
+            () -> new ViciousAcidBlock(ModFluids.VICIOUS_ACID_SOURCE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).noLootTable()), null);
+
+    public static final DeferredBlock<ViciousAcidCauldronBlock> VICIOUS_ACID_CAULDRON = register("vicious_acid_cauldron",
+            () -> new ViciousAcidCauldronBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON)), null);
+
     public static final DeferredBlock<Block> NITER_BLOCK = register("niter_block",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.SAND)));
+
+    public static final DeferredBlock<Block> GUANO_CANDLE = register("guano_candle",
+            () -> new GuanoCandleBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CANDLE)
+                    .lightLevel(state -> state.getValue(GuanoCandleBlock.LIT) ? 10 : 0)));
 
     public static final DeferredBlock<Block> PENETRATOR = register("penetrator",
             () -> new PenetratorBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)

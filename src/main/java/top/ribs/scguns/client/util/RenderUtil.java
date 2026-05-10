@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
+import top.ribs.scguns.client.compat.OptionalClientCompat;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -284,6 +285,9 @@ public class RenderUtil
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack poseStack, MultiBufferSource buffer, int combinedLight)
     {
+        if (OptionalClientCompat.renderCleanFirstPersonArm(player, hand, poseStack, buffer, combinedLight)) {
+            return;
+        }
         Minecraft mc = Minecraft.getInstance();
         EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
         PlayerRenderer renderer = (PlayerRenderer) renderManager.getRenderer(player);

@@ -3,9 +3,9 @@ package top.ribs.scguns.blockentity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -27,23 +26,16 @@ import top.ribs.scguns.block.GeothermalVentBlock;
 import top.ribs.scguns.block.SulfurVentBlock;
 import top.ribs.scguns.block.VentCollectorBlock;
 import top.ribs.scguns.client.screen.VentCollectorMenu;
+import top.ribs.scguns.config.VentDataConfig;
 import top.ribs.scguns.init.ModTags;
 import top.ribs.scguns.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Random;
 
 public class VentCollectorBlockEntity extends BlockEntity implements MenuProvider {
-    private static final int BASE_TICK_INTERVAL = 100;
-    private static final int TICK_WIGGLE_ROOM = 60;
-    private static final float POWER_SPEED_MULTIPLIER = 0.35f;
-    private static final int MAX_FILTER_CHARGE = 64;
-    private static final int WEAK_FILTER_CHARGE = 4;
-    private static final int STRONG_FILTER_CHARGE = 8;
-    private static final float FILTER_CONSUMPTION_CHANCE = 0.5f;
-    private static final int FILTER_PROCESS_COOLDOWN = 2;
-    private static final int PUSH_COOLDOWN = 5;
+    private static final ResourceLocation GEOTHERMAL_VENT = ResourceLocation.fromNamespaceAndPath("scguns", "geothermal_vent");
+    private static final ResourceLocation SULFUR_VENT = ResourceLocation.fromNamespaceAndPath("scguns", "sulfur_vent");
     private int pushCooldown = 0;
     private int filterProcessCooldown = 0;
     private final ItemStackHandler itemHandler = new ItemStackHandler(4) {
@@ -58,7 +50,7 @@ public class VentCollectorBlockEntity extends BlockEntity implements MenuProvide
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (slot == 0) {
-                return stack.is(ModTags.Items.WEAK_FILTER) || stack.is(ModTags.Items.STRONG_FILTER);
+                return VentDataConfig.isFilterItem(stack);
             }
             return slot > 0 && (stack.is(ModTags.Items.GEOTHERMAL_VENT_OUTPUT) || stack.is(ModTags.Items.SULFUR_VENT_OUTPUT));
         }
@@ -82,7 +74,7 @@ public class VentCollectorBlockEntity extends BlockEntity implements MenuProvide
     public VentCollectorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.VENT_COLLECTOR.get(), pos, state);
         this.productionCounter = 0;
-        this.currentTickInterval = calculateNextTickInterval();
+        this.currentTickInterval = calculateNextTickInterval(SULFUR_VENT);
         this.filterCharge = 0;
     }
 
@@ -90,8 +82,12 @@ public class VentCollectorBlockEntity extends BlockEntity implements MenuProvide
         return this.filterCharge;
     }
 
-    private int calculateNextTickInterval() {
-        return BASE_TICK_INTERVAL + random.nextInt(TICK_WIGGLE_ROOM);
+    public int getMaxFilterCharge() {
+        return VentDataConfig.collector().maxCharge();
+    }
+
+    private int calculateNextTickInterval(ResourceLocation ventId) {
+        return VentDataConfig.nextTickInterval(ventId, random);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, VentCollectorBlockEntity blockEntity) {
@@ -104,27 +100,24 @@ public class VentCollectorBlockEntity extends BlockEntity implements MenuProvide
 
             if (isActive && blockEntity.filterCharge > 0) {
                 int ventPower = 1;
+                ResourceLocation ventId = SULFUR_VENT;
                 if (isGeothermalVentBelow) {
                     ventPower = belowState.getValue(GeothermalVentBlock.VENT_POWER);
+                    ventId = GEOTHERMAL_VENT;
                 } else {
                     ventPower = belowState.getValue(SulfurVentBlock.VENT_POWER);
                 }
 
-                float speedMultiplier = 1 + (ventPower - 1) * POWER_SPEED_MULTIPLIER;
+                float speedMultiplier = 1 + (ventPower - 1) * VentDataConfig.collector().powerSpeedMultiplier();
                 blockEntity.productionCounter += (int) speedMultiplier;
 
                 if (blockEntity.productionCounter >= blockEntity.currentTickInterval) {
                     blockEntity.productionCounter = 0;
-                    blockEntity.currentTickInterval = blockEntity.calculateNextTickInterval();
+                    blockEntity.currentTickInterval = blockEntity.calculateNextTickInterval(ventId);
 
-                    boolean produced;
-                    if (isGeothermalVentBelow) {
-                        produced = blockEntity.produceFromTag(ModTags.Items.GEOTHERMAL_VENT_OUTPUT);
-                    } else {
-                        produced = blockEntity.produceFromTag(ModTags.Items.SULFUR_VENT_OUTPUT);
-                    }
+                    boolean produced = blockEntity.produceFromVent(ventId);
 
-                    if (produced && blockEntity.random.nextFloat() < FILTER_CONSUMPTION_CHANCE) {
+                    if (produced && blockEntity.random.nextFloat() < VentDataConfig.collector().consumptionChance()) {
                         blockEntity.filterCharge--;
                     }
 
@@ -137,30 +130,23 @@ public class VentCollectorBlockEntity extends BlockEntity implements MenuProvide
                 blockEntity.filterProcessCooldown--;
             } else {
                 blockEntity.processFilterItem();
-                blockEntity.filterProcessCooldown = FILTER_PROCESS_COOLDOWN;
+                blockEntity.filterProcessCooldown = VentDataConfig.collector().processCooldown();
             }
 
             if (blockEntity.pushCooldown > 0) {
                 blockEntity.pushCooldown--;
             } else {
                 blockEntity.pushItemsToAdjacentInventories(level, pos);
-                blockEntity.pushCooldown = PUSH_COOLDOWN;
+                blockEntity.pushCooldown = VentDataConfig.collector().pushCooldown();
             }
         }
     }
 
-    private boolean produceFromTag(net.minecraft.tags.TagKey<Item> tag) {
-        List<Item> tagItems = new java.util.ArrayList<>();
-        for (var holder : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
-            tagItems.add(holder.value());
-        }
-
-        if (tagItems.isEmpty()) {
+    private boolean produceFromVent(ResourceLocation ventId) {
+        ItemStack producedItem = VentDataConfig.createOutput(ventId, random);
+        if (producedItem.isEmpty()) {
             return false;
         }
-        Item selectedItem = tagItems.get(random.nextInt(tagItems.size()));
-        ItemStack producedItem = new ItemStack(selectedItem, 1);
-
         return insertProducedItem(producedItem);
     }
 
@@ -177,14 +163,8 @@ public class VentCollectorBlockEntity extends BlockEntity implements MenuProvide
     private void processFilterItem() {
         ItemStack filterStack = itemHandler.getStackInSlot(0);
         if (!filterStack.isEmpty()) {
-            int chargeToAdd = 0;
-            if (filterStack.is(ModTags.Items.WEAK_FILTER)) {
-                chargeToAdd = WEAK_FILTER_CHARGE;
-            } else if (filterStack.is(ModTags.Items.STRONG_FILTER)) {
-                chargeToAdd = STRONG_FILTER_CHARGE;
-            }
-
-            int chargeNeeded = MAX_FILTER_CHARGE - filterCharge;
+            int chargeToAdd = VentDataConfig.getFilterChargeAmount(filterStack);
+            int chargeNeeded = VentDataConfig.collector().maxCharge() - filterCharge;
             if (chargeToAdd > 0 && chargeNeeded >= chargeToAdd) {
                 filterCharge += chargeToAdd;
                 filterStack.shrink(1);
@@ -226,7 +206,13 @@ public class VentCollectorBlockEntity extends BlockEntity implements MenuProvide
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
-            return index == 0 ? VentCollectorBlockEntity.this.filterCharge : 0;
+            if (index == 0) {
+                return VentCollectorBlockEntity.this.filterCharge;
+            }
+            if (index == 1) {
+                return VentCollectorBlockEntity.this.getMaxFilterCharge();
+            }
+            return 0;
         }
 
         @Override
@@ -238,7 +224,7 @@ public class VentCollectorBlockEntity extends BlockEntity implements MenuProvide
 
         @Override
         public int getCount() {
-            return 1;
+            return 2;
         }
     };
 

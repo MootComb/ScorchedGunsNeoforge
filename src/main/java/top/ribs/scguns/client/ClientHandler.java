@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,6 +26,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.lwjgl.glfw.GLFW;
 import top.ribs.scguns.ScorchedGuns;
 import top.ribs.scguns.Reference;
+import top.ribs.scguns.client.compat.OptionalClientCompat;
 import top.ribs.scguns.client.handler.*;
 import top.ribs.scguns.client.render.block.*;
 import top.ribs.scguns.client.render.curios.AmmoBoxRenderer;
@@ -46,7 +46,6 @@ import top.ribs.scguns.item.AmmoBoxItem;
 import top.ribs.scguns.item.GunItem;
 import top.ribs.scguns.network.PacketHandler;
 import top.ribs.scguns.network.message.*;
-import top.ribs.scguns.util.GunModifierHelper;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 import java.lang.reflect.Field;
@@ -57,9 +56,6 @@ import java.lang.reflect.Field;
 @EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
     private static Field mouseOptionsField;
-    private static double currentScopeSensitivityModifier = 1.0;
-    private static boolean isCurrentlyScoped = false;
-    private static double originalMouseSensitivity = -1;
     public static void registerClientHandlers(IEventBus bus) {
         FrameworkClientAPI.registerDataLoader(MetaLoader.getInstance());
        // onRegisterCreativeTab(bus);
@@ -73,65 +69,10 @@ public class ClientHandler {
     }
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
-        updateMouseSensitivity();
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && mc.screen == null && KeyBinds.KEY_MELEE.consumeClick()) {
             if (mc.player.getMainHandItem().getItem() instanceof GunItem) {
                 PacketHandler.getPlayChannel().sendToServer(new C2SMessageMeleeAttack());
-            }
-        }
-    }
-    private static void updateMouseSensitivity() {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null) return;
-
-        ItemStack heldItem = mc.player.getMainHandItem();
-        boolean shouldBeScoped = heldItem.getItem() instanceof GunItem && AimingHandler.get().isAiming();
-
-        if (shouldBeScoped && !isCurrentlyScoped) {
-            double sensitivityModifier = GunModifierHelper.getModifiedMouseSensitivity(heldItem, 1.0);
-            currentScopeSensitivityModifier = sensitivityModifier;
-            applyScopeSensitivity(sensitivityModifier);
-            isCurrentlyScoped = true;
-
-        } else if (!shouldBeScoped && isCurrentlyScoped) {
-            restoreOriginalSensitivity();
-            currentScopeSensitivityModifier = 1.0;
-            isCurrentlyScoped = false;
-
-        } else if (shouldBeScoped) {
-            double newModifier = GunModifierHelper.getModifiedMouseSensitivity(heldItem, 1.0);
-            if (newModifier != currentScopeSensitivityModifier) {
-                currentScopeSensitivityModifier = newModifier;
-                applyScopeSensitivity(newModifier);
-            }
-        }
-    }
-
-    private static void applyScopeSensitivity(double modifier) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.options == null) return;
-
-        // Store original sensitivity on first use
-        if (originalMouseSensitivity < 0) {
-            originalMouseSensitivity = mc.options.sensitivity().get();
-        }
-
-        // Apply the modifier to the base sensitivity
-        double newSensitivity = originalMouseSensitivity * modifier;
-
-        // Clamp to reasonable values (Minecraft's sensitivity range is 0.0 to 1.0)
-        newSensitivity = Math.max(0.01, Math.min(1.0, newSensitivity));
-
-        // Set the new sensitivity
-        mc.options.sensitivity().set(newSensitivity);
-    }
-
-    private static void restoreOriginalSensitivity() {
-        if (originalMouseSensitivity >= 0) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.options != null) {
-                mc.options.sensitivity().set(originalMouseSensitivity);
             }
         }
     }
@@ -231,6 +172,7 @@ public class ClientHandler {
 
         event.enqueueWork(ModMuzzleFlashes::init);
         event.enqueueWork(ClientHandler::setup);
+        event.enqueueWork(OptionalClientCompat::registerEntityModelFeaturesVariables);
     }
     private ResourceLocation getFlashTexture(String flashType) {
         return ModMuzzleFlashes.getMuzzleFlashTexture(flashType);

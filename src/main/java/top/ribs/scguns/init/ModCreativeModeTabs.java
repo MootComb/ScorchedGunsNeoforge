@@ -203,6 +203,7 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModItems.REPAIR_KIT.get());
                         pOutput.accept(ModItems.COMPOSITE_FILTER.get());
                         pOutput.accept(ModItems.RANGE_FINDER.get());
+                        pOutput.accept(ModItems.METAL_DETECTOR.get());
 
                         pOutput.accept(ModItems.EXO_SUIT_CORE.get());
                         pOutput.accept(ModItems.ADVANCED_EXO_SUIT_CORE.get());
@@ -229,7 +230,9 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModItems.SULFUR_DUST.get());
                         pOutput.accept(ModItems.RAW_PHOSPHOR.get());
                         pOutput.accept(ModItems.PHOSPHOR_DUST.get());
+                        pOutput.accept(ModItems.VICIOUS_ACID_BUCKET.get());
                         pOutput.accept(ModItems.NITER_DUST.get());
+                        pOutput.accept(ModItems.BAT_GUANO.get());
                         pOutput.accept(ModItems.GUNPOWDER_DUST.get());
                         pOutput.accept(ModItems.AUREOUS_SLAG.get());
                         pOutput.accept(ModItems.SHEOL.get());
@@ -379,6 +382,7 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModItems.HEAVY_GUN_BARREL.get());
                         pOutput.accept(ModItems.GUN_GRIP.get());
                         pOutput.accept(ModItems.GUN_MAGAZINE.get());
+                        pOutput.accept(ModItems.TURRET_PLATFORM.get());
                         pOutput.accept(ModItems.CHARGED_AMETHYST_SHARD.get());
                         pOutput.accept(ModItems.EMPTY_TANK.get());
                         pOutput.accept(ModItems.EMPTY_CORE.get());
@@ -497,6 +501,7 @@ public class ModCreativeModeTabs {
 
 
                         pOutput.accept(ModBlocks.ADVANCED_COMPOSTER.get());
+                        pOutput.accept(ModBlocks.GUANO_CANDLE.get());
                         pOutput.accept(ModBlocks.GEOTHERMAL_VENT.get());
                         pOutput.accept(ModBlocks.SULFUR_VENT.get());
                         pOutput.accept(ModBlocks.VENT_COLLECTOR.get());
@@ -514,6 +519,8 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModBlocks.AMMO_BOX.get());
                         pOutput.accept(ModBlocks.PLASMA_LANTERN.get());
                         pOutput.accept(ModBlocks.CHARGED_AMETHYST_RELAY.get());
+                        pOutput.accept(ModBlocks.SHOCK_COIL.get());
+                        pOutput.accept(ModBlocks.MINE_UNIT.get());
                         pOutput.accept(ModBlocks.BASIC_TURRET.get());
                         pOutput.accept(ModBlocks.AUTO_TURRET.get());
                         pOutput.accept(ModBlocks.SHOTGUN_TURRET.get());

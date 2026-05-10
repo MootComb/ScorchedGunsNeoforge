@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "scguns:pax",
+    "scguns:winnie",
+    "scguns:callwell",
+    "scguns:callwell_conversion",
+    "scguns:callwell_terminal",
+    "scguns:saketini",
+    "scguns:saketini_ironport",
+    "scguns:big_bore"
+  ]
+}

@@ -28,12 +28,16 @@ import top.ribs.scguns.client.screen.*;
 import top.ribs.scguns.common.BoundingBoxManager;
 import top.ribs.scguns.common.ProjectileManager;
 import top.ribs.scguns.common.exosuit.ExoSuitUpgradeManager;
+import top.ribs.scguns.config.EliteTierConfig;
+import top.ribs.scguns.config.GunnerMobConfig;
+import top.ribs.scguns.config.GunnerMobSpawner;
 import top.ribs.scguns.compat.CreateModCondition;
 import top.ribs.scguns.compat.FarmersDelightModCondition;
 import top.ribs.scguns.compat.IEModCondition;
 import top.ribs.scguns.event.SculkHordeEvents;
 import top.ribs.scguns.config.MerchantTradeConfig;
 import top.ribs.scguns.config.ProjectileAdvantageConfig;
+import top.ribs.scguns.config.TieredWeaponConfig;
 import top.ribs.scguns.entity.config.ConfigLoader;
 import top.ribs.scguns.entity.projectile.*;
 import top.ribs.scguns.entity.throwable.GrenadeEntity;
@@ -46,6 +50,7 @@ import top.ribs.scguns.network.PacketHandler;
 import top.ribs.scguns.world.VillageStructures;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 
 import static top.ribs.scguns.Reference.MOD_ID;
 import static top.ribs.scguns.compat.CompatManager.SCULK_HORDE_LOADED;
@@ -63,6 +68,9 @@ public class ScorchedGuns {
     private static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<IEModCondition>> IE_MOD_LOADED_CONDITION =
             CONDITION_CODECS.register(IEModCondition.ID, () -> IEModCondition.CODEC);
     public static CogMinionConfig COG_MINION_CONFIG = new CogMinionConfig();
+    public static GunnerMobConfig GUNNER_MOB_CONFIG = new GunnerMobConfig();
+    public static TieredWeaponConfig TIERED_WEAPON_CONFIG = new TieredWeaponConfig(Collections.emptyMap());
+    public static EliteTierConfig ELITE_TIER_CONFIG = new EliteTierConfig(Collections.emptyMap());
     public static boolean backpackedLoaded;
     public static boolean curiosLoaded;
     public static boolean controllableLoaded;
@@ -83,6 +91,8 @@ public class ScorchedGuns {
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.serverSpec);
         IEventBus bus = modEventBus;
         modEventBus.addListener(this::onConfigLoad);
+        ModFluids.FLUID_TYPES.register(bus);
+        ModFluids.FLUIDS.register(bus);
         ModItems.REGISTER.register(bus);
         CONDITION_CODECS.register(bus);
 
@@ -111,6 +121,7 @@ public class ScorchedGuns {
         ModLootModifiers.LOOT_MODIFIERS.register(bus);
         ModPointOfInterestTypes.REGISTER.register(bus);
         ModRecipes.register(modEventBus);
+        modEventBus.addListener(ModCauldronInteractions::registerCauldronFluidContent);
 
         ModStructures.REGISTRY.register(bus);
         bus.addListener(this::onCommonSetup);
@@ -132,6 +143,10 @@ public class ScorchedGuns {
         NeoForge.EVENT_BUS.register(PiglinWeaponEventHandler.class);
         NeoForge.EVENT_BUS.register(MerchantTradeConfig.class);
         NeoForge.EVENT_BUS.register(ProjectileAdvantageConfig.class);
+        NeoForge.EVENT_BUS.register(GunnerMobSpawner.class);
+        NeoForge.EVENT_BUS.register(GunProgressionEventHandler.class);
+        NeoForge.EVENT_BUS.register(RaidEventHandler.class);
+        NeoForge.EVENT_BUS.register(GuanoItemEventHandler.class);
 
 
         if (SCULK_HORDE_LOADED) {
@@ -171,6 +186,7 @@ public class ScorchedGuns {
     private void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             PacketHandler.init();
+            ModCauldronInteractions.register();
             FrameworkAPI.registerSyncedDataKey(ModSyncedDataKeys.AIMING);
             FrameworkAPI.registerSyncedDataKey(ModSyncedDataKeys.RELOADING);
             FrameworkAPI.registerSyncedDataKey(ModSyncedDataKeys.SHOOTING);
@@ -209,6 +225,7 @@ public class ScorchedGuns {
             ProjectileManager.getInstance().registerFactory(ModItems.MICROJET.get(), (worldIn, entity, weapon, item, modifiedGun) -> new MicroJetEntity(ModEntities.MICROJET.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.GRENADE.get(), (worldIn, entity, weapon, item, modifiedGun) -> new GrenadeEntity(ModEntities.GRENADE.get(), worldIn, entity, weapon, item, modifiedGun));
             useEnergyGuns = Config.COMMON.gameplay.forceEnergyGuns.get();
+            GunnerMobSpawner.reloadConfigs();
 
           if (Config.COMMON.gameplay.improvedHitboxes.get()) {
                 NeoForge.EVENT_BUS.register(new BoundingBoxManager());

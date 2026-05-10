@@ -11,6 +11,8 @@ import top.ribs.scguns.item.animated.ExoSuitItem;
 @EventBusSubscriber(modid = Reference.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ExoSuitFlightHandler {
 
+    private static final int JETPACK_ENERGY_INTERVAL = 20;
+
     static boolean consumeJetpackEnergy(Player player) {
         ItemStack chestplate = player.getInventory().getArmor(2);
         if (!(chestplate.getItem() instanceof ExoSuitItem)) {
@@ -43,6 +45,11 @@ public class ExoSuitFlightHandler {
         if (player.getAbilities().flying && !player.isCreative() && !player.isSpectator() && isUsingJetpack(player)) {
             if (player.isSprinting()) {
                 player.setSprinting(false);
+            }
+
+            if (ExoSuitPowerManager.canConsumeEnergy(player, "utility", JETPACK_ENERGY_INTERVAL) &&
+                    !consumeJetpackEnergy(player)) {
+                disableFlight(player);
             }
         }
     }

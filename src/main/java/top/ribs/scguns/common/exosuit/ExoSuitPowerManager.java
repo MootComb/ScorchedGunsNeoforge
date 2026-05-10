@@ -3,6 +3,7 @@ package top.ribs.scguns.common.exosuit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -31,7 +32,12 @@ public class ExoSuitPowerManager {
             return false;
         }
 
-        ItemStack powerCore = findPowerCore(chestplate);
+        int powerCoreSlot = findPowerCoreSlot(chestplate);
+        if (powerCoreSlot < 0) {
+            return false;
+        }
+
+        ItemStack powerCore = ExoSuitData.getUpgradeInSlot(chestplate, powerCoreSlot);
         if (powerCore.isEmpty()) {
             return false;
         }
@@ -42,8 +48,12 @@ public class ExoSuitPowerManager {
         }
 
         if (energyStorage.getEnergyStored() >= energyRequired) {
-            energyStorage.extractEnergy(energyRequired, false);
-            return true;
+            int extracted = energyStorage.extractEnergy(energyRequired, false);
+            if (extracted >= energyRequired) {
+                ExoSuitData.setUpgradeInSlot(chestplate, powerCoreSlot, powerCore);
+                player.setItemSlot(EquipmentSlot.CHEST, chestplate);
+                return true;
+            }
         }
 
         sendPowerShortageNotification(player, upgradeType);
@@ -139,15 +149,15 @@ public class ExoSuitPowerManager {
         UUID playerId = player.getUUID();
         Map<String, Integer> upgradeCooldowns = playerCooldowns.computeIfAbsent(playerId, k -> new HashMap<>());
 
-        int lastConsumption = upgradeCooldowns.getOrDefault(upgradeType, 0);
+        int lastConsumption = upgradeCooldowns.getOrDefault(upgradeType, -cooldownTicks);
         int currentTick = player.tickCount;
 
         if (currentTick - lastConsumption >= cooldownTicks) {
             upgradeCooldowns.put(upgradeType, currentTick);
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -204,16 +214,21 @@ public class ExoSuitPowerManager {
     }
 
     private static ItemStack findPowerCore(ItemStack chestplate) {
+        int slot = findPowerCoreSlot(chestplate);
+        return slot >= 0 ? ExoSuitData.getUpgradeInSlot(chestplate, slot) : ItemStack.EMPTY;
+    }
+
+    private static int findPowerCoreSlot(ItemStack chestplate) {
         for (int slot = 0; slot < 4; slot++) {
             ItemStack upgradeItem = ExoSuitData.getUpgradeInSlot(chestplate, slot);
             if (!upgradeItem.isEmpty()) {
                 ExoSuitUpgrade upgrade = ExoSuitUpgradeManager.getUpgradeForItem(upgradeItem);
                 if (upgrade != null && upgrade.getType().equals("power_core")) {
-                    return upgradeItem;
+                    return slot;
                 }
             }
         }
-        return ItemStack.EMPTY;
+        return -1;
     }
 
     private static ItemStack findUpgradeByType(ItemStack armorPiece, String upgradeType) {
@@ -251,7 +266,7 @@ public class ExoSuitPowerManager {
      * Sends a power shortage notification to the player
      */
     private static void sendPowerShortageNotification(Player player, String upgradeType) {
-        if (canConsumeEnergy(player, upgradeType + "_notification", 800)) {
+        if (!canConsumeEnergy(player, upgradeType + "_notification", 800)) {
             return;
         }
 

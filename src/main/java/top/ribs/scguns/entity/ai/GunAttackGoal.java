@@ -1,0 +1,140 @@
+package top.ribs.scguns.entity.ai;
+
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.ItemStack;
+import top.ribs.scguns.entity.weapon.ScGunsWeapon;
+import top.ribs.scguns.item.GunItem;
+
+import java.util.EnumSet;
+
+public class GunAttackGoal<T extends PathfinderMob> extends Goal {
+    private final T shooter;
+    private final int aiDifficulty;
+    private int seeTime;
+    private int attackTime;
+    private int burstTimer;
+    private int remainingBursts;
+    private ScGunsWeapon weapon;
+    private ItemStack cachedStack = ItemStack.EMPTY;
+
+    public GunAttackGoal(T shooter, int aiDifficulty) {
+        this.shooter = shooter;
+        this.aiDifficulty = Math.max(1, aiDifficulty);
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+    }
+
+    @Override
+    public boolean canUse() {
+        LivingEntity target = shooter.getTarget();
+        return target != null && target.isAlive() && isHoldingGun();
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return canUse();
+    }
+
+    @Override
+    public void start() {
+        shooter.setAggressive(true);
+        attackTime = 0;
+        seeTime = 0;
+        remainingBursts = 0;
+        burstTimer = 0;
+    }
+
+    @Override
+    public void stop() {
+        shooter.setAggressive(false);
+        seeTime = 0;
+        remainingBursts = 0;
+        burstTimer = 0;
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
+
+    @Override
+    public void tick() {
+        LivingEntity target = shooter.getTarget();
+        if (target == null || !target.isAlive() || !isHoldingGun()) {
+            return;
+        }
+
+        double distance = shooter.distanceToSqr(target);
+        boolean canSee = shooter.getSensing().hasLineOfSight(target);
+        seeTime = canSee ? seeTime + 1 : 0;
+
+        if (distance < 36.0D) {
+            shooter.getNavigation().stop();
+        } else if (distance > 196.0D) {
+            shooter.getNavigation().moveTo(target, weapon != null ? weapon.getMoveSpeedAmp() : 0.4D);
+        } else {
+            shooter.getNavigation().stop();
+        }
+
+        shooter.getLookControl().setLookAt(target, 30.0F, 30.0F);
+
+        if (!canSee || seeTime < 5) {
+            return;
+        }
+
+        if (attackTime > 0) {
+            attackTime--;
+            return;
+        }
+
+        if (burstTimer > 0) {
+            burstTimer--;
+            return;
+        }
+
+        shoot(target);
+
+        if (remainingBursts > 0) {
+            remainingBursts--;
+            burstTimer = Math.max(3, 8 - aiDifficulty);
+        } else {
+            remainingBursts = aiDifficulty > 1 ? shooter.getRandom().nextInt(aiDifficulty) : 0;
+            attackTime = Math.max(10, weapon.getAdjustedAttackCooldown(1.4D - Math.min(0.4D, aiDifficulty * 0.1D)));
+        }
+    }
+
+    private boolean isHoldingGun() {
+        ItemStack stack = shooter.getMainHandItem();
+        if (ItemStack.isSameItemSameComponents(stack, cachedStack)) {
+            return weapon != null;
+        }
+        cachedStack = stack.copy();
+        if (stack.getItem() instanceof GunItem) {
+            weapon = new ScGunsWeapon(stack);
+            return true;
+        }
+        weapon = null;
+        return false;
+    }
+
+    private void shoot(LivingEntity target) {
+        if (weapon == null || !weapon.isLoaded()) {
+            return;
+        }
+
+        double spread = Math.max(0.02D, 0.35D - aiDifficulty * 0.08D);
+        double x = target.getX() + (shooter.getRandom().nextDouble() - 0.5D) * spread;
+        double y = (target.getEyeY() + target.getY()) * 0.5D + (shooter.getRandom().nextDouble() - 0.5D) * spread;
+        double z = target.getZ() + (shooter.getRandom().nextDouble() - 0.5D) * spread;
+
+        SoundEvent sound = weapon.getShootSound();
+        if (sound != null) {
+            shooter.level().playSound(null, shooter, sound, SoundSource.HOSTILE, 1.0F, 1.0F);
+        }
+        weapon.performRangedAttackIWeapon(shooter, x, y, z, weapon.getProjectileSpeed());
+        shooter.swing(shooter.getUsedItemHand());
+    }
+}
