@@ -11,7 +11,7 @@
       "item": "minecraft:redstone"
     },
     "X": {
-      "tag": "forge:glass"
+      "tag": "c:glass"
     }
   },
   "pattern": [

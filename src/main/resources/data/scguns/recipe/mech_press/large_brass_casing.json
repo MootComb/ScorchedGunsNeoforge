@@ -3,7 +3,7 @@
   "processingTime": 50,
   "ingredients": [
     {
-      "tag": "forge:ingots/brass"
+      "tag": "c:ingots/brass"
     }
   ],
   "mold": {

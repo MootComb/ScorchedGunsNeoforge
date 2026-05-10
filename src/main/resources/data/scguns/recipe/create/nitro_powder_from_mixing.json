@@ -1,8 +1,8 @@
 {
   "type": "create:mixing",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
@@ -29,10 +29,10 @@
       "item": "scguns:netherite_scrap_chunk"
     },
     {
-      "tag": "forge:dusts/saltpeter"
+      "tag": "c:dusts/saltpeter"
     },
     {
-      "tag": "forge:dusts/phosphorus"
+      "tag": "c:dusts/phosphorus"
     }
   ],
   "results": [

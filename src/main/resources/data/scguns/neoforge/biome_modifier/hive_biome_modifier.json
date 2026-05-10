@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#forge:is_general",
+  "biomes": "#c:is_general",
   "spawners": {
     "type": "scguns:hive",
     "weight": 30,

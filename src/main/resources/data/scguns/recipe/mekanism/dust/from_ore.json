@@ -1,6 +1,6 @@
-{"type":"mekanism:enriching",  "conditions": [
+{"type":"mekanism:enriching",  "neoforge:conditions": [
   {
-    "type": "forge:mod_loaded",
+    "type": "neoforge:mod_loaded",
     "modid": "mekanism"
   }
 ],"input":{

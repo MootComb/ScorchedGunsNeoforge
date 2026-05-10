@@ -3,7 +3,7 @@
   "processingTime": 200,
   "ingredients": [
     {
-      "tag": "forge:ingots/brass"
+      "tag": "c:ingots/brass"
     },
     {
       "item": "minecraft:redstone"

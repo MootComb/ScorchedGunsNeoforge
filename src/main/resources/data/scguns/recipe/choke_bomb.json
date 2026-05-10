@@ -9,7 +9,7 @@
       "item": "minecraft:glass_bottle"
     },
     "Q": {
-      "tag": "forge:dusts/saltpeter"
+      "tag": "c:dusts/saltpeter"
     }
   },
   "pattern": [

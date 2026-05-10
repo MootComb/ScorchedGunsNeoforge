@@ -1,8 +1,8 @@
 {
   "type": "create_new_age:energising",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create_new_age"
     }
   ],

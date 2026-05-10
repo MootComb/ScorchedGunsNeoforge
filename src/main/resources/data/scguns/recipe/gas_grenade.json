@@ -9,10 +9,10 @@
       "item": "minecraft:glass_bottle"
     },
     "Q": {
-      "tag": "forge:dusts/sulfur"
+      "tag": "c:dusts/sulfur"
     },
     "T": {
-      "tag": "forge:dusts/phosphorus"
+      "tag": "c:dusts/phosphorus"
     }
   },
   "pattern": [

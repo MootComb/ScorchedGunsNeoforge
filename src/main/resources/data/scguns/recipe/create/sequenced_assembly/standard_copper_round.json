@@ -1,8 +1,8 @@
 {
   "type": "create:sequenced_assembly",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
@@ -22,15 +22,13 @@
         {
           "item": "scguns:unfinished_standard_copper_round"
         },
-        [
-          {
-            "tag": "scguns:gunpowder_dust"
-          }
-        ]
+        {
+          "tag": "scguns:gunpowder_dust"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_standard_copper_round"
+          "id": "scguns:unfinished_standard_copper_round"
         }
       ]
     },
@@ -40,15 +38,13 @@
         {
           "item": "scguns:unfinished_standard_copper_round"
         },
-        [
-          {
-            "tag": "scguns:stan_bullet_tips"
-          }
-        ]
+        {
+          "tag": "scguns:stan_bullet_tips"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_standard_copper_round"
+          "id": "scguns:unfinished_standard_copper_round"
         }
       ]
     },
@@ -61,12 +57,12 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_standard_copper_round"
+          "id": "scguns:unfinished_standard_copper_round"
         }
       ]
     }
   ],
-  "transitionalItem": {
-    "item": "scguns:unfinished_standard_copper_round"
+  "transitional_item": {
+    "id": "scguns:unfinished_standard_copper_round"
   }
 }

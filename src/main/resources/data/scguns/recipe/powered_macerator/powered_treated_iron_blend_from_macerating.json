@@ -3,16 +3,19 @@
   "processingTime": 100,
   "energyUse": 1000,
   "ingredients": [
-    [
-      {
-        "item": "minecraft:iron_ingot"
-      },
-      {
-        "item": "minecraft:raw_iron"
-      }
-    ],
     {
-      "tag": "forge:dusts/saltpeter"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "minecraft:iron_ingot"
+        },
+        {
+          "item": "minecraft:raw_iron"
+        }
+      ]
+    },
+    {
+      "tag": "c:dusts/saltpeter"
     },
     {
       "item": "minecraft:charcoal"

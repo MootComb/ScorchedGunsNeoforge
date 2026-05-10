@@ -6,7 +6,7 @@
       "item": "minecraft:rotten_flesh"
     },
     "Q": {
-      "tag": "forge:glass"
+      "tag": "c:glass"
     }
   },
   "pattern": [

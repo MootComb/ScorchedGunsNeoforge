@@ -3,14 +3,17 @@
   "processingTime": 50,
   "energyUse": 1000,
   "ingredients": [
-    [
-      {
-        "item": "scguns:sulfur_chunk"
-      },
-      {
-        "tag": "forge:dusts/sulfur"
-      }
-    ],
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "scguns:sulfur_chunk"
+        },
+        {
+          "tag": "c:dusts/sulfur"
+        }
+      ]
+    },
     {
       "item": "minecraft:blaze_powder"
     },

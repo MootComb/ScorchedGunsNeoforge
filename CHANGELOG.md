@@ -4,10 +4,19 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ## Unreleased
 
+## 1.1.0 - 2026-05-10
+
+### Fixed
+
+- Fixed remaining NeoForge resource namespace migrations for optional compatibility recipes, global loot modifiers, and common tags so old `forge:` condition/tag paths no longer drive recipe and loot loading.
+- Fixed Scorched Guns ore and vent biome modifiers using the old Forge namespace/path so Anthralite, Sulfur, Phosphorite, Vehement Coal, Sulfur Vents, and Geothermal Vents can be added to NeoForge 1.21.1 world generation.
+- Fixed remaining Scorched Guns recipe datapack parse errors in Create 6 integration recipes, Macerator and Powered Macerator alternative ingredients, Create filling fluid ingredients, and stale item ids.
+
 ### Changed
 
 - Cleaned the public changelog so it contains release-facing notes only.
 - Removed the obsolete legacy `changelog` file from the public source package; `CHANGELOG.md` is now the only public changelog.
+- Raised the public version to `1.1.0`.
 
 ## 1.0.2 - 2026-05-10
 

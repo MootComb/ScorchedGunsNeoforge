@@ -5,13 +5,13 @@
       "tag": "minecraft:wooden_slabs"
     },
     "L": {
-      "tag": "forge:dusts/saltpeter"
+      "tag": "c:dusts/saltpeter"
     },
     "R": {
       "item": "minecraft:tnt"
     },
     "X": {
-      "tag": "forge:dusts/phosphorus"
+      "tag": "c:dusts/phosphorus"
     },
     "P": {
       "item": "scguns:buckshot"

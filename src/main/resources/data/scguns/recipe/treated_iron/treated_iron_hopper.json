@@ -10,7 +10,7 @@
       "item": "scguns:treated_iron_ingot"
     },
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     }
   },
   "result": {

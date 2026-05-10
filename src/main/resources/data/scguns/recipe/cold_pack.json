@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "H": {
-      "tag": "forge:dusts/saltpeter"
+      "tag": "c:dusts/saltpeter"
     },
     "Q": {
       "item": "minecraft:paper"

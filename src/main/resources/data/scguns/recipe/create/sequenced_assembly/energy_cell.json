@@ -1,8 +1,8 @@
 {
   "type": "create:sequenced_assembly",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
@@ -22,15 +22,13 @@
         {
           "item": "scguns:unfinished_energy_cell"
         },
-        [
-          {
-            "item": "scguns:plasma_nugget"
-          }
-        ]
+        {
+          "item": "scguns:plasma_nugget"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_energy_cell"
+          "id": "scguns:unfinished_energy_cell"
         }
       ]
     },
@@ -40,15 +38,13 @@
         {
           "item": "scguns:unfinished_energy_cell"
         },
-        [
-          {
-            "tag": "scguns:stan_bullet_tips"
-          }
-        ]
+        {
+          "tag": "scguns:stan_bullet_tips"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_energy_cell"
+          "id": "scguns:unfinished_energy_cell"
         }
       ]
     },
@@ -61,12 +57,12 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_energy_cell"
+          "id": "scguns:unfinished_energy_cell"
         }
       ]
     }
   ],
-  "transitionalItem": {
-    "item": "scguns:unfinished_energy_cell"
+  "transitional_item": {
+    "id": "scguns:unfinished_energy_cell"
   }
 }

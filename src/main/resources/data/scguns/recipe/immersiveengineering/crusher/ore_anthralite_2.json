@@ -1,8 +1,8 @@
 {
     "type": "immersiveengineering:crusher",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "immersiveengineering"
     }
   ],
@@ -19,17 +19,17 @@
     "secondaries": [
         {
             "chance": 0.1,
-            "conditions": [
+            "neoforge:conditions": [
                 {
-                    "type": "forge:not",
+                    "type": "neoforge:not",
                     "value": {
-                        "type": "forge:tag_empty",
-                        "tag": "forge:dusts/nickel"
+                        "type": "neoforge:tag_empty",
+                        "tag": "c:dusts/nickel"
                     }
                 }
             ],
             "output": {
-                "tag": "forge:dusts/nickel"
+                "tag": "c:dusts/nickel"
             }
         }
     ]

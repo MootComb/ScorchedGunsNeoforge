@@ -1,6 +1,6 @@
-{"type":"mekanism:combining",  "conditions": [
+{"type":"mekanism:combining",  "neoforge:conditions": [
   {
-    "type": "forge:mod_loaded",
+    "type": "neoforge:mod_loaded",
     "modid": "mekanism"
   }
-],"extraInput":{"ingredient":{"tag":"forge:cobblestone/deepslate"}},"mainInput":{"amount":8,"ingredient":{"item":"scguns:raw_anthralite"}},"output":{"item":"scguns:deepslate_anthralite_ore"}}
+],"extraInput":{"ingredient":{"tag":"c:cobblestone/deepslate"}},"mainInput":{"amount":8,"ingredient":{"item":"scguns:raw_anthralite"}},"output":{"item":"scguns:deepslate_anthralite_ore"}}

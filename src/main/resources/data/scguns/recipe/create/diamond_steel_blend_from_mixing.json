@@ -1,32 +1,38 @@
 {
   "type": "create:mixing",
   "heatRequirement": "heated",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
   "ingredients": [
-    [
-      {
-        "item": "scguns:raw_anthralite"
-      },
-      {
-        "item": "scguns:anthralite_ingot"
-      }
-    ],
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "scguns:raw_anthralite"
+        },
+        {
+          "item": "scguns:anthralite_ingot"
+        }
+      ]
+    },
     {
       "item": "minecraft:diamond"
     },
-    [
-      {
-        "item": "scguns:treated_iron_blend"
-      },
-      {
-        "item": "scguns:treated_iron_ingot"
-      }
-    ],
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "scguns:treated_iron_blend"
+        },
+        {
+          "item": "scguns:treated_iron_ingot"
+        }
+      ]
+    },
     {
       "item": "minecraft:lapis_lazuli"
     }

@@ -1,8 +1,8 @@
 {
   "type": "create:sequenced_assembly",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
@@ -22,15 +22,13 @@
         {
           "item": "scguns:unfinished_rocket"
         },
-        [
-          {
-            "item": "scguns:sheol"
-          }
-        ]
+        {
+          "item": "scguns:sheol"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_rocket"
+          "id": "scguns:unfinished_rocket"
         }
       ]
     },
@@ -40,15 +38,13 @@
         {
           "item": "scguns:unfinished_rocket"
         },
-        [
-          {
-            "tag": "scguns:advanced_bullet_tips"
-          }
-        ]
+        {
+          "tag": "scguns:advanced_bullet_tips"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_rocket"
+          "id": "scguns:unfinished_rocket"
         }
       ]
     },
@@ -61,12 +57,12 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_rocket"
+          "id": "scguns:unfinished_rocket"
         }
       ]
     }
   ],
-  "transitionalItem": {
-    "item": "scguns:unfinished_rocket"
+  "transitional_item": {
+    "id": "scguns:unfinished_rocket"
   }
 }

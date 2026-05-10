@@ -1,8 +1,8 @@
 {
   "type": "create:sequenced_assembly",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
@@ -22,15 +22,13 @@
         {
           "item": "scguns:unfinished_krahg_round"
         },
-        [
-          {
-            "item": "scguns:nitro_powder_dust"
-          }
-        ]
+        {
+          "item": "scguns:nitro_powder_dust"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_krahg_round"
+          "id": "scguns:unfinished_krahg_round"
         }
       ]
     },
@@ -40,15 +38,13 @@
         {
           "item": "scguns:unfinished_krahg_round"
         },
-        [
-          {
-            "item": "scguns:anthralite_nugget"
-          }
-        ]
+        {
+          "item": "scguns:anthralite_nugget"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_krahg_round"
+          "id": "scguns:unfinished_krahg_round"
         }
       ]
     },
@@ -61,12 +57,12 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_krahg_round"
+          "id": "scguns:unfinished_krahg_round"
         }
       ]
     }
   ],
-  "transitionalItem": {
-    "item": "scguns:unfinished_krahg_round"
+  "transitional_item": {
+    "id": "scguns:unfinished_krahg_round"
   }
 }

@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     },
     {
       "tag": "scguns:stan_bullet_tips"

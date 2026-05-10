@@ -8,14 +8,17 @@
     {
       "item": "minecraft:blaze_powder"
     },
-    [
-      {
-        "item": "minecraft:coal"
-      },
-      {
-        "item": "minecraft:charcoal"
-      }
-    ]
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "minecraft:coal"
+        },
+        {
+          "item": "minecraft:charcoal"
+        }
+      ]
+    }
   ],
   "result": {
     "count": 4,

@@ -1,7 +1,7 @@
 {"type":"mekanism:crushing",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "mekanism"
     }
   ],"input":{"ingredient":{"item":"scguns:clump_anthralite"}},"output":{"item":"scguns:dirty_dust_anthralite"}}

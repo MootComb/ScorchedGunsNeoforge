@@ -1,8 +1,8 @@
 {
   "type": "create:sequenced_assembly",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
@@ -22,15 +22,13 @@
         {
           "item": "scguns:unfinished_shulkshot"
         },
-        [
-          {
-            "tag": "scguns:gunpowder_dust"
-          }
-        ]
+        {
+          "tag": "scguns:gunpowder_dust"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_shulkshot"
+          "id": "scguns:unfinished_shulkshot"
         }
       ]
     },
@@ -40,15 +38,13 @@
         {
           "item": "scguns:unfinished_shulkshot"
         },
-        [
-          {
-            "tag": "scguns:advanced_bullet_tips"
-          }
-        ]
+        {
+          "tag": "scguns:advanced_bullet_tips"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_shulkshot"
+          "id": "scguns:unfinished_shulkshot"
         }
       ]
     },
@@ -61,12 +57,12 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_shulkshot"
+          "id": "scguns:unfinished_shulkshot"
         }
       ]
     }
   ],
-  "transitionalItem": {
-    "item": "scguns:unfinished_shulkshot"
+  "transitional_item": {
+    "id": "scguns:unfinished_shulkshot"
   }
 }

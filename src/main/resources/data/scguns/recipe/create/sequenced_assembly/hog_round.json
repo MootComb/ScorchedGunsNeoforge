@@ -1,8 +1,8 @@
 {
   "type": "create:sequenced_assembly",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
@@ -22,15 +22,13 @@
         {
           "item": "scguns:unfinished_hog_round"
         },
-        [
-          {
-            "item": "scguns:sheol_dust"
-          }
-        ]
+        {
+          "item": "scguns:sheol_dust"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_hog_round"
+          "id": "scguns:unfinished_hog_round"
         }
       ]
     },
@@ -40,15 +38,13 @@
         {
           "item": "scguns:unfinished_hog_round"
         },
-        [
-          {
-            "item": "minecraft:gold_nugget"
-          }
-        ]
+        {
+          "item": "minecraft:gold_nugget"
+        }
       ],
       "results": [
         {
-          "item": "scguns:unfinished_hog_round"
+          "id": "scguns:unfinished_hog_round"
         }
       ]
     },
@@ -61,12 +57,12 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_hog_round"
+          "id": "scguns:unfinished_hog_round"
         }
       ]
     }
   ],
-  "transitionalItem": {
-    "item": "scguns:unfinished_hog_round"
+  "transitional_item": {
+    "id": "scguns:unfinished_hog_round"
   }
 }

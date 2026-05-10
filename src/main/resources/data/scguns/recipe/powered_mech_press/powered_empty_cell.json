@@ -4,7 +4,7 @@
   "energyUse": 500,
   "ingredients": [
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   ],
   "mold": {

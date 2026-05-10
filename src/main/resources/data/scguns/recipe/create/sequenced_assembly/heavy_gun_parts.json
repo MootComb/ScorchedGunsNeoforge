@@ -1,8 +1,8 @@
 {
   "type": "create:sequenced_assembly",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
@@ -27,7 +27,7 @@
       "processingTime": 50,
       "results": [
         {
-          "item": "scguns:unfinished_heavy_gun_parts"
+          "id": "scguns:unfinished_heavy_gun_parts"
         }
       ]
     },
@@ -40,7 +40,7 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_heavy_gun_parts"
+          "id": "scguns:unfinished_heavy_gun_parts"
         }
       ]
     },
@@ -53,7 +53,7 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_heavy_gun_parts"
+          "id": "scguns:unfinished_heavy_gun_parts"
         }
       ]
     },
@@ -66,12 +66,12 @@
       ],
       "results": [
         {
-          "item": "scguns:unfinished_heavy_gun_parts"
+          "id": "scguns:unfinished_heavy_gun_parts"
         }
       ]
     }
   ],
-  "transitionalItem": {
-    "item": "scguns:unfinished_heavy_gun_parts"
+  "transitional_item": {
+    "id": "scguns:unfinished_heavy_gun_parts"
   }
 }

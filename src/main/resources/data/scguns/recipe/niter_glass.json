@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "X": {
-      "tag": "forge:dusts/saltpeter"
+      "tag": "c:dusts/saltpeter"
     },
     "Q": {
       "item": "minecraft:glass"

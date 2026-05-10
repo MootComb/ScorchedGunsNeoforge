@@ -12,14 +12,17 @@
     {
       "item": "scguns:buckshot"
     },
-    [
-      {
-        "item": "scguns:raw_phosphor"
-      },
-      {
-        "tag": "forge:dusts/phosphorus"
-      }
-    ]
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "scguns:raw_phosphor"
+        },
+        {
+          "tag": "c:dusts/phosphorus"
+        }
+      ]
+    }
   ],
   "result": {
     "count": 5,

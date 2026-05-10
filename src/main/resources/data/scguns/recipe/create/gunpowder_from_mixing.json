@@ -1,22 +1,25 @@
 {
   "type": "create:mixing",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ],
   "ingredients": [
-    [
-      {
-        "item": "scguns:sulfur_chunk"
-      },
-      {
-        "tag": "forge:dusts/sulfur"
-      }
-    ],
     {
-      "tag": "forge:dusts/saltpeter"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "scguns:sulfur_chunk"
+        },
+        {
+          "tag": "c:dusts/sulfur"
+        }
+      ]
+    },
+    {
+      "tag": "c:dusts/saltpeter"
     },
     {
       "item": "minecraft:flint"

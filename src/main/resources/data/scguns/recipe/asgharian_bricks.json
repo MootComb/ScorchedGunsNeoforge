@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "X": {
-      "tag": "forge:dusts/phosphorus"
+      "tag": "c:dusts/phosphorus"
     },
     "Q": {
       "item": "minecraft:stone_bricks"

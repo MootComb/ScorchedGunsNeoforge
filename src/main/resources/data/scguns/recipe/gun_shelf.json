@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "X": {
-      "tag": "forge:nuggets/iron"
+      "tag": "c:nuggets/iron"
     },
     "Q": {
       "item": "minecraft:paper"

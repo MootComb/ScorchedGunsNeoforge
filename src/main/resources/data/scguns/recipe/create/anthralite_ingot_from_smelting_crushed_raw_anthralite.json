@@ -10,7 +10,7 @@
   "result": {
     "id": "scguns:anthralite_ingot"
   },
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "scguns:create_mod_loaded"
     }
