@@ -66,12 +66,21 @@ public class GunFireEvent extends PlayerEvent
     public static class Post extends GunFireEvent {
         public Post(Player player, ItemStack stack) {
             super(player, stack);
+            if (!this.isClient()) {
+                return;
+            }
             CustomData data = stack.get(DataComponents.CUSTOM_DATA);
             if (data != null && !data.isEmpty()) {
                 Item var4 = stack.getItem();
                 if (var4 instanceof AnimatedGunItem gunItem) {
                     long id = GeoItem.getId(stack);
-                    AnimationController<GeoAnimatable> animationController = gunItem.getAnimatableInstanceCache().getManagerForId(id).getAnimationControllers().get("controller");
+                    var manager = gunItem.getAnimatableInstanceCache().getManagerForId(id);
+                    AnimationController<GeoAnimatable> animationController = manager != null
+                            ? manager.getAnimationControllers().get("controller")
+                            : null;
+                    if (animationController == null) {
+                        return;
+                    }
                     animationController.forceAnimationReset();
                     if (ModSyncedDataKeys.AIMING.getValue(player)) {
                         animationController.tryTriggerAnimation("aim_shoot");

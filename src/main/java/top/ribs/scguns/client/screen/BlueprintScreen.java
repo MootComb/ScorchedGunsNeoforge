@@ -353,7 +353,9 @@ public class BlueprintScreen extends Screen {
         renderRecipeSlots(guiGraphics, mouseX, mouseY);
         renderGunInfo(guiGraphics, centerX, centerY);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        for (var renderable : this.renderables) {
+            renderable.render(guiGraphics, mouseX, mouseY, partialTick);
+        }
 
         renderItemTooltips(guiGraphics, mouseX, mouseY);
     }

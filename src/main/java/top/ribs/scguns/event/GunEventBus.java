@@ -267,29 +267,33 @@ public class GunEventBus {
                 tag.putFloat("MagazinePosition", slidePosition);
                 setCustomData(heldItem, tag);
             }
-            long id = GeoItem.getId(heldItem);
-            AnimationController<GeoAnimatable> controller = gunItem.getAnimatableInstanceCache()
-                    .getManagerForId(id)
-                    .getAnimationControllers()
-                    .get("controller");
+            if (level.isClientSide()) {
+                long id = GeoItem.getId(heldItem);
+                var manager = gunItem.getAnimatableInstanceCache().getManagerForId(id);
+                AnimationController<GeoAnimatable> controller = manager != null
+                        ? manager.getAnimationControllers().get("controller")
+                        : null;
 
-            controller.forceAnimationReset();
-            boolean isCarbine = gunItem.isInCarbineMode(heldItem);
+                if (controller != null) {
+                    controller.forceAnimationReset();
+                    boolean isCarbine = gunItem.isInCarbineMode(heldItem);
 
-            if (gunItem instanceof AnimatedDualWieldGunItem) {
-                ServerPlayHandler.RatKingAndQueenModel.GunFireEventRatHandler.incrementShotCount();
-                boolean useAlternate = ServerPlayHandler.RatKingAndQueenModel.GunFireEventRatHandler.shouldUseAlternateAnimation();
+                    if (gunItem instanceof AnimatedDualWieldGunItem) {
+                        ServerPlayHandler.RatKingAndQueenModel.GunFireEventRatHandler.incrementShotCount();
+                        boolean useAlternate = ServerPlayHandler.RatKingAndQueenModel.GunFireEventRatHandler.shouldUseAlternateAnimation();
 
-                if (ModSyncedDataKeys.AIMING.getValue(player)) {
-                    controller.tryTriggerAnimation(useAlternate ? "aim_shoot1" : "aim_shoot");
-                } else {
-                    controller.tryTriggerAnimation(useAlternate ? "shoot1" : "shoot");
-                }
-            } else {
-                if (ModSyncedDataKeys.AIMING.getValue(player)) {
-                    controller.tryTriggerAnimation(isCarbine ? "carbine_aim_shoot" : "aim_shoot");
-                } else {
-                    controller.tryTriggerAnimation(isCarbine ? "carbine_shoot" : "shoot");
+                        if (ModSyncedDataKeys.AIMING.getValue(player)) {
+                            controller.tryTriggerAnimation(useAlternate ? "aim_shoot1" : "aim_shoot");
+                        } else {
+                            controller.tryTriggerAnimation(useAlternate ? "shoot1" : "shoot");
+                        }
+                    } else {
+                        if (ModSyncedDataKeys.AIMING.getValue(player)) {
+                            controller.tryTriggerAnimation(isCarbine ? "carbine_aim_shoot" : "aim_shoot");
+                        } else {
+                            controller.tryTriggerAnimation(isCarbine ? "carbine_shoot" : "shoot");
+                        }
+                    }
                 }
             }
         }
