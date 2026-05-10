@@ -498,16 +498,18 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
     }
     private void handleMagazineVisibility(GeoBone bone) {
         ItemStack magazineAttachment = Gun.getAttachment(IAttachment.Type.MAGAZINE, this.currentItemStack);
+        boolean hasModeledMagazine = magazineAttachment.getItem() == ModItems.EXTENDED_MAG.get()
+                || magazineAttachment.getItem() == ModItems.SPEED_MAG.get();
 
         switch (bone.getName()) {
             case "standard_mag":
             case "default_mag":
-                bone.setHidden(!magazineAttachment.isEmpty());
+                bone.setHidden(hasModeledMagazine);
                 break;
             case "standard_mag_2":
             case "default_mag_2":
                 // Show the correct fake standard/default mag based on attachment
-                bone.setHidden(!magazineAttachment.isEmpty());
+                bone.setHidden(hasModeledMagazine);
                 break;
             case "extended_mag":
                 bone.setHidden(magazineAttachment.getItem() != ModItems.EXTENDED_MAG.get());
@@ -537,13 +539,11 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
         setupArmTransforms(poseStack, bone);
 
         ResourceLocation playerSkin = client.player.getSkin().texture();
-        VertexConsumer arm = this.bufferSource.getBuffer(RenderType.entitySolid(playerSkin));
-        VertexConsumer sleeve = this.bufferSource.getBuffer(RenderType.entityTranslucent(playerSkin));
 
         if (isRightArm(bone)) {
-            renderRightArm(poseStack, playerEntityModel, arm, sleeve, bone, packedLight, packedOverlay);
+            renderRightArm(poseStack, playerEntityModel, playerSkin, bone, packedLight, packedOverlay);
         } else {
-            renderLeftArm(poseStack, playerEntityModel, arm, sleeve, bone, packedLight, packedOverlay,
+            renderLeftArm(poseStack, playerEntityModel, playerSkin, bone, packedLight, packedOverlay,
                     client.player, animatable);
         }
     }
@@ -562,22 +562,22 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
     }
 
     private void renderRightArm(PoseStack poseStack, PlayerModel<AbstractClientPlayer> playerEntityModel,
-                                VertexConsumer arm, VertexConsumer sleeve, GeoBone bone,
+                                ResourceLocation playerSkin, GeoBone bone,
                                 int packedLight, int packedOverlay) {
         poseStack.scale(0.66F, 0.78F, 0.66F);
         poseStack.translate(0.25, -0.1, 0.1625);
 
         playerEntityModel.rightArm.setPos(bone.getPivotX(), bone.getPivotY(), bone.getPivotZ());
         playerEntityModel.rightArm.setRotation(0.0F, 0.0F, 0.0F);
-        playerEntityModel.rightArm.render(poseStack, arm, packedLight, packedOverlay);
+        playerEntityModel.rightArm.render(poseStack, this.bufferSource.getBuffer(RenderType.entitySolid(playerSkin)), packedLight, packedOverlay);
 
         playerEntityModel.rightSleeve.setPos(bone.getPivotX(), bone.getPivotY(), bone.getPivotZ());
         playerEntityModel.rightSleeve.setRotation(0.0F, 0.0F, 0.0F);
-        playerEntityModel.rightSleeve.render(poseStack, sleeve, packedLight, packedOverlay);
+        playerEntityModel.rightSleeve.render(poseStack, this.bufferSource.getBuffer(RenderType.entityTranslucent(playerSkin)), packedLight, packedOverlay);
     }
 
     private void renderLeftArm(PoseStack poseStack, PlayerModel<AbstractClientPlayer> playerEntityModel,
-                               VertexConsumer arm, VertexConsumer sleeve, GeoBone bone,
+                               ResourceLocation playerSkin, GeoBone bone,
                                int packedLight, int packedOverlay, Player player, AnimatedGunItem animatable) {
         Gun modifiedGun = ((GunItem) this.currentItemStack.getItem()).getModifiedGun(this.currentItemStack);
         modifiedGun.determineGripType(this.currentItemStack);
@@ -593,11 +593,11 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
 
         playerEntityModel.leftArm.setPos(bone.getPivotX(), bone.getPivotY(), bone.getPivotZ());
         playerEntityModel.leftArm.setRotation(0.0F, 0.0F, 0.0F);
-        playerEntityModel.leftArm.render(poseStack, arm, packedLight, packedOverlay);
+        playerEntityModel.leftArm.render(poseStack, this.bufferSource.getBuffer(RenderType.entitySolid(playerSkin)), packedLight, packedOverlay);
 
         playerEntityModel.leftSleeve.setPos(bone.getPivotX(), bone.getPivotY(), bone.getPivotZ());
         playerEntityModel.leftSleeve.setRotation(0.0F, 0.0F, 0.0F);
-        playerEntityModel.leftSleeve.render(poseStack, sleeve, packedLight, packedOverlay);
+        playerEntityModel.leftSleeve.render(poseStack, this.bufferSource.getBuffer(RenderType.entityTranslucent(playerSkin)), packedLight, packedOverlay);
     }
 
     private void checkAndHandleAnimations(AnimationController<GeoAnimatable> animationController) {
@@ -730,7 +730,8 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
                 ModItems.LIGHT_STOCK.get(),
                 ModItems.WEIGHTED_STOCK.get(),
                 ModItems.EXTENDED_MAG.get(),
-                ModItems.SPEED_MAG.get()
+                ModItems.SPEED_MAG.get(),
+                ModItems.PLUS_P_MAG.get()
 
         );
 

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,8 +28,10 @@ public class AttachmentRenderer extends GeoRenderLayer<AnimatedGunItem> {
 
     public void updateAttachment(ItemStack attachmentStack) {
         itemStack = attachmentStack;
-        model_resource = ResourceLocation.fromNamespaceAndPath("scguns", "geo/item/attachment/" + attachmentStack.getItem() + ".geo.json");
-        texture_resource = ResourceLocation.fromNamespaceAndPath("scguns", "textures/animated/attachment/" + attachmentStack.getItem() + ".png");
+        ResourceLocation attachmentId = BuiltInRegistries.ITEM.getKey(attachmentStack.getItem());
+        String attachmentPath = attachmentId.getPath();
+        model_resource = ResourceLocation.fromNamespaceAndPath(attachmentId.getNamespace(), "geo/item/attachment/" + attachmentPath + ".geo.json");
+        texture_resource = ResourceLocation.fromNamespaceAndPath(attachmentId.getNamespace(), "textures/animated/attachment/" + attachmentPath + ".png");
 
     }
 

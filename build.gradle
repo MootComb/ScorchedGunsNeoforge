@@ -1,4 +1,4 @@
-﻿plugins {
+plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.moddev' version '2.0.141'
@@ -108,13 +108,19 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.7:processor'
 
     compileOnly "maven.modrinth:geckolib:${geckolib_version}"
+    // Stage 3P verified Framework's NeoForge 1.21.1 API jar for compile-surface inspection.
     compileOnly "curse.maven:framework-549225:7530361"
+    // Optional integration APIs are compile-only; runtime dependencies remain external.
     compileOnly "maven.modrinth:curios:${curios_version}"
     compileOnly "curse.maven:controllable-317269:${controllable_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+
+    // Dev runtime dependencies are required for local smoke testing but are not bundled.
     localRuntime "maven.modrinth:geckolib:${geckolib_version}"
     localRuntime "curse.maven:framework-549225:7530361"
     localRuntime "maven.modrinth:curios:${curios_version}"
+
+    // Deferred optional mod integrations should stay external unless deliberately enabled.
 }
 
 def replaceProperties = [
@@ -177,4 +183,3 @@ idea {
         downloadJavadoc = true
     }
 }
-

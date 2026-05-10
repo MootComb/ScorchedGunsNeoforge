@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 8,
+  "ingredient": {
+    "item": "scguns:anthralite_ingot"
+  },
+  "result": {
+    "id": "scguns:flechette"
+  }
+}

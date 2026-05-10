@@ -1,0 +1,28 @@
+{
+  "type": "create:splashing",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "scguns:treated_iron_blend"
+    }
+  ],
+  "results": [
+    {
+      "count": 6,
+      "id": "scguns:treated_iron_nugget"
+    },
+    {
+      "count": 2,
+      "id": "minecraft:iron_nugget"
+    },
+    {
+      "chance": 0.9,
+      "id": "minecraft:iron_nugget"
+    }
+  ]
+}

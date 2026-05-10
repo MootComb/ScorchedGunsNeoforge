@@ -19,12 +19,12 @@ import top.ribs.scguns.init.ModStructures;
 import java.util.Optional;
 
 public class CogChambers extends Structure {
-    public static final MapCodec<CogChambers> CODEC = RecordCodecBuilder.<CogChambers>mapCodec((codex) -> codex.group(
-            settingsCodec(codex),
+    public static final MapCodec<CogChambers> CODEC = RecordCodecBuilder.<CogChambers>mapCodec((builder) -> builder.group(
+            settingsCodec(builder),
             StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
             HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
             Heightmap.Types.CODEC.optionalFieldOf("heightmap").forGetter(structure -> structure.heightmap)
-    ).apply(codex, CogChambers::new));
+    ).apply(builder, CogChambers::new));
 
     public final Holder<StructureTemplatePool> startPool;
     public final HeightProvider startHeight;
