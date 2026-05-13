@@ -7,12 +7,20 @@
     "scguns:micina",
     "scguns:valora",
     "scguns:prush_gun",
+    "scguns:drill",
+    "scguns:drill_conversion",
     "scguns:lockewood",
     "scguns:rg_jigsaw",
     "scguns:inertial",
+    "scguns:nailer",
     "scguns:mas_55",
+    "scguns:inquisitor",
     "scguns:plasgun",
     "scguns:cyclone",
-    "scguns:shard_culler"
+    "scguns:zilk_45",
+    "scguns:truant",
+    "scguns:shard_culler",
+    "scguns:minksy",
+    "scguns:mas_peddler"
   ]
 }

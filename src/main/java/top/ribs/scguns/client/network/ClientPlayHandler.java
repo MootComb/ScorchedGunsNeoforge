@@ -153,7 +153,7 @@ public class ClientPlayHandler {
 
         int currentAmmo = tag.getInt("AmmoCount");
         int maxAmmo = GunModifierHelper.getModifiedAmmoCapacity(heldItem, modifiedGun);
-        boolean hasNoAmmo = Gun.findAmmo(player, modifiedGun.getProjectile().getItem()).stack().isEmpty();
+        boolean hasNoAmmo = Gun.findAmmo(player, modifiedGun).stack().isEmpty();
 
         if (animationController != null && (currentAmmo >= maxAmmo || hasNoAmmo)) {
             tag.putString("scguns:ReloadState", "STOPPING");
@@ -180,7 +180,7 @@ public class ClientPlayHandler {
         if(message.getShooterId() == mc.player.getId()) {
             Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(
                     message.getId(),
-                    SoundSource.PLAYERS,
+                    message.getCategory(),
                     message.getVolume(),
                     message.getPitch(),
                     mc.level.getRandom(),
@@ -192,7 +192,7 @@ public class ClientPlayHandler {
         } else {
             Minecraft.getInstance().getSoundManager().play(new GunShotSound(
                     message.getId(),
-                    SoundSource.PLAYERS,
+                    message.getCategory(),
                     message.getX(),
                     message.getY(),
                     message.getZ(),

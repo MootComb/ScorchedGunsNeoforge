@@ -46,6 +46,10 @@ public class GunEntityRenderers
         event.registerEntityRenderer(ModEntities.SHATTER_ROUND_PROJECTILE.get(), ProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GIBBS_ROUND_PROJECTILE.get(), ProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.SHOTBALL_PROJECTILE.get(), ProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.HE_GRENADE_ROUND.get(), ProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.FIRE_GRENADE_ROUND.get(), ProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.GAS_GRENADE_ROUND.get(), ProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.BOUNCY_GRENADE_ROUND.get(), ProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWABLE_GRENADE.get(), ThrowableGrenadeRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWABLE_STUN_GRENADE.get(), ThrowableGrenadeRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWABLE_MOLOTOV_COCKTAIL.get(), ThrowableGrenadeRenderer::new);
@@ -55,6 +59,7 @@ public class GunEntityRenderers
         event.registerEntityRenderer(ModEntities.THROWABLE_SWARM_BOMB.get(), ThrowableGrenadeRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWABLE_SHOTBALL.get(), ThrowableShotballRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWABLE_NAIL_BOMB.get(), ThrowableGrenadeRenderer::new);
+        event.registerEntityRenderer(ModEntities.THROWABLE_HELLFIRE_BOMB.get(), ThrowableGrenadeRenderer::new);
 
     }
 }

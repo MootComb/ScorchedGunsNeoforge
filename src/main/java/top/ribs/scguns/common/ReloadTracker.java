@@ -115,9 +115,25 @@ public class ReloadTracker {
         if (gun.getReloads().getReloadType() == ReloadType.SINGLE_ITEM) {
             result = Gun.findAmmo(player, this.gun.getReloads().getReloadItem()).stack().isEmpty();
         } else {
-            result = Gun.findAmmo(player, this.gun.getProjectile().getItem()).stack().isEmpty();
+            result = this.findProjectileAmmo(player).stack().isEmpty();
         }
         return result;
+    }
+
+    private AmmoContext findProjectileAmmo(Player player) {
+        CompoundTag tag = getCustomData(this.stack);
+        if (tag != null && tag.getInt("AmmoCount") > 0) {
+            return Gun.findAmmo(player, Gun.getLoadedProjectileItem(this.stack, this.gun));
+        }
+        return Gun.findAmmo(player, this.gun);
+    }
+
+    private ItemStack[] findProjectileAmmoStacks(Player player) {
+        AmmoContext context = this.findProjectileAmmo(player);
+        if (context.stack().isEmpty()) {
+            return new ItemStack[0];
+        }
+        return Gun.findAmmoStack(player, context.stack().getItem());
     }
 
     private boolean canReload(Player player) {
@@ -141,12 +157,12 @@ public class ReloadTracker {
         return result;
     }
 
-    private void shrinkFromAmmoPool(ItemStack[] ammoStack, Player player, int shrinkAmount) {
+    private void shrinkFromAmmoPool(ItemStack[] ammoStack, Player player, int shrinkAmount, Item ammoItem) {
         final int[] shrinkAmt = {shrinkAmount};
 
-        int exoSuitShrinkAmount = Math.min(shrinkAmt[0], ExoSuitAmmoHelper.getAmmoCountInExoSuit(player, gun.getProjectile().getItem()));
+        int exoSuitShrinkAmount = Math.min(shrinkAmt[0], ExoSuitAmmoHelper.getAmmoCountInExoSuit(player, ammoItem));
         if (exoSuitShrinkAmount > 0) {
-            ExoSuitAmmoHelper.shrinkAmmoInExoSuit(player, gun.getProjectile().getItem(), exoSuitShrinkAmount);
+            ExoSuitAmmoHelper.shrinkAmmoInExoSuit(player, ammoItem, exoSuitShrinkAmount);
             shrinkAmt[0] -= exoSuitShrinkAmount;
 
             if (shrinkAmt[0] == 0) {
@@ -161,7 +177,7 @@ public class ReloadTracker {
                 if (stack.getItem() instanceof AmmoBoxItem) {
                     List<ItemStack> contents = AmmoBoxItem.getContents(stack).collect(Collectors.toList());
                     for (ItemStack pouchAmmoStack : contents) {
-                        if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == gun.getProjectile().getItem()) {
+                        if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == ammoItem) {
                             int max = Math.min(shrinkAmt[0], pouchAmmoStack.getCount());
                             pouchAmmoStack.shrink(max);
                             shrinkAmt[0] -= max;
@@ -180,7 +196,7 @@ public class ReloadTracker {
             if (itemStack.getItem() instanceof AmmoBoxItem) {
                 List<ItemStack> contents = AmmoBoxItem.getContents(itemStack).collect(Collectors.toList());
                 for (ItemStack pouchAmmoStack : contents) {
-                    if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == gun.getProjectile().getItem()) {
+                    if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == ammoItem) {
                         int max = Math.min(shrinkAmt[0], pouchAmmoStack.getCount());
                         pouchAmmoStack.shrink(max);
                         shrinkAmt[0] -= max;
@@ -195,7 +211,7 @@ public class ReloadTracker {
         }
 
         for (ItemStack itemStack : ammoStack) {
-            if (shrinkAmt[0] > 0 && !itemStack.isEmpty() && itemStack.getItem() == gun.getProjectile().getItem()) {
+            if (shrinkAmt[0] > 0 && !itemStack.isEmpty() && itemStack.getItem() == ammoItem) {
                 int max = Math.min(shrinkAmt[0], itemStack.getCount());
                 itemStack.shrink(max);
                 shrinkAmt[0] -= max;
@@ -203,12 +219,12 @@ public class ReloadTracker {
         }
     }
 
-    private void shrinkFromAmmoPool(ItemStack ammoStack, Player player, int shrinkAmount) {
+    private void shrinkFromAmmoPool(ItemStack ammoStack, Player player, int shrinkAmount, Item ammoItem) {
         final int[] shrinkAmt = {shrinkAmount};
 
-        int exoSuitShrinkAmount = Math.min(shrinkAmt[0], ExoSuitAmmoHelper.getAmmoCountInExoSuit(player, gun.getProjectile().getItem()));
+        int exoSuitShrinkAmount = Math.min(shrinkAmt[0], ExoSuitAmmoHelper.getAmmoCountInExoSuit(player, ammoItem));
         if (exoSuitShrinkAmount > 0) {
-            ExoSuitAmmoHelper.shrinkAmmoInExoSuit(player, gun.getProjectile().getItem(), exoSuitShrinkAmount);
+            ExoSuitAmmoHelper.shrinkAmmoInExoSuit(player, ammoItem, exoSuitShrinkAmount);
             shrinkAmt[0] -= exoSuitShrinkAmount;
 
             if (shrinkAmt[0] == 0) {
@@ -223,7 +239,7 @@ public class ReloadTracker {
                 if (stack.getItem() instanceof AmmoBoxItem) {
                     List<ItemStack> contents = AmmoBoxItem.getContents(stack).collect(Collectors.toList());
                     for (ItemStack pouchAmmoStack : contents) {
-                        if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == gun.getProjectile().getItem()) {
+                        if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == ammoItem) {
                             int max = Math.min(shrinkAmt[0], pouchAmmoStack.getCount());
                             pouchAmmoStack.shrink(max);
                             shrinkAmt[0] -= max;
@@ -241,7 +257,7 @@ public class ReloadTracker {
             if (itemStack.getItem() instanceof AmmoBoxItem) {
                 List<ItemStack> contents = AmmoBoxItem.getContents(itemStack).collect(Collectors.toList());
                 for (ItemStack pouchAmmoStack : contents) {
-                    if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == gun.getProjectile().getItem()) {
+                    if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == ammoItem) {
                         int max = Math.min(shrinkAmt[0], pouchAmmoStack.getCount());
                         pouchAmmoStack.shrink(max);
                         shrinkAmt[0] -= max;
@@ -254,7 +270,7 @@ public class ReloadTracker {
                 updateAmmoPouchContents(itemStack, contents, player.registryAccess());
             }
         }
-        if (shrinkAmt[0] > 0 && !ammoStack.isEmpty() && ammoStack.getItem() == gun.getProjectile().getItem()) {
+        if (shrinkAmt[0] > 0 && !ammoStack.isEmpty() && ammoStack.getItem() == ammoItem) {
             int max = Math.min(shrinkAmt[0], ammoStack.getCount());
             ammoStack.shrink(max);
             shrinkAmt[0] -= max;
@@ -274,8 +290,9 @@ public class ReloadTracker {
     }
 
     public void increaseMagAmmo(Player player) {
-        ItemStack[] ammoStack = Gun.findAmmoStack(player, this.gun.getProjectile().getItem());
+        ItemStack[] ammoStack = this.findProjectileAmmoStacks(player);
         if (ammoStack.length > 0) {
+            Item ammoItem = ammoStack[0].getItem();
             CompoundTag tag = getCustomData(this.stack);
             if (tag != null) {
                 int maxAmmo = GunModifierHelper.getModifiedAmmoCapacity(this.stack, this.gun);
@@ -285,6 +302,7 @@ public class ReloadTracker {
                 if (hasCreativeBox) {
                     tag.putInt("AmmoCount", maxAmmo);
                     setCustomData(this.stack, tag);
+                    Gun.setLoadedProjectileItem(this.stack, this.gun, ammoItem);
                     return;
                 }
                 int currentAmmo = tag.getInt("AmmoCount");
@@ -295,12 +313,13 @@ public class ReloadTracker {
                 int amount = maxAmmo - currentAmmo;
                 if (ammoAmount < amount) {
                     tag.putInt("AmmoCount", currentAmmo + ammoAmount);
-                    this.shrinkFromAmmoPool(ammoStack, player, ammoAmount);
+                    this.shrinkFromAmmoPool(ammoStack, player, ammoAmount, ammoItem);
                 } else {
                     tag.putInt("AmmoCount", maxAmmo);
-                    this.shrinkFromAmmoPool(ammoStack, player, amount);
+                    this.shrinkFromAmmoPool(ammoStack, player, amount, ammoItem);
                 }
                 setCustomData(this.stack, tag);
+                Gun.setLoadedProjectileItem(this.stack, this.gun, ammoItem);
             }
         }
         playReloadSound(player);
@@ -319,7 +338,7 @@ public class ReloadTracker {
 
                 if (currentAmmo < maxAmmo) {
                     tag.putInt("AmmoCount", maxAmmo);
-                    this.shrinkFromAmmoPool(ammoStacks, player, 1);
+                    this.shrinkFromAmmoPool(ammoStacks, player, 1, reloadItem);
                     handleReloadByproduct(player);
                     setCustomData(this.stack, tag);
                 }
@@ -329,10 +348,11 @@ public class ReloadTracker {
     }
 
     public void increaseAmmo(Player player) {
-        AmmoContext context = Gun.findAmmo(player, this.gun.getProjectile().getItem());
+        AmmoContext context = this.findProjectileAmmo(player);
         ItemStack ammo = context.stack();
 
         if (!ammo.isEmpty()) {
+            Item ammoItem = ammo.getItem();
             int amount = Math.min(ammo.getCount(), this.gun.getReloads().getReloadAmount());
             ItemStack currentStack = player.getMainHandItem();
             CompoundTag tag = getCustomData(currentStack);
@@ -343,9 +363,10 @@ public class ReloadTracker {
                 amount = Math.min(amount, maxAmmo - currentAmmo);
                 tag.putInt("AmmoCount", currentAmmo + amount);
                 setCustomData(currentStack, tag);
+                Gun.setLoadedProjectileItem(currentStack, this.gun, ammoItem);
 
             }
-            shrinkFromAmmoPool(Gun.findAmmoStack(player, this.gun.getProjectile().getItem()), player, amount);
+            shrinkFromAmmoPool(Gun.findAmmoStack(player, ammoItem), player, amount, ammoItem);
         }
 
         playReloadSound(player);

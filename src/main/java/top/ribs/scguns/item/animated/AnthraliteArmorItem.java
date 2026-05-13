@@ -1,14 +1,8 @@
 package top.ribs.scguns.item.animated;
 
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceCache;
@@ -25,20 +19,8 @@ public class AnthraliteArmorItem extends ArmorItem implements GeoItem {
         super(pMaterial, pType, ModArmorMaterials.withDurability(pProperties, pMaterial, pType));
     }
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private AnthraliteArmorRenderer renderer;
-
-            @Override
-            public @NotNull HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack,
-                                                                   EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
-                if (this.renderer == null)
-                    this.renderer = new AnthraliteArmorRenderer();
-
-                this.renderer.prepForRender(livingEntity, itemStack, equipmentSlot, original);
-                return this.renderer;
-            }
-        });
+    public void createGeoRenderer(Consumer<software.bernie.geckolib.animatable.client.GeoRenderProvider> consumer) {
+        top.ribs.scguns.client.render.armor.ScGunsGeoArmorRenderProvider.accept(consumer, AnthraliteArmorRenderer::new);
     }
 
     private PlayState predicate(AnimationState animationState) {

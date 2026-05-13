@@ -8,6 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
@@ -125,7 +126,22 @@ public class GunItem extends Item implements IColored, IMeta {
         if (modifiedGun.getReloads().getReloadType() == ReloadType.SINGLE_ITEM) {
             ammo = reloadItem;
         }
-        if (ammo != null) {
+        if (modifiedGun.getReloads().getReloadType() != ReloadType.SINGLE_ITEM && modifiedGun.getAcceptedProjectiles().size() > 1) {
+            MutableComponent ammoTypes = Component.empty();
+            boolean first = true;
+            for (Gun.Projectile projectile : modifiedGun.getAcceptedProjectiles()) {
+                Item projectileItem = projectile.getItem();
+                if (projectileItem == null) {
+                    continue;
+                }
+                if (!first) {
+                    ammoTypes.append(Component.literal(", ").withStyle(ChatFormatting.GRAY));
+                }
+                ammoTypes.append(Component.translatable(projectileItem.getDescriptionId()).withStyle(ChatFormatting.WHITE));
+                first = false;
+            }
+            tooltip.add(Component.translatable("info.scguns.ammo_type", ammoTypes).withStyle(ChatFormatting.GRAY));
+        } else if (ammo != null) {
             tooltip.add(Component.translatable("info.scguns.ammo_type", Component.translatable(ammo.getDescriptionId()).withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.GRAY));
         }
         if (tagCompound != null) {

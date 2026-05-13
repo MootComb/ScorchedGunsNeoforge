@@ -68,6 +68,7 @@ public class ModTags
         public static final TagKey<Item> END_GUN_TIER = tag("end_gun_tier");
         public static final TagKey<Item> SCORCHED_GUN_TIER = tag("scorched_gun_tier");
         public static final TagKey<Item> GRENADES = tag("grenades");
+        public static final TagKey<Item> VIVENTRUM_BANNED_ITEMS = tag("viventrum_banned_items");
 
         private static TagKey<Item> tag(String name)
         {
@@ -101,6 +102,7 @@ public class ModTags
         public static final TagKey<EntityType<?>> BOT = tag("bot");
         public static final TagKey<EntityType<?>> WATER = tag("water");
         public static final TagKey<EntityType<?>> TURRET_BLACKLIST = tag("turret_blacklist");
+        public static final TagKey<EntityType<?>> TURRET_ENEMY_WHITELIST = tag("turret_enemy_whitelist");
         public static final TagKey<EntityType<?>> GUNNER = tag("gunner");
         public static final TagKey<EntityType<?>> IGNORES_MINE_UNITS = tag("ignores_mine_units");
 

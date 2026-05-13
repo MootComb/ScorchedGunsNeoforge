@@ -47,12 +47,14 @@ public class RarityUtils {
         ITEM_RARITY_MAP.put(scguns("carapice"), Constants.ENDISH);
         ITEM_RARITY_MAP.put(scguns("weevil"), Constants.ENDISH);
         ITEM_RARITY_MAP.put(scguns("shulkshot"), Constants.ENDISH);
+        ITEM_RARITY_MAP.put(scguns("shulker_core"), Constants.ENDISH);
 
         ITEM_RARITY_MAP.put(scguns("scorched_blueprint"), Constants.SCORCHED);
         ITEM_RARITY_MAP.put(scguns("scorched_ingot"), Constants.SCORCHED);
         ITEM_RARITY_MAP.put(scguns("earths_corpse"), Constants.SCORCHED);
         ITEM_RARITY_MAP.put(scguns("rat_king_and_queen"), Constants.SCORCHED);
         ITEM_RARITY_MAP.put(scguns("locust"), Constants.SCORCHED);
+        ITEM_RARITY_MAP.put(scguns("sterilizer"), Constants.SCORCHED);
         ITEM_RARITY_MAP.put(scguns("newborn_cyst"), Constants.SCORCHED);
         ITEM_RARITY_MAP.put(scguns("astella"), Constants.SCORCHED);
         ITEM_RARITY_MAP.put(scguns("flayed_god"), Constants.SCORCHED);
@@ -67,6 +69,8 @@ public class RarityUtils {
 
         ITEM_RARITY_MAP.put(scguns("ultra_knight_hawk"), Constants.BIZARRE);
         ITEM_RARITY_MAP.put(scguns("big_bore"), Constants.BIZARRE);
+        ITEM_RARITY_MAP.put(scguns("kiln_gun"), Constants.BIZARRE);
+        ITEM_RARITY_MAP.put(scguns("whizzbanger"), Constants.BIZARRE);
         ITEM_RARITY_MAP.put(scguns("osborne_slug"), Constants.BIZARRE);
         ITEM_RARITY_MAP.put(scguns("ribs_glory"), Constants.PIGLISH);
 

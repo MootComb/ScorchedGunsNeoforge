@@ -41,6 +41,8 @@ public class ModMenuTypes {
             registerMenuType("shotgun_turret_menu", ShotgunTurretMenu::new);
     public static final DeferredHolder<MenuType<?>, MenuType<AutoTurretMenu>> AUTO_TURRET_MENU =
             registerMenuType("auto_turret_menu", AutoTurretMenu::new);
+    public static final DeferredHolder<MenuType<?>, MenuType<SniperTurretMenu>> SNIPER_TURRET_MENU =
+            registerMenuType("sniper_turret_menu", SniperTurretMenu::new);
     public static final DeferredHolder<MenuType<?>, MenuType<LightningBatteryMenu>> LIGHTING_BATTERY_MENU =
             registerMenuType("lightning_battery_menu", LightningBatteryMenu::new);
     public static final DeferredHolder<MenuType<?>, MenuType<MechanicalPressMenu>> MECHANICAL_PRESS_MENU =

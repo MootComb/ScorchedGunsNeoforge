@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/shatter_round",
+		"0": "scguns:item/shatter_round",
 		"particle": "scguns:item/shatter_round"
 	},
 	"loader": "neoforge:separate_transforms",

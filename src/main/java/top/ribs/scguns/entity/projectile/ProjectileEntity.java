@@ -121,7 +121,7 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
         this.shooter = shooter;
         this.modifiedGun = modifiedGun;
         this.general = modifiedGun.getGeneral();
-        this.projectile = modifiedGun.getProjectile();
+        this.projectile = Gun.getLoadedProjectile(weapon, modifiedGun);
         if (shooter instanceof ServerPlayer player) {
             this.chargeProgress = player.getPersistentData().getFloat("ChargeProgress");
         } else if (shooter instanceof Player player) {
@@ -143,7 +143,7 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
         this.attributeDamageMultiplier = damageMultAttr != null ? damageMultAttr.getValue() : 1.0;
 
         this.entitySize = EntityDimensions.scalable(this.projectile.getSize(), this.projectile.getSize());
-        this.modifiedGravity = modifiedGun.getProjectile().isGravity() ? GunModifierHelper.getModifiedProjectileGravity(weapon, -0.04) : 0.0;
+        this.modifiedGravity = this.projectile.isGravity() ? GunModifierHelper.getModifiedProjectileGravity(weapon, -0.04) : 0.0;
         this.life = GunModifierHelper.getModifiedProjectileLife(weapon, this.projectile.getLife());
         this.worldDay = worldIn.getDayTime() / 24000L;
 
@@ -635,37 +635,40 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
     }
 
     protected void onLavaImpact(Vec3 impactPos) {
-        if (!this.level().isClientSide() && Config.CLIENT.particle.enableLavaImpactParticles.get()) {
-            ServerLevel serverLevel = (ServerLevel) this.level();
-            for (int i = 0; i < 5; i++) {
-                double ySpeed = 0.2 + (random.nextDouble() * 0.3);
+        if (!this.level().isClientSide()) {
+            boolean enableParticles = isLavaImpactParticlesEnabled();
+
+            if (enableParticles) {
+                ServerLevel serverLevel = (ServerLevel) this.level();
+                for (int i = 0; i < 5; i++) {
+                    double ySpeed = 0.2 + (random.nextDouble() * 0.3);
+                    serverLevel.sendParticles(ParticleTypes.LAVA,
+                            impactPos.x, impactPos.y, impactPos.z,
+                            1,
+                            0.02, 0, 0.02,
+                            ySpeed
+                    );
+                }
+
+                for (int i = 0; i < 3; i++) {
+                    double xSpeed = (random.nextDouble() - 0.5) * 0.1;
+                    double ySpeed = 0.2 + (random.nextDouble() * 0.2);
+                    double zSpeed = (random.nextDouble() - 0.5) * 0.1;
+                    serverLevel.sendParticles(ParticleTypes.SMOKE,
+                            impactPos.x, impactPos.y, impactPos.z,
+                            1,
+                            xSpeed, ySpeed, zSpeed,
+                            0.05
+                    );
+                }
+
                 serverLevel.sendParticles(ParticleTypes.LAVA,
-                        impactPos.x, impactPos.y, impactPos.z,
-                        1,
-                        0.02, 0, 0.02,
-                        ySpeed
+                        impactPos.x, impactPos.y + 0.05, impactPos.z,
+                        3,
+                        0.1, 0.1, 0.1,
+                        0.2
                 );
             }
-
-            // Smoke particles
-            for (int i = 0; i < 3; i++) {
-                double xSpeed = (random.nextDouble() - 0.5) * 0.1;
-                double ySpeed = 0.2 + (random.nextDouble() * 0.2);
-                double zSpeed = (random.nextDouble() - 0.5) * 0.1;
-                serverLevel.sendParticles(ParticleTypes.SMOKE,
-                        impactPos.x, impactPos.y, impactPos.z,
-                        1,
-                        xSpeed, ySpeed, zSpeed,
-                        0.05
-                );
-            }
-
-            serverLevel.sendParticles(ParticleTypes.LAVA,
-                    impactPos.x, impactPos.y + 0.05, impactPos.z,
-                    3,
-                    0.1, 0.1, 0.1,
-                    0.2
-            );
         }
         this.level().playSound(null, impactPos.x, impactPos.y, impactPos.z,
                 SoundEvents.LAVA_POP, SoundSource.NEUTRAL,
@@ -674,12 +677,7 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
 
     protected void onWaterImpact(Vec3 impactPos) {
         if (!this.level().isClientSide()) {
-            boolean enableParticles = true;
-            try {
-                enableParticles = Config.CLIENT.particle.enableWaterImpactParticles.get();
-            } catch (IllegalStateException e) {
-                enableParticles = true;
-            }
+            boolean enableParticles = isWaterImpactParticlesEnabled();
 
             if (enableParticles) {
                 ServerLevel serverLevel = (ServerLevel) this.level();
@@ -713,10 +711,26 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
                         impactPos.x, impactPos.y, impactPos.z,
                         bubbleParticles, 0.5, 0.3, 0.5, 0.2);
             }
+        }
 
-            this.level().playSound(null, impactPos.x, impactPos.y, impactPos.z,
-                    SoundEvents.PLAYER_SPLASH, SoundSource.NEUTRAL,
-                    1.2F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+        this.level().playSound(null, impactPos.x, impactPos.y, impactPos.z,
+                SoundEvents.PLAYER_SPLASH, SoundSource.NEUTRAL,
+                1.2F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+    }
+
+    protected static boolean isWaterImpactParticlesEnabled() {
+        try {
+            return Config.CLIENT.particle.enableWaterImpactParticles.get();
+        } catch (IllegalStateException e) {
+            return true;
+        }
+    }
+
+    protected static boolean isLavaImpactParticlesEnabled() {
+        try {
+            return Config.CLIENT.particle.enableLavaImpactParticles.get();
+        } catch (IllegalStateException e) {
+            return true;
         }
     }
 

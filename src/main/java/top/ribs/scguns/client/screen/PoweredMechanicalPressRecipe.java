@@ -106,6 +106,11 @@ public class PoweredMechanicalPressRecipe implements Recipe<PoweredMechanicalPre
         return Type.INSTANCE;
     }
 
+    @Override
+    public boolean isSpecial() {
+        return true;
+    }
+
     public NonNullList<Ingredient> getIngredients() {
         return inputItems;
     }

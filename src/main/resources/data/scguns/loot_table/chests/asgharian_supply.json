@@ -2,7 +2,7 @@
   "type": "minecraft:chest",
   "pools": [
     {
-      "bonus_rolls": 0.0,
+      "bonus_rolls": 0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -11,8 +11,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 2.0,
-                "min": 1.0
+                "max": 2,
+                "min": 1
               },
               "function": "minecraft:set_count"
             }
@@ -27,8 +27,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 3.0,
-                "min": 1.0
+                "max": 3,
+                "min": 1
               },
               "function": "minecraft:set_count"
             }
@@ -43,8 +43,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 12.0,
-                "min": 1.0
+                "max": 12,
+                "min": 1
               },
               "function": "minecraft:set_count"
             }
@@ -59,8 +59,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 6.0,
-                "min": 2.0
+                "max": 6,
+                "min": 2
               },
               "function": "minecraft:set_count"
             }
@@ -75,8 +75,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 2.0,
-                "min": 1.0
+                "max": 2,
+                "min": 1
               },
               "function": "minecraft:set_count"
             }
@@ -91,8 +91,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 21.0,
-                "min": 8.0
+                "max": 21,
+                "min": 8
               },
               "function": "minecraft:set_count"
             }
@@ -107,8 +107,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 8.0,
-                "min": 2.0
+                "max": 8,
+                "min": 2
               },
               "function": "minecraft:set_count"
             }
@@ -123,8 +123,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 24.0,
-                "min": 5.0
+                "max": 24,
+                "min": 5
               },
               "function": "minecraft:set_count"
             }
@@ -139,8 +139,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 12.0,
-                "min": 1.0
+                "max": 12,
+                "min": 1
               },
               "function": "minecraft:set_count"
             }
@@ -155,8 +155,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 16.0,
-                "min": 1.0
+                "max": 16,
+                "min": 1
               },
               "function": "minecraft:set_count"
             }
@@ -164,7 +164,6 @@
           "name": "scguns:small_copper_casing",
           "weight": 2
         },
-
         {
           "type": "minecraft:item",
           "functions": [
@@ -172,8 +171,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 5.0,
-                "min": 1.0
+                "max": 5,
+                "min": 1
               },
               "function": "minecraft:set_count"
             }
@@ -188,8 +187,8 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 2.0,
-                "min": 1.0
+                "max": 2,
+                "min": 1
               },
               "function": "minecraft:set_count"
             }
@@ -268,12 +267,17 @@
           ],
           "name": "scguns:anthralite_leggings",
           "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "scguns:blueprint_scrap",
+          "weight": 3
         }
       ],
       "rolls": {
         "type": "minecraft:uniform",
-        "max": 10.0,
-        "min": 3.0
+        "max": 10,
+        "min": 3
       }
     }
   ],

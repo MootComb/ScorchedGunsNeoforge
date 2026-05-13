@@ -1,13 +1,21 @@
 package top.ribs.scguns.entity.ai;
 
+import com.mrcrayfish.framework.api.network.LevelLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
+import top.ribs.scguns.Config;
 import top.ribs.scguns.entity.weapon.ScGunsWeapon;
 import top.ribs.scguns.item.GunItem;
+import top.ribs.scguns.network.PacketHandler;
+import top.ribs.scguns.network.message.S2CMessageGunSound;
+import top.ribs.scguns.util.GunModifierHelper;
 
 import java.util.EnumSet;
 
@@ -99,7 +107,7 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
 
         if (remainingBursts > 0) {
             remainingBursts--;
-            burstTimer = Math.max(3, 8 - aiDifficulty);
+            burstTimer = Math.max(getWeaponCooldown(), Math.max(3, 8 - aiDifficulty));
         } else {
             remainingBursts = aiDifficulty > 1 ? shooter.getRandom().nextInt(aiDifficulty) : 0;
             attackTime = Math.max(10, weapon.getAdjustedAttackCooldown(1.4D - Math.min(0.4D, aiDifficulty * 0.1D)));
@@ -132,9 +140,51 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
 
         SoundEvent sound = weapon.getShootSound();
         if (sound != null) {
-            shooter.level().playSound(null, shooter, sound, SoundSource.HOSTILE, 1.0F, 1.0F);
+            playShootSound(sound);
         }
         weapon.performRangedAttackIWeapon(shooter, x, y, z, weapon.getProjectileSpeed());
         shooter.swing(shooter.getUsedItemHand());
+    }
+
+    private int getWeaponCooldown() {
+        return weapon != null ? Math.max(1, weapon.getAttackCooldown()) : 20;
+    }
+
+    private void playShootSound(SoundEvent sound) {
+        if (!(shooter.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        ResourceLocation soundId = BuiltInRegistries.SOUND_EVENT.getKey(sound);
+        if (soundId == null) {
+            return;
+        }
+
+        ItemStack stack = shooter.getMainHandItem();
+        double posX = shooter.getX();
+        double posY = shooter.getY() + shooter.getEyeHeight();
+        double posZ = shooter.getZ();
+        float volume = GunModifierHelper.getFireSoundVolume(stack);
+        float pitch = 0.9F + shooter.getRandom().nextFloat() * 0.2F;
+        double radius = GunModifierHelper.getModifiedFireSoundRadius(stack, Config.SERVER.gunShotMaxDistance.get());
+        boolean muzzle = weapon != null && weapon.hasMuzzleFlash();
+
+        S2CMessageGunSound messageSound = new S2CMessageGunSound(
+                soundId,
+                SoundSource.HOSTILE,
+                (float) posX,
+                (float) posY,
+                (float) posZ,
+                volume,
+                pitch,
+                shooter.getId(),
+                muzzle,
+                false
+        );
+
+        PacketHandler.getPlayChannel().sendToNearbyPlayers(
+                () -> LevelLocation.create(serverLevel, posX, posY, posZ, radius),
+                messageSound
+        );
     }
 }

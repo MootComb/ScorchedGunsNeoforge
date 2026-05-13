@@ -16,7 +16,6 @@
     "client.ItemInHandLayerMixin",
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
-    "client.MouseHandlerMixin",
     "client.PlayerModelMixin",
     "client.VehiclePoseMixin",
     "client.compat.fa.EMFModelPartRootMixin",

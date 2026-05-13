@@ -91,6 +91,11 @@ public class MaceratorRecipe implements Recipe<MaceratorRecipe.Input> {
         return Type.INSTANCE;
     }
 
+    @Override
+    public boolean isSpecial() {
+        return true;
+    }
+
     public NonNullList<Ingredient> getIngredients() {
         return inputItems;
     }

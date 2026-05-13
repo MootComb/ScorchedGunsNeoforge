@@ -15,6 +15,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
@@ -301,6 +303,45 @@ public class AimingHandler
         event.setFOV(event.getFOV() - event.getFOV() * modifier);
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onCalculatePlayerTurn(CalculatePlayerTurnEvent event)
+    {
+        double multiplier = this.getAimingSensitivityMultiplier();
+        if(multiplier >= 0.999D)
+            return;
+
+        double sensitivity = event.getMouseSensitivity();
+        double base = sensitivity * 0.6D + 0.2D;
+        double scaledBase = Math.cbrt(base * base * base * multiplier);
+        event.setMouseSensitivity(Math.max(0.0D, (scaledBase - 0.2D) / 0.6D));
+    }
+
+    private double getAimingSensitivityMultiplier()
+    {
+        Minecraft mc = Minecraft.getInstance();
+        if(mc.player == null || mc.player.getMainHandItem().isEmpty() || mc.options.getCameraType() != CameraType.FIRST_PERSON)
+            return 1.0D;
+
+        double adsProgress = this.localTracker.getCurrentNormalProgress();
+        if(adsProgress <= 0.0D)
+            return 1.0D;
+
+        ItemStack heldItem = mc.player.getMainHandItem();
+        if(!(heldItem.getItem() instanceof GunItem gunItem) || ModSyncedDataKeys.RELOADING.getValue(mc.player))
+            return 1.0D;
+
+        double adsSensitivity = Config.CLIENT.controls.aimDownSightSensitivity.get();
+        double multiplier = 1.0D - (1.0D - adsSensitivity) * adsProgress;
+
+        Gun modifiedGun = gunItem.getModifiedGun(heldItem);
+        if(modifiedGun.getModules().getZoom() != null)
+        {
+            float fovModifier = Mth.clamp(Gun.getFovModifier(heldItem, modifiedGun), 0.1F, 10.0F);
+            multiplier *= Mth.clamp(fovModifier * 1.5F, 0.2F, 1.0F);
+        }
+        return Math.max(0.01D, multiplier);
+    }
+
     @SubscribeEvent
     public void onClientTick(ClientPlayerNetworkEvent.LoggingOut event)
     {
@@ -398,6 +439,11 @@ public class AimingHandler
         public double getNormalProgress(float partialTicks)
         {
             return Mth.clamp((this.previousAim + (this.currentAim - this.previousAim) * partialTicks) / MAX_AIM_PROGRESS, 0.0, 1.0);
+        }
+
+        public double getCurrentNormalProgress()
+        {
+            return Mth.clamp(this.currentAim / MAX_AIM_PROGRESS, 0.0, 1.0);
         }
     }
 }

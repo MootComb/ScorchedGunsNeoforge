@@ -14,6 +14,9 @@
     "minecraft:zombified_piglin",
     "minecraft:wither_skeleton",
     "scguns:hornlin",
-    "scguns:zombified_hornlin"
+    "scguns:zombified_hornlin",
+    "scguns:adjudicator",
+    "scguns:subjugator",
+    "scguns:finforcer"
   ]
 }

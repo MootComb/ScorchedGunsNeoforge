@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/microjet",
+		"0": "scguns:item/microjet",
 		"particle": "scguns:item/microjet"
 	},
 	"loader": "neoforge:separate_transforms",

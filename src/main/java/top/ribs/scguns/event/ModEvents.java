@@ -97,6 +97,10 @@ public class ModEvents {
                     new ItemStack(ModItems.SPEED_MAG.get(), 1),
                     4, 20, 0.05f));
             trades.get(4).add((pTrader, pRandom) -> new MerchantOffer(
+                    new ItemCost(Items.EMERALD, 25),
+                    new ItemStack(ModItems.FENCER_CARABINE.get(), 1),
+                    4, 20, 0.05f));
+            trades.get(4).add((pTrader, pRandom) -> new MerchantOffer(
                     new ItemCost(Items.EMERALD, 16),
                     new ItemStack(ModItems.LONG_SCOPE.get(), 1),
                     4, 20, 0.05f));

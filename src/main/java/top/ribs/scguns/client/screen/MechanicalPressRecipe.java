@@ -100,6 +100,11 @@ public class MechanicalPressRecipe implements Recipe<MechanicalPressRecipe.Input
         return Type.INSTANCE;
     }
 
+    @Override
+    public boolean isSpecial() {
+        return true;
+    }
+
     public NonNullList<Ingredient> getIngredients() {
         return inputItems;
     }

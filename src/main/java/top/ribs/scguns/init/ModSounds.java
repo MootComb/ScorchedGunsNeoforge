@@ -16,6 +16,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> RELOAD_END = register("item.reload_end.reload_end");
     public static final DeferredHolder<SoundEvent, SoundEvent> GUN_RUSTLE = register("item.gun_rustle.gun_rustle");
     public static final DeferredHolder<SoundEvent, SoundEvent> METAL = register("item.gun_sounds.metal");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HISS = register("item.gun_sounds.hiss");
     public static final DeferredHolder<SoundEvent, SoundEvent> BOLT_PULL = register("item.bolt_pull.bolt_pull");
     public static final DeferredHolder<SoundEvent, SoundEvent> BOLT_RELEASE = register("item.bolt_release.bolt_release");
     public static final DeferredHolder<SoundEvent, SoundEvent> RACK = register("item.rack.rack");
@@ -34,9 +35,13 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> MACHINE_GUN_FIRE = register("item.machine_gun.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> WITHER = register("item.wither.wither");
     public static final DeferredHolder<SoundEvent, SoundEvent> AIRGUN_FIRE = register("item.airgun.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> AIRGUN_FIRE_2 = register("item.airgun.fire_2");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RAIL_FIRE = register("item.rail.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CARABINE_FIRE = register("item.carabine.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> BEAM_FIRE = register("item.beam.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> BRUISER_SILENCED_FIRE = register("item.bruiser.silenced_fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> MAKESHIFT_RIFLE_FIRE = register("item.makeshift_rifle.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NEW_RIFLE_FIRE_2 = register("item.new_rifle.fire_2");
     public static final DeferredHolder<SoundEvent, SoundEvent> REVOLVER_FIRE = register("item.revolver.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> COWBOY_FIRE = register("item.cowboy.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> SHOCK_FIRE = register("item.shock.fire");
@@ -64,6 +69,8 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> HEAVY_RIFLE_FIRE = register("item.heavy_rifle.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> BRASS_PISTOL_FIRE = register("item.brass_pistol.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> PLASMA_FIRE = register("item.plasma.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PLASMA_FIRE_2 = register("item.plasma.fire_2");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PLASMA_SHOTGUN_FIRE = register("item.plasma_shotgun.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> GAUSS_FIRE = register("item.gauss.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_FIRE = register("item.rocket.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_RIFLE_FIRE = register("item.rocket_rifle.fire");
@@ -76,6 +83,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> FLAMETHROWER_PRE_FIRE = register("item.flamethrower.pre_fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> FLAMETHROWER_RELOAD = register("item.flamethrower.reload");
     public static final DeferredHolder<SoundEvent, SoundEvent> LASER_FIRE = register("item.laser.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LASER_FIRE_2 = register("item.laser.fire_2");
     public static final DeferredHolder<SoundEvent, SoundEvent> HEAVIER_FIRE = register("item.heavier_rifle.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> IRON_PISTOL_FIRE = register("item.iron_pistol.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> ITEM_PISTOL_RELOAD = register("item.pistol.reload");
@@ -83,6 +91,9 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ITEM_GRENADE_PIN = register("item.grenade.pin");
     public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_STUN_GRENADE_EXPLOSION = register("entity.stun_grenade.explosion");
     public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_STUN_GRENADE_RING = register("entity.stun_grenade.ring");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SULFURHEAD_HURT = register("entity.sulfurhead.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SULFURHEAD_DIE = register("entity.sulfurhead.die");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SULFURHEAD_IDLE = register("entity.sulfurhead.idle");
     public static final DeferredHolder<SoundEvent, SoundEvent> UI_WEAPON_ATTACH = register("ui.weapon.attach");
 
     //bullet flyby sounds

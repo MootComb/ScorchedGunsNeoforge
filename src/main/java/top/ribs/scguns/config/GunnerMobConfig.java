@@ -1,6 +1,8 @@
 package top.ribs.scguns.config;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import top.ribs.scguns.ScorchedGuns;
 
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +48,7 @@ public class GunnerMobConfig {
         private int aiDifficulty = 1;
         @SerializedName("weapon_drop_chance")
         private double weaponDropChance = 0.08D;
-        private List<String> weapons = Collections.emptyList();
+        private List<JsonElement> weapons = Collections.emptyList();
         private List<ArmorPiece> armor = Collections.emptyList();
 
         public double getSpawnChance() {
@@ -61,11 +64,94 @@ public class GunnerMobConfig {
         }
 
         public List<String> getWeapons() {
-            return weapons != null ? weapons : Collections.emptyList();
+            List<String> ids = new ArrayList<>();
+            for (WeaponEntry entry : getWeaponEntries()) {
+                ids.add(entry.getItem());
+            }
+            return ids;
+        }
+
+        public List<WeaponEntry> getWeaponEntries() {
+            if (weapons == null || weapons.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            List<WeaponEntry> entries = new ArrayList<>();
+            for (JsonElement element : weapons) {
+                WeaponEntry entry = WeaponEntry.from(element);
+                if (entry != null) {
+                    entries.add(entry);
+                }
+            }
+            return entries;
         }
 
         public List<ArmorPiece> getArmor() {
             return armor != null ? armor : Collections.emptyList();
+        }
+    }
+
+    public static class WeaponEntry {
+        private final String item;
+        private final double weight;
+        private final Double dropWeight;
+
+        private WeaponEntry(String item, double weight, Double dropWeight) {
+            this.item = item;
+            this.weight = weight;
+            this.dropWeight = dropWeight;
+        }
+
+        public static WeaponEntry from(JsonElement element) {
+            if (element == null || element.isJsonNull()) {
+                return null;
+            }
+            if (element.isJsonPrimitive()) {
+                return new WeaponEntry(element.getAsString(), 1.0D, null);
+            }
+            if (!element.isJsonObject()) {
+                return null;
+            }
+
+            JsonObject object = element.getAsJsonObject();
+            String item = stringValue(object, "item");
+            if (item == null || item.isBlank()) {
+                item = stringValue(object, "id");
+            }
+            if (item == null || item.isBlank()) {
+                return null;
+            }
+
+            double weight = numberValue(object, "weight", numberValue(object, "spawn_weight", 1.0D));
+            Double dropWeight = nullableNumberValue(object, "drop_weight");
+            return new WeaponEntry(item, Math.max(0.0D, weight), dropWeight);
+        }
+
+        public String getItem() {
+            return item;
+        }
+
+        public double getWeight() {
+            return weight;
+        }
+
+        public double getDropChance(double fallback) {
+            return dropWeight == null ? fallback : Math.max(0.0D, Math.min(1.0D, dropWeight));
+        }
+
+        private static String stringValue(JsonObject object, String key) {
+            JsonElement value = object.get(key);
+            return value != null && value.isJsonPrimitive() ? value.getAsString() : null;
+        }
+
+        private static double numberValue(JsonObject object, String key, double fallback) {
+            Double value = nullableNumberValue(object, key);
+            return value != null ? value : fallback;
+        }
+
+        private static Double nullableNumberValue(JsonObject object, String key) {
+            JsonElement value = object.get(key);
+            return value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber() ? value.getAsDouble() : null;
         }
     }
 

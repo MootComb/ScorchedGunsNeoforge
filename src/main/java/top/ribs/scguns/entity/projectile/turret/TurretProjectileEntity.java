@@ -27,6 +27,11 @@ public class TurretProjectileEntity extends AbstractArrow {
         this.setNoGravity(true);
     }
 
+    public TurretProjectileEntity(Level world) {
+        super(ModEntities.TURRET_PROJECTILE.get(), world);
+        this.setNoGravity(true);
+    }
+
     public TurretProjectileEntity(Level world, BulletType bulletType) {
         super(ModEntities.TURRET_PROJECTILE.get(), world);
 

@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "0": "scguns:items/hardened_bullet",
+    "0": "scguns:item/hardened_bullet",
     "particle": "scguns:item/hardened_bullet"
   },
   "loader": "neoforge:separate_transforms",

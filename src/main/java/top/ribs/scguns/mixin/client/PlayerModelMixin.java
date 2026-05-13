@@ -1,6 +1,7 @@
 package top.ribs.scguns.mixin.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.InteractionHand;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.ribs.scguns.client.handler.AimingHandler;
 import top.ribs.scguns.common.Gun;
 import top.ribs.scguns.item.GunItem;
+import top.ribs.scguns.item.WaraxeItem;
 
 @Mixin(PlayerModel.class)
 public class PlayerModelMixin<T extends LivingEntity>
@@ -27,7 +29,13 @@ public class PlayerModelMixin<T extends LivingEntity>
 
         PlayerModel<T> model = (PlayerModel<T>) (Object) this;
         ItemStack heldItem = player.getMainHandItem();
-        if(heldItem.getItem() instanceof GunItem gunItem)
+        if (heldItem.getItem() instanceof WaraxeItem waraxeItem) {
+            HumanoidModel<LivingEntity> humanoidModel = (HumanoidModel<LivingEntity>) model;
+            waraxeItem.applyHoldingPose(humanoidModel, player);
+            copyModelAngles(model.rightArm, model.rightSleeve);
+            copyModelAngles(model.leftArm, model.leftSleeve);
+        }
+        else if(heldItem.getItem() instanceof GunItem gunItem)
         {
             if(player.isLocalPlayer() && Minecraft.getInstance().options.getCameraType().isFirstPerson() && animationPos == 0.0F)
             {

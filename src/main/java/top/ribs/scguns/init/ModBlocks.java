@@ -26,6 +26,8 @@ import java.util.function.Supplier;
 public class ModBlocks {
 
     public static final DeferredRegister.Blocks REGISTER = DeferredRegister.createBlocks(Reference.MOD_ID);
+    public static final DeferredBlock<Block> FAKE_SOUL_FIRE = REGISTER.register("fake_soul_fire",
+            () -> new FakeSoulFireBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SOUL_FIRE), 2.0F));
     public static final DeferredBlock<Block> TEMPORARY_LIGHT = REGISTER.register("temporary_light",
             TemporaryLightBlock::new);
     public static final DeferredBlock<Block> GUN_SHELF = register("gun_shelf",
@@ -65,6 +67,11 @@ public class ModBlocks {
                     .noOcclusion()));
     public static final DeferredBlock<Block> SHOTGUN_TURRET = register("shotgun_turret",
             () -> new ShotgunTurretBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> SNIPER_TURRET = register("sniper_turret",
+            () -> new SniperTurretBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops()
                     .strength(3.0F)
                     .noOcclusion()));
@@ -141,10 +148,97 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
                     .requiresCorrectToolForDrops()
                     .strength(3.0F)));
+    public static final DeferredBlock<Block> ANTHRALITE_GRATE = register("anthralite_grate",
+            () -> new GrateBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> ANTHRALITE_GRATE_PANE = register("anthralite_grate_pane",
+            () -> new IronBarsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BARS).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> ANTHRALITE_TILES = register("anthralite_tiles",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> ANTHRALITE_TILES_SLAB = register("anthralite_tiles_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> ANTHRALITE_TILES_STAIRS = register("anthralite_tiles_stairs",
+            () -> new StairBlock(ModBlocks.ANTHRALITE_TILES.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> ANTHRALITE_PLATES = register("anthralite_plates",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> CHISELED_ANTHRALITE_BLOCK = register("chiseled_anthralite_block",
+            () -> new RedstoneLampBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)
+                    .lightLevel(state -> 0)));
+    public static final DeferredBlock<Block> CUT_ANTHRALITE = register("cut_anthralite",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(2.5F)));
+    public static final DeferredBlock<Block> CUT_ANTHRALITE_SLAB = register("cut_anthralite_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(2.5F)));
+    public static final DeferredBlock<Block> CUT_ANTHRALITE_STAIRS = register("cut_anthralite_stairs",
+            () -> new StairBlock(ModBlocks.CUT_ANTHRALITE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .strength(2.5F)));
+    public static final DeferredBlock<Block> ANTHRALITE_PILLAR = register("anthralite_pillar",
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> ANTHRALITE_LAMP = register("anthralite_lamp",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.REDSTONE_LAMP).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)
+                    .lightLevel(state -> 15)));
     public static final DeferredBlock<Block> TREATED_IRON_BLOCK = register("treated_iron_block",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
                     .requiresCorrectToolForDrops()
                     .strength(3.0F)));
+    public static final DeferredBlock<Block> CHISELED_TREATED_IRON_BLOCK = register("chiseled_treated_iron_block",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> CUT_TREATED_IRON = register("cut_treated_iron",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(2.5F)));
+    public static final DeferredBlock<Block> CUT_TREATED_IRON_SLAB = register("cut_treated_iron_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(2.5F)));
+    public static final DeferredBlock<Block> CUT_TREATED_IRON_STAIRS = register("cut_treated_iron_stairs",
+            () -> new StairBlock(ModBlocks.CUT_TREATED_IRON.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .strength(2.5F)));
+    public static final DeferredBlock<Block> TREATED_IRON_LAMP = register("treated_iron_lamp",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.REDSTONE_LAMP).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)
+                    .lightLevel(state -> 15)));
+    public static final DeferredBlock<Block> TREATED_IRON_PLATES = register("treated_iron_plates",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> TREATED_IRON_BARS = register("treated_iron_bars",
+            () -> new IronBarsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BARS).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> TREATED_IRON_GRATE_PANE = register("treated_iron_grate_pane",
+            () -> new IronBarsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BARS).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0F)
+                    .noOcclusion()));
     public static final DeferredBlock<Block> TREATED_BRASS_BLOCK = register("treated_brass_block",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
                     .requiresCorrectToolForDrops()
@@ -165,6 +259,62 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops()
                     .strength(3.0F)));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_GRATE = register("diamond_steel_grate",
+            () -> new GrateBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_GRATE_PANE = register("diamond_steel_grate_pane",
+            () -> new IronBarsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BARS).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> CHISELED_DIAMOND_STEEL_BLOCK = register("chiseled_diamond_steel_block",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)));
+    public static final DeferredBlock<Block> CUT_DIAMOND_STEEL = register("cut_diamond_steel",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(4.5F)));
+    public static final DeferredBlock<Block> CUT_DIAMOND_STEEL_SLAB = register("cut_diamond_steel_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(4.5F)));
+    public static final DeferredBlock<Block> CUT_DIAMOND_STEEL_STAIRS = register("cut_diamond_steel_stairs",
+            () -> new StairBlock(ModBlocks.CUT_DIAMOND_STEEL.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .strength(4.5F)));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_BARS = register("diamond_steel_bars",
+            () -> new IronBarsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BARS).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_PANEL = register("diamond_steel_panel",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_PILLAR = register("diamond_steel_pillar",
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_LAMP = register("diamond_steel_lamp",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)
+                    .lightLevel(state -> 15)));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_TILES = register("diamond_steel_tiles",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_TILES_SLAB = register("diamond_steel_tiles_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F)));
+    public static final DeferredBlock<Block> DIAMOND_STEEL_TILES_STAIRS = register("diamond_steel_tiles_stairs",
+            () -> new StairBlock(ModBlocks.DIAMOND_STEEL_TILES.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .strength(5.0F)));
     public static final DeferredBlock<Block> RAW_ANTHRALITE_BLOCK = register("raw_anthralite_block",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
                     .requiresCorrectToolForDrops()
@@ -385,7 +535,34 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
                     .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.PLING)
                     .strength(4.0F)));
-
+    public static final DeferredBlock<Block> REINFORCED_ASGHARIAN_TILES = register("reinforced_asgharian_tiles",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.PLING)
+                    .strength(6.0F)));
+    public static final DeferredBlock<Block> ASGHARIAN_TILES = register("asgharian_tiles",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.PLING)
+                    .strength(4.0F)));
+    public static final DeferredBlock<Block> CRACKED_ASGHARIAN_TILES = register("cracked_asgharian_tiles",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.PLING)
+                    .strength(4.0F)));
+    public static final DeferredBlock<Block> MOSSY_ASGHARIAN_BRICKS = register("mossy_asgharian_bricks",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.PLING)
+                    .strength(4.0F)));
+    public static final DeferredBlock<Block> MOSSY_ASGHARIAN_TILES = register("mossy_asgharian_tiles",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.PLING)
+                    .strength(4.0F)));
+    public static final DeferredBlock<Block> CHISELED_ASGHARIAN_BRICKS = register("chiseled_asgharian_bricks",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.PLING)
+                    .strength(4.0F)));
+    public static final DeferredBlock<Block> POLISHED_ASGHARIAN_PANEL = register("polished_asgharian_panel",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.PLING)
+                    .strength(4.0F)));
 
     public static final DeferredBlock<Block> CRACKED_ASGHARIAN_BRICKS = register("cracked_asgharian_bricks",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
@@ -412,11 +589,55 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
                     .strength(2.5F)));
+    public static final DeferredBlock<Block> CUT_TREATED_BRASS_SLAB = register("cut_treated_brass_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(2.5F)));
+    public static final DeferredBlock<Block> CUT_TREATED_BRASS_STAIRS = register("cut_treated_brass_stairs",
+            () -> new StairBlock(ModBlocks.CUT_TREATED_BRASS.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(2.5F)));
     public static final DeferredBlock<Block> TREATED_IRON_GRATE = register("treated_iron_grate",
-            () -> new TreatedIronGrateBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+            () -> new GrateBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.IRON_XYLOPHONE)
                     .strength(3.0F)
                     .noOcclusion()));
+    public static final DeferredBlock<Block> TREATED_BRASS_GRATE = register("treated_brass_grate",
+            () -> new GrateBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(3.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> TREATED_BRASS_GRATE_PANE = register("treated_brass_grate_pane",
+            () -> new IronBarsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BARS)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(3.0F)
+                    .noOcclusion()));
+    public static final DeferredBlock<Block> CHISELED_TREATED_BRASS_BLOCK = register("chiseled_treated_brass_block",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> TREATED_BRASS_TILES = register("treated_brass_tiles",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> TREATED_BRASS_TILES_SLAB = register("treated_brass_tiles_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> TREATED_BRASS_TILES_STAIRS = register("treated_brass_tiles_stairs",
+            () -> new StairBlock(ModBlocks.TREATED_BRASS_TILES.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(3.0F)));
+    public static final DeferredBlock<Block> TREATED_BRASS_LAMP = register("treated_brass_lamp",
+            () -> new RedstoneLampBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.REDSTONE_LAMP)
+                    .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.FLUTE)
+                    .strength(3.0F)
+                    .lightLevel(state -> state.getValue(RedstoneLampBlock.LIT) ? 15 : 0)));
+    public static final DeferredBlock<Block> SCORCHED_BLOCK = register("scorched_block",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.5F)
+                    .lightLevel(state -> 10)));
 
     public static final DeferredBlock<Block> SANDBAG = register("sandbag",
             () -> new SandbagBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SANDSTONE)

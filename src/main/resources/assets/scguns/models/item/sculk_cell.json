@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/sculk_cell",
+		"0": "scguns:item/sculk_cell",
 		"particle": "scguns:item/sculk_cell"
 	},
 	"loader": "neoforge:separate_transforms",

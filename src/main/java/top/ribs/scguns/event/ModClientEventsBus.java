@@ -32,5 +32,13 @@ public class ModClientEventsBus {
         event.registerLayerDefinition(ModModelLayers.SCAMP_TANK_LAYER, ScampTankModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.SCAMP_ROCKET_LAYER, ScampRocketModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.SCAMPLER_LAYER, ScamplerModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.ADJUDICATOR_LAYER, AdjudicatorModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.SUBJUGATOR_LAYER, SubjugatorModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.FINFORCER_LAYER, FinforcerModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.PRAETOR_LAYER, PraetorModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.MOTHER_GHAST_LAYER, MotherGhastModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.VIVENTRUM_LAYER, ViventrumModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.SULFURHEAD_LAYER, SulfurheadModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.LATE_RAID_HUMANOID_LAYER, LateRaidHumanoidModel::createBodyLayer);
     }
 }

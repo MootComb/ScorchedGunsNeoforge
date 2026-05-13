@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.WrappedGoal;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import top.ribs.scguns.ScorchedGuns;
 import top.ribs.scguns.common.Gun;
 import top.ribs.scguns.entity.ai.GunAttackGoal;
@@ -53,6 +55,13 @@ public class GunnerMobSpawner {
         }
         if (event.getSlot() == EquipmentSlot.MAINHAND && event.getTo().getItem() instanceof GunItem) {
             reassessWeaponGoal(mob);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDrops(LivingDropsEvent event) {
+        for (ItemEntity drop : event.getDrops()) {
+            clearMobGunFlags(drop.getItem());
         }
     }
 
@@ -108,13 +117,13 @@ public class GunnerMobSpawner {
     }
 
     private static void equipThematicGun(PathfinderMob mob, GunnerMobConfig.MobGunnerData data) {
-        ItemStack gun = randomStack(data.getWeapons(), mob);
-        if (gun.isEmpty()) {
+        SelectedWeapon selectedWeapon = randomWeightedWeapon(data.getWeaponEntries(), mob, data.getWeaponDropChance());
+        if (selectedWeapon.stack().isEmpty()) {
             return;
         }
-        equipGun(mob, gun, data.getAiDifficulty(), data.getWeaponDropChance());
+        equipGun(mob, selectedWeapon.stack(), data.getAiDifficulty(), selectedWeapon.dropChance());
         equipArmor(mob, data.getArmor());
-        maybeEquipElite(mob, getTier(gun), data.getAiDifficulty(), data.getWeaponDropChance());
+        maybeEquipElite(mob, getTier(selectedWeapon.stack()), data.getAiDifficulty(), selectedWeapon.dropChance());
     }
 
     private static void equipProgressionGun(PathfinderMob mob, Player player) {
@@ -195,6 +204,44 @@ public class GunnerMobSpawner {
         return new ItemStack(items.get(mob.getRandom().nextInt(items.size())));
     }
 
+    private static SelectedWeapon randomWeightedWeapon(List<GunnerMobConfig.WeaponEntry> entries, PathfinderMob mob, double fallbackDropChance) {
+        List<GunnerMobConfig.WeaponEntry> validEntries = new ArrayList<>();
+        double totalWeight = 0.0D;
+
+        for (GunnerMobConfig.WeaponEntry entry : entries) {
+            if (entry.getWeight() <= 0.0D) {
+                continue;
+            }
+            try {
+                if (BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(entry.getItem())).isPresent()) {
+                    validEntries.add(entry);
+                    totalWeight += entry.getWeight();
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        if (validEntries.isEmpty()) {
+            return new SelectedWeapon(ItemStack.EMPTY, fallbackDropChance);
+        }
+
+        double roll = mob.getRandom().nextDouble() * totalWeight;
+        for (GunnerMobConfig.WeaponEntry entry : validEntries) {
+            roll -= entry.getWeight();
+            if (roll <= 0.0D) {
+                Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(entry.getItem()));
+                return new SelectedWeapon(new ItemStack(item), entry.getDropChance(fallbackDropChance));
+            }
+        }
+
+        GunnerMobConfig.WeaponEntry fallback = validEntries.get(validEntries.size() - 1);
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(fallback.getItem()));
+        return new SelectedWeapon(new ItemStack(item), fallback.getDropChance(fallbackDropChance));
+    }
+
+    private record SelectedWeapon(ItemStack stack, double dropChance) {
+    }
+
     private static void equipArmor(PathfinderMob mob, List<GunnerMobConfig.ArmorPiece> armorPieces) {
         for (GunnerMobConfig.ArmorPiece armorPiece : armorPieces) {
             if (armorPiece.getItem() == null || armorPiece.getSlot() == null) {
@@ -238,5 +285,28 @@ public class GunnerMobSpawner {
         tag.putInt("AmmoCount", Math.max(1, gun.getReloads().getMaxAmmo()));
         tag.putBoolean("scguns:MobGun", true);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    }
+
+    private static void clearMobGunFlags(ItemStack stack) {
+        if (!(stack.getItem() instanceof GunItem)) {
+            return;
+        }
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null || data.isEmpty()) {
+            return;
+        }
+
+        CompoundTag tag = data.copyTag();
+        if (!tag.getBoolean("scguns:MobGun")) {
+            return;
+        }
+
+        tag.remove("IgnoreAmmo");
+        tag.remove("scguns:MobGun");
+        if (tag.isEmpty()) {
+            stack.remove(DataComponents.CUSTOM_DATA);
+        } else {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        }
     }
 }

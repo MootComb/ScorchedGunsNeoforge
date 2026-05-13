@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/rocket",
+		"0": "scguns:item/rocket",
 		"particle": "scguns:item/rocket"
 	},
 	"loader": "neoforge:separate_transforms",

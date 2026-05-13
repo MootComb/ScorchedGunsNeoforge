@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/advanced_round",
+		"0": "scguns:item/advanced_round",
 		"particle": "scguns:item/advanced_round"
 	},
 	"loader": "neoforge:separate_transforms",

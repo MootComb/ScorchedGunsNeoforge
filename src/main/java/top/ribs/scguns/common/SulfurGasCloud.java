@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import top.ribs.scguns.init.ModEffects;
+import top.ribs.scguns.init.ModBlocks;
 import top.ribs.scguns.init.ModParticleTypes;
 import top.ribs.scguns.init.ModTags;
 
@@ -218,6 +219,7 @@ public class SulfurGasCloud {
     public static boolean isFireSource(BlockState blockState) {
         return blockState.is(Blocks.FIRE) ||
                 blockState.is(Blocks.SOUL_FIRE) ||
+                blockState.is(ModBlocks.FAKE_SOUL_FIRE.get()) ||
                 (blockState.is(Blocks.CAMPFIRE) && blockState.getValue(BlockStateProperties.LIT)) ||
                 (blockState.is(Blocks.SOUL_CAMPFIRE) && blockState.getValue(BlockStateProperties.LIT));
     }
@@ -246,7 +248,7 @@ public class SulfurGasCloud {
 
             if (center.distanceTo(Vec3.atCenterOf(checkPos)) <= radius) {
                 BlockState blockState = level.getBlockState(checkPos);
-                if (blockState.is(Blocks.FIRE) || blockState.is(Blocks.SOUL_FIRE)) {
+                if (blockState.is(Blocks.FIRE) || blockState.is(Blocks.SOUL_FIRE) || blockState.is(ModBlocks.FAKE_SOUL_FIRE.get())) {
                     level.setBlock(checkPos, Blocks.AIR.defaultBlockState(), 3);
                 } else if (blockState.is(Blocks.CAMPFIRE) || blockState.is(Blocks.SOUL_CAMPFIRE)) {
                     level.setBlock(checkPos, blockState.setValue(BlockStateProperties.LIT, false), 3);

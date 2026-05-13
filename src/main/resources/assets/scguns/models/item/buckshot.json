@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "0": "scguns:items/buckshot",
+    "0": "scguns:item/buckshot",
     "particle": "scguns:item/buckshot"
   },
   "loader": "neoforge:separate_transforms",

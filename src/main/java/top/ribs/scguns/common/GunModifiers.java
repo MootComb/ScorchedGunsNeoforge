@@ -360,6 +360,25 @@ public class GunModifiers
             return speed * 1.05F;
         }
     };
+    public static final IGunModifier BUMP_STOCK_MODIFIER = new IGunModifier() {
+        @Override
+        public int modifyFireRate(int rate) {
+            if (rate <= 3) {
+                return Math.max(rate - 1, 1);
+            }
+            return rate <= 10 ? Math.max((int) (rate * 0.75F), 1) : Math.max((int) (rate * 0.85F), 1);
+        }
+
+        @Override
+        public float recoilModifier() {
+            return 0.95F;
+        }
+
+        @Override
+        public double modifyAimDownSightSpeed(double speed) {
+            return speed * 0.92F;
+        }
+    };
     public static final IGunModifier MUZZLE_BRAKE_MODIFIER = new IGunModifier() {
         @Override
         public float modifyProjectileSpread(float spread) {

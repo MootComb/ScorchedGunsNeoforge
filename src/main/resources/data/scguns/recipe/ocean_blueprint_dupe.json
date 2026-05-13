@@ -3,25 +3,22 @@
   "category": "equipment",
   "key": {
     "H": {
-      "item": "minecraft:prismarine_shard"
-    },
-    "T": {
-      "item": "minecraft:prismarine_crystals"
+      "item": "scguns:blueprint_scrap"
     },
     "Q": {
-      "item": "scguns:ocean_blueprint"
+      "item": "scguns:leviathan_tooth"
     },
     "Z": {
       "item": "minecraft:paper"
     }
   },
   "pattern": [
-    "HZT",
+    "HZH",
     "ZQZ",
-    "TZH"
+    "HZH"
   ],
   "result": {
-    "id": "scguns:ocean_blueprint",
-    "count": 1
+    "count": 1,
+    "id": "scguns:ocean_blueprint"
   }
 }

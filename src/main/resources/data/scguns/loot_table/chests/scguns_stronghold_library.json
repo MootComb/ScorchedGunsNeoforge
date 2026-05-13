@@ -14,6 +14,20 @@
         {
           "type": "minecraft:item",
           "name": "scguns:iron_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 7,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:blueprint_scrap"
         }
       ]
     }

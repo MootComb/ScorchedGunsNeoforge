@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/energy_cell",
+		"0": "scguns:item/energy_cell",
 		"particle": "scguns:item/energy_cell"
 	},
 	"loader": "neoforge:separate_transforms",

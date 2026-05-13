@@ -2,9 +2,7 @@ package top.ribs.scguns.client;
 
 import com.mrcrayfish.framework.api.client.FrameworkClientAPI;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.options.MouseSettingsScreen;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -20,7 +18,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.common.NeoForge;
 import org.lwjgl.glfw.GLFW;
@@ -48,14 +45,11 @@ import top.ribs.scguns.network.PacketHandler;
 import top.ribs.scguns.network.message.*;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
-import java.lang.reflect.Field;
-
  /**
  * Author: MrCrayfish
  */
 @EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
-    private static Field mouseOptionsField;
     public static void registerClientHandlers(IEventBus bus) {
         FrameworkClientAPI.registerDataLoader(MetaLoader.getInstance());
        // onRegisterCreativeTab(bus);
@@ -93,6 +87,7 @@ public class ClientHandler {
         BlockEntityRenderers.register(ModBlockEntities.ENEMY_TURRET.get(), EnemyTurretRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.AUTO_TURRET.get(), AutoTurretRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.SHOTGUN_TURRET.get(), ShotgunTurretRenderer::new);
+        BlockEntityRenderers.register(ModBlockEntities.SNIPER_TURRET.get(), SniperTurretRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.POWERED_MECHANICAL_PRESS.get(), PoweredMechanicalPressRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.POLAR_GENERATOR.get(), PolarGeneratorRenderer::new);
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.PLASMA_LANTERN.get(), RenderType.cutout());
@@ -113,6 +108,7 @@ public class ClientHandler {
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.MAGENTA_NITER_GLASS.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.GRAY_NITER_GLASS.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.LIGHT_GRAY_NITER_GLASS.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_SOUL_FIRE.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.CHARGED_AMETHYST_RELAY.get(), RenderType.cutout());
 
         registerAmmoCountProperty(ModItems.PISTOL_AMMO_BOX.get());
@@ -141,6 +137,13 @@ public class ClientHandler {
         EntityRenderers.register(ModEntities.THE_MERCHANT.get(), TheMerchantRenderer::new);
 
         EntityRenderers.register(ModEntities.BLUNDERER.get(), BlundererRenderer::new);
+        EntityRenderers.register(ModEntities.ADJUDICATOR.get(), AdjudicatorRenderer::new);
+        EntityRenderers.register(ModEntities.SUBJUGATOR.get(), SubjugatorRenderer::new);
+        EntityRenderers.register(ModEntities.FINFORCER.get(), FinforcerRenderer::new);
+        EntityRenderers.register(ModEntities.PRAETOR.get(), PraetorRenderer::new);
+        EntityRenderers.register(ModEntities.MOTHER_GHAST.get(), MotherGhastRenderer::new);
+        EntityRenderers.register(ModEntities.VIVENTRUM.get(), ViventrumRenderer::new);
+        EntityRenderers.register(ModEntities.SULFURHEAD.get(), SulfurheadRenderer::new);
         EntityRenderers.register(ModEntities.SIGNAL_BEACON.get(), SignalBeaconRenderer::new);
         EntityRenderers.register(ModEntities.BRASS_BOLT.get(), BrassBoltRenderer::new);
         EntityRenderers.register(ModEntities.TRAUMA_HOOK.get(), TraumaHookRenderer::new);
@@ -156,6 +159,7 @@ public class ClientHandler {
                 });
 
         EntityRenderers.register(ModEntities.TURRET_PROJECTILE.get(), TurretProjectileRenderer::new);
+        EntityRenderers.register(ModEntities.RAID_FLARE.get(), RaidFlareRenderer::new);
 
         // Register the AmmoBoxRenderer for each ammo box item
         CuriosRendererRegistry.register(ModItems.PISTOL_AMMO_BOX.get(), AmmoBoxRenderer::new);
@@ -238,10 +242,21 @@ public class ClientHandler {
         ModelOverrides.register(ModItems.MK43_RIFLE.get(), new Mk43RifleModel());
         ModelOverrides.register(ModItems.PLASGUN.get(), new PlasgunModel());
         ModelOverrides.register(ModItems.REPEATING_MUSKET.get(), new RepeatingMusketModel());
+        ModelOverrides.register(ModItems.LONGARM.get(), new LongarmModel());
         ModelOverrides.register(ModItems.ULTRA_KNIGHT_HAWK.get(), new UltraKnightHawkModel());
         ModelOverrides.register(ModItems.SEQUOIA.get(), new SequoiaModel());
         ModelOverrides.register(ModItems.LASER_MUSKET.get(), new LaserMusketModel());
+        ModelOverrides.register(ModItems.TESLOCK_RIFLE.get(), new TeslockRifleModel());
+        ModelOverrides.register(ModItems.KILN_GUN.get(), new KilnGunModel());
         ModelOverrides.register(ModItems.PLASMABUSS.get(), new PlasmabussModel());
+        ModelOverrides.register(ModItems.HAMMER_GL.get(), new HammerGlModel());
+        ModelOverrides.register(ModItems.WHISTLER.get(), new WhistlerModel());
+        ModelOverrides.register(ModItems.MINKSY.get(), new MinksyModel());
+        ModelOverrides.register(ModItems.MAS_PEDDLER.get(), new MasPeddlerModel());
+        ModelOverrides.register(ModItems.LIBERTAS.get(), new LibertasModel());
+        ModelOverrides.register(ModItems.TRUANT.get(), new TruantModel());
+        ModelOverrides.register(ModItems.ZILK_45.get(), new Zilk45Model());
+        ModelOverrides.register(ModItems.JR_WRISTBREAKER.get(), new JrWristbreakerModel());
         ModelOverrides.register(ModItems.JACKHAMMER.get(), new JackhammerModel());
         ModelOverrides.register(ModItems.KILLER_23.get(), new Killer23Model());
         ModelOverrides.register(ModItems.HOMEMAKER.get(), new HomemakerModel());
@@ -252,19 +267,25 @@ public class ClientHandler {
         ModelOverrides.register(ModItems.HOWLER_CONVERSION.get(), new HowlerConversionModel());
         ModelOverrides.register(ModItems.BIG_BORE.get(), new BigBoreModel());
         ModelOverrides.register(ModItems.ARC_WORKER.get(), new ArcWorkerModel());
+        ModelOverrides.register(ModItems.BLOOPER.get(), new BlooperModel());
         ModelOverrides.register(ModItems.FLINTLOCK_PISTOL.get(), new FlintlockPistolModel());
         ModelOverrides.register(ModItems.HANDCANNON.get(), new HandcannonPistolModel());
         ModelOverrides.register(ModItems.MUSKET.get(), new MusketModel());
         ModelOverrides.register(ModItems.BLUNDERBUSS.get(), new BlunderbussModel());
+        ModelOverrides.register(ModItems.FENCER_CARABINE.get(), new FencerCarabineModel());
+        ModelOverrides.register(ModItems.FENCER_THUMPER.get(), new FencerThumperModel());
         ModelOverrides.register(ModItems.DOUBLET.get(), new DoubletModel());
         ModelOverrides.register(ModItems.ASTELLA.get(), new AstellaModel());
         ModelOverrides.register(ModItems.BRAWLER.get(), new BrawlerModel());
         ModelOverrides.register(ModItems.FLOUNDERGAT.get(), new FloundergatModel());
+        ModelOverrides.register(ModItems.SPIRULIDA.get(), new SpirulidaModel());
+        ModelOverrides.register(ModItems.HYPERBARIA.get(), new HyperbariaModel());
         ModelOverrides.register(ModItems.HULLBREAKER.get(), new HullbreakerModel());
         ModelOverrides.register(ModItems.SAKETINI.get(), new SaketiniModel());
         ModelOverrides.register(ModItems.SAKETINI_IRONPORT.get(), new SaketiniIronPortModel());
         ModelOverrides.register(ModItems.CALLWELL.get(), new CallwellModel());
         ModelOverrides.register(ModItems.WINNIE.get(), new WinnieModel());
+        ModelOverrides.register(ModItems.WINNIE_MILLEND.get(), new WinnieMillendModel());
         ModelOverrides.register(ModItems.SCRAPPER.get(), new ScrapperModel());
         ModelOverrides.register(ModItems.MAKESHIFT_RIFLE.get(), new MakeshiftRifleModel());
         ModelOverrides.register(ModItems.BOOMSTICK.get(), new BoomstickModel());
@@ -273,6 +294,8 @@ public class ClientHandler {
         ModelOverrides.register(ModItems.LLR_DIRECTOR.get(), new LlrDirectorModel());
         ModelOverrides.register(ModItems.BIRDFEEDER.get(), new BirdfeederModel());
         ModelOverrides.register(ModItems.TURNPIKE.get(), new TurnpikeModel());
+        ModelOverrides.register(ModItems.RAILWORKER.get(), new RailworkerModel());
+        ModelOverrides.register(ModItems.WHIZZBANGER.get(), new WhizzbangerModel());
         ModelOverrides.register(ModItems.BASKER.get(), new BaskerModel());
         ModelOverrides.register(ModItems.WEEVIL.get(), new WeevilModel());
         ModelOverrides.register(ModItems.TL_RUNNER.get(), new TlRunnerModel());
@@ -287,16 +310,21 @@ public class ClientHandler {
         ModelOverrides.register(ModItems.M3_CARABINE.get(), new M3CarabineModel());
         ModelOverrides.register(ModItems.M3_MARKSMAN.get(), new M3MarksmanModel());
         ModelOverrides.register(ModItems.STILETTO.get(), new StilettoModel());
+        ModelOverrides.register(ModItems.DRILL.get(), new DrillModel());
+        ModelOverrides.register(ModItems.DRILL_CONVERSION.get(), new DrillConversionModel());
         ModelOverrides.register(ModItems.LOCKEWOOD.get(), new LockewoodModel());
         ModelOverrides.register(ModItems.RG_JIGSAW.get(), new RgJigsawModel());
+        ModelOverrides.register(ModItems.NAILER.get(), new NailerModel());
         ModelOverrides.register(ModItems.GREASER_SMG.get(), new GreaserSmgModel());
         ModelOverrides.register(ModItems.DEFENDER_PISTOL.get(), new DefenderPistolModel());
         ModelOverrides.register(ModItems.COMBAT_SHOTGUN.get(), new CombatShotgunModel());
         ModelOverrides.register(ModItems.AUVTOMAG.get(), new AuvtomagModel());
          ModelOverrides.register(ModItems.GAUSS_RIFLE.get(), new GaussRifleModel());
         ModelOverrides.register(ModItems.ROCKET_RIFLE.get(), new RocketRifleModel());
+        ModelOverrides.register(ModItems.TRIQUETRA.get(), new TriquetraModel());
         ModelOverrides.register(ModItems.PRUSH_GUN.get(), new PrushGunModel());
         ModelOverrides.register(ModItems.INERTIAL.get(), new InertialModel());
+        ModelOverrides.register(ModItems.INQUISITOR.get(), new InquisitorModel());
         ModelOverrides.register(ModItems.COGLOADER.get(), new CogloaderModel());
         ModelOverrides.register(ModItems.GRANDLE.get(), new GrandleModel());
         ModelOverrides.register(ModItems.GRANDLE_OG.get(), new GrandleOgModel());
@@ -316,6 +344,8 @@ public class ClientHandler {
         ModelOverrides.register(ModItems.CALLWELL_TERMINAL.get(), new CallwellTerminalModel());
         ModelOverrides.register(ModItems.FORLORN_HOPE.get(), new ForlornHopeModel());
         ModelOverrides.register(ModItems.PRIMA_MATERIA.get(), new PrimaMateriaModel());
+        ModelOverrides.register(ModItems.RED_RAYDAR.get(), new RedRaydarModel());
+        ModelOverrides.register(ModItems.STERILIZER.get(), new SterilizerModel());
         ModelOverrides.register(ModItems.TROTTERS.get(), new TrottersModel());
 
 
@@ -332,6 +362,7 @@ public class ClientHandler {
         event.register(ModMenuTypes.BASIC_TURRET_MENU.get(), BasicTurretScreen::new);
         event.register(ModMenuTypes.AUTO_TURRET_MENU.get(), AutoTurretScreen::new);
         event.register(ModMenuTypes.SHOTGUN_TURRET_MENU.get(), ShotgunTurretScreen::new);
+        event.register(ModMenuTypes.SNIPER_TURRET_MENU.get(), SniperTurretScreen::new);
         event.register(ModMenuTypes.VENT_COLLECTOR_MENU.get(), VentCollectorScreen::new);
         event.register(ModMenuTypes.MECHANICAL_PRESS_MENU.get(), MechanicalPressScreen::new);
         event.register(ModMenuTypes.POWERED_MECHANICAL_PRESS_MENU.get(), PoweredMechanicalPressScreen::new);
@@ -342,24 +373,6 @@ public class ClientHandler {
         event.register(ModMenuTypes.GUN_BENCH.get(), GunBenchScreen::new);
         event.register(ModContainers.ATTACHMENTS.get(), AttachmentScreen::new);
     }
-
-    @SubscribeEvent
-    public static void onScreenInit(ScreenEvent.Init.Post event) {
-        if (event.getScreen() instanceof MouseSettingsScreen) {
-            MouseSettingsScreen screen = (MouseSettingsScreen) event.getScreen();
-            if (mouseOptionsField == null) {
-                mouseOptionsField = ObfuscationReflectionHelper.findField(MouseSettingsScreen.class, "f_96218_");
-                mouseOptionsField.setAccessible(true);
-            }
-            try {
-                OptionsList list = (OptionsList) mouseOptionsField.get(screen);
-                //list.addSmall(GunOptions.ADS_SENSITIVITY, GunOptions.CROSSHAIR);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     @SubscribeEvent
     public static void onKeyPressed(InputEvent.Key event) {

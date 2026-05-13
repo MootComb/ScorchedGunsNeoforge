@@ -11,6 +11,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import top.ribs.scguns.ScorchedGuns;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,20 +37,17 @@ public class ExoSuitUpgradeManager extends SimpleJsonResourceReloadListener {
                 if (jsonElement.isJsonObject()) {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
                     ResourceLocation itemId = getItemIdFromJson(jsonObject, resourceLocation);
-                    if (BuiltInRegistries.ITEM.containsKey(itemId)) {
+                    if (!jsonObject.has("item") || BuiltInRegistries.ITEM.containsKey(itemId)) {
                         ExoSuitUpgrade upgrade = loadUpgradeFromJson(jsonObject);
                         if (upgrade != null) {
                             itemUpgrades.put(itemId, upgrade);
                         }
                     } else {
-                        BuiltInRegistries.ITEM.keySet().stream()
-                                .filter(key -> key.toString().contains("heavy_armor_plate"))
-                                .forEach(key -> System.err.println("  - " + key));
+                        ScorchedGuns.LOGGER.warn("Skipping ExoSuit upgrade {} because item {} is not registered", resourceLocation, itemId);
                     }
-                } else {
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                ScorchedGuns.LOGGER.error("Failed to load ExoSuit upgrade {}", resourceLocation, e);
             }
         });
     }
@@ -149,8 +147,8 @@ public class ExoSuitUpgradeManager extends SimpleJsonResourceReloadListener {
 
             return upgrade;
 
-        } catch (Exception e) {;
-            e.printStackTrace();
+        } catch (Exception e) {
+            ScorchedGuns.LOGGER.error("Failed to parse ExoSuit upgrade data", e);
             return null;
         }
     }

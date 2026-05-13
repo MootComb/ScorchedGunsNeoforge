@@ -2,9 +2,46 @@
 
 All notable public changes to Scorched Guns are recorded in this file.
 
-## Unreleased
+## 1.3.0 - 2026-05-13
 
-No unreleased changes.
+### Added
+
+- Restored the Scorched Guns raid progression stack: data-driven raid configs, active raid tracking, boss and henchman spawning, boss bars, raid timeout/defeat/surrender flow, raid flares, Flare Pistol behavior, White Flag surrender item and raid trophy rewards.
+- Restored Blueprint Scrap progression with merchant and loot sources, trophy-based blueprint duplication recipes, the Wrecker blueprint duplication recipe and weighted gunner weapon JSON support with optional `drop_weight` values.
+- Restored late-raid enemies and related raid content: Adjudicator, Subjugator, Finforcer, Praetor, Mother Ghast, Sulfurhead and Spirulida, including renderers, models, spawn eggs, loot tables, raid integration and localization.
+- Restored additional weapons and combat items from newer upstream versions: Fencer Carabine, Teslock Rifle, Hyperbaria, Kiln Gun, Blooper, Triquetra, Hammer GL, Truant, Zilk .45, Whistler, Minksy, Libertas, Mas Peddler, J.R. Wristbreaker, Fencer Thumper, Fencer Longarm, Nailer, Railworker, Drill, Drill Conversion, Inquisitor, Red Raydar, Atom Sterilizer, Whizzbanger, Winnie Millend and War Axe.
+- Restored supporting ammo and crafting content for the late weapons: Needle, Frog Dart, HE/Gas/Bouncy/Fire grenade rounds, hidden Create transitional items, GunBench entries, Blueprint/GunBench ordering, tier tags, Create sequenced assembly chains and optional Create recycling/mechanical crafting recipes.
+- Restored Viventrum as a tameable mechanical companion with package item, spawn egg, renderer/model, behavior logic, recipe, loot table, item/entity tags and localization.
+- Restored Iron Mask, Hellfire Bomb, Air Canister, Reinforced Air Canister, Creative Air Canister and Bump Stock with their associated recipes, assets, tooltips and runtime behavior.
+- Restored decorative and building block families for Anthralite, Diamond Steel, Treated Iron, Treated Brass and Asgharian materials, including block registrations, assets, loot tables, mining tags, crafting and stonecutting recipes.
+- Restored turret data parity: shared data-driven player turret backend, GunBench entries for existing Basic, Auto and Shotgun Turrets, Sniper Turret, turret config JSON, JEI info and the `scguns:entity_blacklisted_gun` item tag.
+- Restored utility/progression content: Cog Mace, Anthralite Hammer, Anthralite Paxel, Shulker Core, Shulker Core End Blueprint duplication support and Shulker Core rare Shulker drops.
+- Restored visual/resource parity for throwable grenades and bombs, Scorched Block, temporary fake soul fire for Hellfire effects and optional Create recipe parity.
+- Updated the first targeted weapon asset parity batch for RG Jigsaw, Birdfeeder and M3 Marksman, including upstream special models and animated gun resources.
+- Improved JEI recipe integration for Scorched Guns machine and GunBench recipes by preserving recipe IDs through `RecipeHolder`, enabling advanced tooltip IDs and recipe bookmarking. Thanks to `gisellevonbingen` for the pull request.
+- Updated localization key coverage across English, Russian, Korean, Ukrainian and Vietnamese; Russian wording was refreshed with help from `jpegemerald`.
+
+### Fixed
+
+- Fixed mouse settings screen crashes caused by a stale Scorched Guns mouse-options reflection hook.
+- Fixed ADS mouse sensitivity reduction so high-zoom scopes slow camera movement while aiming again.
+- Tuned high-zoom optic ADS sensitivity scaling so long scopes reduce camera movement more noticeably.
+- Fixed reload FOV handling so reloading no longer forces the player's configured FOV back to the default value or blocks in-game FOV changes until restart.
+- Fixed ExoSuit jetpack landing damage by clearing accumulated fall distance while jetpack flight is active.
+- Fixed melee miss feedback so accepted melee swings still play the local visual animation even when no target is hit.
+- Fixed a dedicated-server crash when Scorched Guns projectiles collided with lava before client particle config values were available.
+- Fixed a dedicated-server crash where Cog Minion explosive self-destructs could break modded storage blocks and crash external storage controllers.
+- Fixed Scorched Guns enchantment availability so custom enchanted books appear in the mod creative tab and can be selected by vanilla loot/trade/equipment enchantment pools without crashing the creative inventory.
+- Fixed missing Mechanical Press and Powered Mechanical Press recipes for Copper, Iron, Wrecker, Gold, Diamond Steel, Treated Brass, Ocean and Sculk raid flares.
+- Fixed Praetor natural spawning parity with upstream 0.5.5 by restoring its low-weight general-biome spawn rule and spawn placement registration.
+
+### Notes
+
+- The post-0.5.0 gun JSON/content set is now present; remaining audits are focused on non-gun content, polish and runtime parity.
+- Viventrum's old in-game guide book helper is not currently restored; the package still spawns a tamed companion.
+- Grenade-round ammo is registered and data-driven; Hammer GL, Truant, Blooper and Triquetra now consume the restored alternate grenade-round types.
+- Player turrets now share the upstream-style data-driven `TurretBlockEntity` backend; Enemy Turrets intentionally remain on their separate hostile turret logic, matching upstream.
+- Raised the public version to `1.3.0`.
 
 ## 1.2.5 - 2026-05-11
 

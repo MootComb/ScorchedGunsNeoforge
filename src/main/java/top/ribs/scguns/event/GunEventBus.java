@@ -175,17 +175,23 @@ public class GunEventBus {
                     }
                 }
 
-                if (ScorchedGuns.createLoaded && heldItem.getItem() instanceof IAirGun) {
-                    List<ItemStack> backtanks = CreateBacktankBridge.getAllWithAir(player);
-                    if (backtanks.isEmpty()) {
-                        player.displayClientMessage(Component.translatable("message.airgun.no_air")
-                                .withStyle(ChatFormatting.RED), true);
-                        event.setCanceled(true);
-                        return;
+                if (heldItem.getItem() instanceof IAirGun) {
+                    int airCostPerShot = Math.max(1, (int) Math.ceil(calculateAirCostPerShot(gun)));
+                    boolean consumedAir = false;
+                    if (ScorchedGuns.createLoaded) {
+                        List<ItemStack> backtanks = CreateBacktankBridge.getAllWithAir(player);
+                        if (!backtanks.isEmpty()) {
+                            CreateBacktankBridge.consumeAir(player, backtanks.get(0), airCostPerShot);
+                            if (!CreateBacktankBridge.hasAirRemaining(backtanks.get(0))) {
+                                player.displayClientMessage(Component.translatable("message.airgun.no_air")
+                                        .withStyle(ChatFormatting.RED), true);
+                                event.setCanceled(true);
+                                return;
+                            }
+                            consumedAir = true;
+                        }
                     }
-                    float airCostPerShot = calculateAirCostPerShot(gun);
-                    CreateBacktankBridge.consumeAir(player, backtanks.get(0), airCostPerShot);
-                    if (!CreateBacktankBridge.hasAirRemaining(backtanks.get(0))) {
+                    if (!consumedAir && !AirCanisterItem.consumeAir(player, airCostPerShot)) {
                         player.displayClientMessage(Component.translatable("message.airgun.no_air")
                                 .withStyle(ChatFormatting.RED), true);
                         event.setCanceled(true);

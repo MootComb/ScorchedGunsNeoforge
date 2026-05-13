@@ -441,7 +441,8 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
                 bone.setHidden(stockAttachment.getItem() != ModItems.LIGHT_STOCK.get());
                 break;
             case "weighted_stock":
-                bone.setHidden(stockAttachment.getItem() != ModItems.WEIGHTED_STOCK.get());
+                bone.setHidden(stockAttachment.getItem() != ModItems.WEIGHTED_STOCK.get()
+                        && stockAttachment.getItem() != ModItems.BUMP_STOCK.get());
                 break;
         }
     }
@@ -740,6 +741,7 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
                 ModItems.WOODEN_STOCK.get(),
                 ModItems.LIGHT_STOCK.get(),
                 ModItems.WEIGHTED_STOCK.get(),
+                ModItems.BUMP_STOCK.get(),
                 ModItems.EXTENDED_MAG.get(),
                 ModItems.SPEED_MAG.get(),
                 ModItems.PLUS_P_MAG.get()

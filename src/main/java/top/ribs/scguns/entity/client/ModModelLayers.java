@@ -40,5 +40,21 @@ public class ModModelLayers {
             ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "scamp_rocket_layer"), "main");
     public static final ModelLayerLocation SCAMPLER_LAYER = new ModelLayerLocation(
             ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "scampler_layer"), "main");
+    public static final ModelLayerLocation ADJUDICATOR_LAYER = new ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "adjudicator_layer"), "main");
+    public static final ModelLayerLocation SUBJUGATOR_LAYER = new ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "subjugator_layer"), "main");
+    public static final ModelLayerLocation FINFORCER_LAYER = new ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "finforcer_layer"), "main");
+    public static final ModelLayerLocation PRAETOR_LAYER = new ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "praetor_layer"), "main");
+    public static final ModelLayerLocation MOTHER_GHAST_LAYER = new ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "mother_ghast_layer"), "main");
+    public static final ModelLayerLocation VIVENTRUM_LAYER = new ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "viventrum_layer"), "main");
+    public static final ModelLayerLocation SULFURHEAD_LAYER = new ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "sulfurhead_layer"), "main");
+    public static final ModelLayerLocation LATE_RAID_HUMANOID_LAYER = new ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "late_raid_humanoid_layer"), "main");
 
 }

@@ -24,6 +24,13 @@ public class ExoSuitFallDamageHandler {
             return;
         }
 
+        if (ExoSuitFlightHandler.isJetpackFlightActive(player)) {
+            player.resetFallDistance();
+            event.setDistance(0.0F);
+            event.setDamageMultiplier(0.0F);
+            return;
+        }
+
         float totalFallDamageReduction = calculateTotalFallDamageReduction(player);
 
         if (totalFallDamageReduction > 0) {

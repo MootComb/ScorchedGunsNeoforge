@@ -171,6 +171,7 @@ public class ExoSuitFlightClientHandler {
         }
 
         player.setDeltaMovement(newX, newY, newZ);
+        player.resetFallDistance();
     }
 
     private static void handleJetpackSounds(Player player, boolean isThrusting) {

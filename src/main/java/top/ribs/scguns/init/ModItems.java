@@ -224,6 +224,28 @@ public class ModItems {
                     ModSounds.COPPER_GUN_JAM.get()
             )
     );
+    public static final DeferredItem<AnimatedDiamondSteelGunItem> DRILL = REGISTER.register("drill",
+            () -> new AnimatedDiamondSteelGunItem(
+                    new Item.Properties().stacksTo(1).durability(1200),
+                    "drill",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedDiamondSteelGunItem> DRILL_CONVERSION = REGISTER.register("drill_conversion",
+            () -> new AnimatedDiamondSteelGunItem(
+                    new Item.Properties().stacksTo(1).durability(1200),
+                    "drill_conversion",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
     public static final DeferredItem<AnimatedDiamondSteelGunItem> LOCKEWOOD = REGISTER.register("lockewood",
             () -> new AnimatedDiamondSteelGunItem(
                     new Item.Properties().stacksTo(1).durability(1350),
@@ -250,6 +272,50 @@ public class ModItems {
             () -> new AnimatedDiamondSteelGunItem(
                     new Item.Properties().stacksTo(1).durability(1350),
                     "rg_jigsaw",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedDiamondSteelAirGunItem> NAILER = REGISTER.register("nailer",
+            () -> new AnimatedDiamondSteelAirGunItem(
+                    new Item.Properties().stacksTo(1).durability(1400),
+                    "nailer",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedDiamondSteelGunItem> MINKSY = REGISTER.register("minksy",
+            () -> new AnimatedDiamondSteelGunItem(
+                    new Item.Properties().stacksTo(1).durability(1350),
+                    "minksy",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedDiamondSteelGunItem> MAS_PEDDLER = REGISTER.register("mas_peddler",
+            () -> new AnimatedDiamondSteelGunItem(
+                    new Item.Properties().stacksTo(1).durability(1350),
+                    "mas_peddler",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedDiamondSteelGunItem> INQUISITOR = REGISTER.register("inquisitor",
+            () -> new AnimatedDiamondSteelGunItem(
+                    new Item.Properties().stacksTo(1).durability(1350),
+                    "inquisitor",
                     ModSounds.MAG_OUT.get(),
                     ModSounds.MAG_IN.get(),
                     ModSounds.RELOAD_END.get(),
@@ -360,6 +426,28 @@ public class ModItems {
             () -> new AnimatedUnderWaterGunItem(
                     new Item.Properties().stacksTo(1).durability(256),
                     "floundergat",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedUnderWaterGunItem> SPIRULIDA = REGISTER.register("spirulida",
+            () -> new AnimatedUnderWaterGunItem(
+                    new Item.Properties().stacksTo(1).durability(800),
+                    "spirulida",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedUnderWaterGunItem> HYPERBARIA = REGISTER.register("hyperbaria",
+            () -> new AnimatedUnderWaterGunItem(
+                    new Item.Properties().stacksTo(1).durability(800),
+                    "hyperbaria",
                     ModSounds.MAG_OUT.get(),
                     ModSounds.MAG_IN.get(),
                     ModSounds.RELOAD_END.get(),
@@ -532,10 +620,54 @@ public class ModItems {
                     ModSounds.COPPER_GUN_JAM.get()
             )
     );
+    public static final DeferredItem<NonUnderwaterAnimatedGunItem> LONGARM = REGISTER.register("longarm",
+            () -> new NonUnderwaterAnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(200),
+                    "longarm",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedAirGunItem> RED_RAYDAR = REGISTER.register("red_raydar",
+            () -> new AnimatedAirGunItem(
+                    new Item.Properties().stacksTo(1).durability(200),
+                    "red_raydar",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
     public static final DeferredItem<NonUnderwaterAnimatedGunItem> BLUNDERBUSS = REGISTER.register("blunderbuss",
             () -> new NonUnderwaterAnimatedGunItem(
                     new Item.Properties().stacksTo(1).durability(256),
                     "blunderbuss",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<NonUnderwaterAnimatedGunItem> FENCER_CARABINE = REGISTER.register("fencer_carabine",
+            () -> new NonUnderwaterAnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(180),
+                    "fencer_carabine",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<NonUnderwaterAnimatedGunItem> FENCER_THUMPER = REGISTER.register("fencer_thumper",
+            () -> new NonUnderwaterAnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(180),
+                    "fencer_thumper",
                     ModSounds.MAG_OUT.get(),
                     ModSounds.MAG_IN.get(),
                     ModSounds.RELOAD_END.get(),
@@ -631,6 +763,17 @@ public class ModItems {
                     ModSounds.COPPER_GUN_JAM.get()
             )
     );
+    public static final DeferredItem<AnimatedGunItem> WINNIE_MILLEND = REGISTER.register("winnie_millend",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(256),
+                    "winnie_millend",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
     public static final DeferredItem<AnimatedGunItem> BRUISER = REGISTER.register("bruiser",
             () -> new AnimatedGunItem(
                     new Item.Properties().stacksTo(1).durability(800),
@@ -668,6 +811,39 @@ public class ModItems {
             () -> new AnimatedGunItem(
                     new Item.Properties().stacksTo(1).durability(800),
                     "rocket_rifle",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedDiamondSteelUnderWaterGunItem> ZILK_45 = REGISTER.register("zilk_45",
+            () -> new AnimatedDiamondSteelUnderWaterGunItem(
+                    new Item.Properties().stacksTo(1).durability(1350),
+                    "zilk_45",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedDiamondSteelGunItem> TRUANT = REGISTER.register("truant",
+            () -> new AnimatedDiamondSteelGunItem(
+                    new Item.Properties().stacksTo(1).durability(1350),
+                    "truant",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedGunItem> TRIQUETRA = REGISTER.register("triquetra",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(1400),
+                    "triquetra",
                     ModSounds.MAG_OUT.get(),
                     ModSounds.MAG_IN.get(),
                     ModSounds.RELOAD_END.get(),
@@ -768,6 +944,28 @@ public class ModItems {
             () -> new AnimatedGunItem(
                     new Item.Properties().stacksTo(1).durability(540),
                     "stiletto",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedAirGunItem> RAILWORKER = REGISTER.register("railworker",
+            () -> new AnimatedAirGunItem(
+                    new Item.Properties().stacksTo(1).durability(540),
+                    "railworker",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedGunItem> WHIZZBANGER = REGISTER.register("whizzbanger",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(15),
+                    "whizzbanger",
                     ModSounds.MAG_OUT.get(),
                     ModSounds.MAG_IN.get(),
                     ModSounds.RELOAD_END.get(),
@@ -940,10 +1138,76 @@ public class ModItems {
                     ModSounds.COPPER_GUN_JAM.get()
             )
     );
+    public static final DeferredItem<AnimatedGunItem> BLOOPER = REGISTER.register("blooper",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(600),
+                    "blooper",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedGunItem> WHISTLER = REGISTER.register("whistler",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(600),
+                    "whistler",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
     public static final DeferredItem<AnimatedGunItem> LASER_MUSKET = REGISTER.register("laser_musket",
             () -> new AnimatedGunItem(
                     new Item.Properties().stacksTo(1).durability(512),
                     "laser_musket",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedGunItem> HAMMER_GL = REGISTER.register("hammer_gl",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(1400),
+                    "hammer_gl",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedGunItem> LIBERTAS = REGISTER.register("libertas",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(1400),
+                    "libertas",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedGunItem> TESLOCK_RIFLE = REGISTER.register("teslock_rifle",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(512),
+                    "teslock_rifle",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedGunItem> KILN_GUN = REGISTER.register("kiln_gun",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(200),
+                    "kiln_gun",
                     ModSounds.MAG_OUT.get(),
                     ModSounds.MAG_IN.get(),
                     ModSounds.RELOAD_END.get(),
@@ -966,6 +1230,17 @@ public class ModItems {
             () -> new AnimatedGunItem(
                     new Item.Properties().stacksTo(1).durability(1400),
                     "jackhammer",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
+    public static final DeferredItem<AnimatedGunItem> JR_WRISTBREAKER = REGISTER.register("jr_wristbreaker",
+            () -> new AnimatedGunItem(
+                    new Item.Properties().stacksTo(1).durability(1400),
+                    "jr_wristbreaker",
                     ModSounds.MAG_OUT.get(),
                     ModSounds.MAG_IN.get(),
                     ModSounds.RELOAD_END.get(),
@@ -1336,6 +1611,17 @@ public class ModItems {
                     ModSounds.COPPER_GUN_JAM.get()
             )
     );
+    public static final DeferredItem<AnimatedScorchedGunItem> STERILIZER = REGISTER.register("sterilizer",
+            () -> new AnimatedScorchedGunItem(
+                    new Item.Properties().stacksTo(1).durability(2400),
+                    "sterilizer",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.HISS.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
+            )
+    );
     public static final DeferredItem<AnimatedGunItem> NEWBORN_CYST = REGISTER.register("newborn_cyst",
             () -> new AnimatedScorchedGunItem(
                     new Item.Properties().stacksTo(1).durability(2400),
@@ -1419,16 +1705,41 @@ public class ModItems {
     public static final DeferredItem<PickaxeItem> ANTHRALITE_PICKAXE = REGISTER.register("anthralite_pickaxe", () -> new PickaxeItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(PickaxeItem.createAttributes(ModTiers.ANTHRALITE, 1.0F, -2.8F))));
     public static final DeferredItem<SwordItem> ANTHRALITE_SWORD = REGISTER.register("anthralite_sword", () -> new SwordItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(SwordItem.createAttributes(ModTiers.ANTHRALITE, 3, -2.4F))));
     public static final DeferredItem<AxeItem> ANTHRALITE_AXE = REGISTER.register("anthralite_axe", () -> new AxeItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(AxeItem.createAttributes(ModTiers.ANTHRALITE, 5.0F, -3.0F))));
+    public static final DeferredItem<Item> ANTHRALITE_HAMMER = REGISTER.register("anthralite_hammer", () -> new AnthraliteHammerItem(ModTiers.ANTHRALITE, -3.2F, new Item.Properties()));
+    public static final DeferredItem<Item> ANTHRALITE_PAXEL = REGISTER.register("anthralite_paxel", () -> new AnthralitePaxelItem(ModTiers.ANTHRALITE, new Item.Properties()));
+    public static final DeferredItem<CogMaceItem> COG_MACE = REGISTER.register("cog_mace", () -> new CogMaceItem(ModTiers.ANCIENT_BRASS, 2, -3.2F, new Item.Properties()));
+    public static final DeferredItem<Item> WARAXE = REGISTER.register("war_axe", () -> new WaraxeItem(new Item.Properties()));
     public static final DeferredItem<ShovelItem> ANTHRALITE_SHOVEL = REGISTER.register("anthralite_shovel", () -> new ShovelItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(ShovelItem.createAttributes(ModTiers.ANTHRALITE, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> ANTHRALITE_HOE = REGISTER.register("anthralite_hoe", () -> new HoeItem(ModTiers.ANTHRALITE, new Item.Properties().attributes(HoeItem.createAttributes(ModTiers.ANTHRALITE, -3.0F, -3.0F))));
     public static final DeferredItem<Item> RANGE_FINDER = REGISTER.register("range_finder", () -> new RangeFinderItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<Item> METAL_DETECTOR = REGISTER.register("metal_detector", () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(128).rarity(Rarity.RARE)));
+    public static final DeferredItem<Item> FLARE_PISTOL = REGISTER.register("flare_pistol", () -> new FlarePistolItem(new Item.Properties().stacksTo(1).durability(128)));
+    public static final DeferredItem<Item> WHITE_FLAG = REGISTER.register("white_flag", () -> new WhiteFlagItem(new Item.Properties().stacksTo(16)));
+    public static final DeferredItem<Item> ANTIQUE_FLARE = REGISTER.register("antique_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "antique"));
+    public static final DeferredItem<Item> FRONTIER_FLARE = REGISTER.register("frontier_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "frontier"));
+    public static final DeferredItem<Item> COPPER_FLARE = REGISTER.register("copper_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "copper"));
+    public static final DeferredItem<Item> IRON_FLARE = REGISTER.register("iron_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "iron"));
+    public static final DeferredItem<Item> WRECKER_FLARE = REGISTER.register("wrecker_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "wrecker"));
+    public static final DeferredItem<Item> GOLD_FLARE = REGISTER.register("gold_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "piglin"));
+    public static final DeferredItem<Item> DIAMOND_STEEL_FLARE = REGISTER.register("diamond_steel_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "diamond_steel"));
+    public static final DeferredItem<Item> TREATED_BRASS_FLARE = REGISTER.register("treated_brass_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "treated_brass"));
+    public static final DeferredItem<Item> OCEAN_FLARE = REGISTER.register("ocean_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "ocean"));
+    public static final DeferredItem<Item> SCULK_FLARE = REGISTER.register("sculk_flare", () -> new RaidFlareItem(new Item.Properties().stacksTo(16), "sculk"));
+    public static final DeferredItem<Item> RUSTY_MEDAL = REGISTER.register("rusty_medal", () -> new TooltipItem(new Item.Properties().rarity(Rarity.UNCOMMON), "item.scguns.rusty_medal.tooltip", "item.scguns.found_in_raids"));
+    public static final DeferredItem<Item> LABOR_TROPHY = REGISTER.register("labor_trophy", () -> new TooltipItem(new Item.Properties().rarity(Rarity.UNCOMMON), "item.scguns.labor_trophy.tooltip", "item.scguns.found_in_raids"));
+    public static final DeferredItem<Item> SNAPPED_COGWHEEL = REGISTER.register("snapped_cogwheel", () -> new TooltipItem(new Item.Properties().rarity(Rarity.UNCOMMON), "item.scguns.snapped_cogwheel.tooltip", "item.scguns.found_in_raids"));
+    public static final DeferredItem<Item> COG_HEART = REGISTER.register("cog_heart", () -> new TooltipItem(new Item.Properties().rarity(Rarity.RARE), "item.scguns.cog_heart.tooltip", "item.scguns.found_in_raids"));
+    public static final DeferredItem<Item> GOLD_IDOL = REGISTER.register("gold_idol", () -> new TooltipItem(new Item.Properties().rarity(Rarity.RARE), "item.scguns.gold_idol.tooltip", "item.scguns.found_in_raids"));
+    public static final DeferredItem<Item> LEVIATHAN_TOOTH = REGISTER.register("leviathan_tooth", () -> new TooltipItem(new Item.Properties().rarity(Rarity.RARE), "item.scguns.leviathan_tooth.tooltip", "item.scguns.found_in_raids"));
+    public static final DeferredItem<Item> CEREMONIAL_COD = REGISTER.register("ceremonial_cod", () -> new TooltipItem(new Item.Properties().rarity(Rarity.RARE), "item.scguns.ceremonial_cod.tooltip", "item.scguns.found_in_raids"));
+    public static final DeferredItem<Item> SCULK_TOME = REGISTER.register("sculk_tome", () -> new TooltipItem(new Item.Properties().rarity(Rarity.RARE), "item.scguns.sculk_tome.tooltip", "item.scguns.found_in_raids"));
     public static final DeferredItem<Item> ANTHRALITE_HELMET = REGISTER.register("anthralite_helmet", () -> new AnthraliteArmorItem(ModArmorMaterials.ANTHRALITE, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> ANTHRALITE_CHESTPLATE = REGISTER.register("anthralite_chestplate", () -> new AnthraliteArmorItem(ModArmorMaterials.ANTHRALITE, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final DeferredItem<Item> ANTHRALITE_LEGGINGS = REGISTER.register("anthralite_leggings", () -> new AnthraliteArmorItem(ModArmorMaterials.ANTHRALITE, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final DeferredItem<Item> ANTHRALITE_BOOTS = REGISTER.register("anthralite_boots", () -> new AnthraliteArmorItem(ModArmorMaterials.ANTHRALITE, ArmorItem.Type.BOOTS, new Item.Properties()));
     public static final DeferredItem<Item> RIDGETOP = REGISTER.register("ridgetop", () -> new RidgetopArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> BRASS_MASK = REGISTER.register("brass_mask", () -> new BrassMaskArmorItem(ModArmorMaterials.TREATED_BRASS, ArmorItem.Type.HELMET, new Item.Properties()));
+    public static final DeferredItem<Item> IRON_MASK = REGISTER.register("iron_mask", () -> new IronMaskArmorItem(ModArmorMaterials.DIAMOND_STEEL, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> ADRIEN_HELM = REGISTER.register("adrien_helm", () -> new AdrienArmorItem(ModArmorMaterials.ADRIEN, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> ADRIEN_CHESTPLATE = REGISTER.register("adrien_chestplate", () -> new AdrienArmorItem(ModArmorMaterials.ADRIEN, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final DeferredItem<Item> ADRIEN_LEGGINGS = REGISTER.register("adrien_leggings", () -> new AdrienArmorItem(ModArmorMaterials.ADRIEN, ArmorItem.Type.LEGGINGS, new Item.Properties()));
@@ -1493,6 +1804,14 @@ public class ModItems {
     public static final DeferredItem<Item> TREATED_BRASS_CHESTPLATE = REGISTER.register("treated_brass_chestplate", () -> new ArmorItem(ModArmorMaterials.TREATED_BRASS, ArmorItem.Type.CHESTPLATE, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.TREATED_BRASS, ArmorItem.Type.CHESTPLATE)));
     public static final DeferredItem<Item> TREATED_BRASS_LEGGINGS = REGISTER.register("treated_brass_leggings", () -> new ArmorItem(ModArmorMaterials.TREATED_BRASS, ArmorItem.Type.LEGGINGS, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.TREATED_BRASS, ArmorItem.Type.LEGGINGS)));
     public static final DeferredItem<Item> TREATED_BRASS_BOOTS = REGISTER.register("treated_brass_boots", () -> new ArmorItem(ModArmorMaterials.TREATED_BRASS, ArmorItem.Type.BOOTS, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.TREATED_BRASS, ArmorItem.Type.BOOTS)));
+    public static final DeferredItem<Item> REDCOAT_HAT = REGISTER.register("redcoat_hat", () -> new ArmorItem(ModArmorMaterials.REDCOAT, ArmorItem.Type.HELMET, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.REDCOAT, ArmorItem.Type.HELMET)));
+    public static final DeferredItem<Item> REDCOAT_COAT = REGISTER.register("redcoat_coat", () -> new ArmorItem(ModArmorMaterials.REDCOAT, ArmorItem.Type.CHESTPLATE, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.REDCOAT, ArmorItem.Type.CHESTPLATE)));
+    public static final DeferredItem<Item> REDCOAT_PANTS = REGISTER.register("redcoat_pants", () -> new ArmorItem(ModArmorMaterials.REDCOAT, ArmorItem.Type.LEGGINGS, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.REDCOAT, ArmorItem.Type.LEGGINGS)));
+    public static final DeferredItem<Item> REDCOAT_BOOTS = REGISTER.register("redcoat_boots", () -> new ArmorItem(ModArmorMaterials.REDCOAT, ArmorItem.Type.BOOTS, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.REDCOAT, ArmorItem.Type.BOOTS)));
+    public static final DeferredItem<Item> SCRAP_HELMET = REGISTER.register("scrap_helmet", () -> new ArmorItem(ModArmorMaterials.SCRAP, ArmorItem.Type.HELMET, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.SCRAP, ArmorItem.Type.HELMET)));
+    public static final DeferredItem<Item> SCRAP_CHESTPLATE = REGISTER.register("scrap_chestplate", () -> new ArmorItem(ModArmorMaterials.SCRAP, ArmorItem.Type.CHESTPLATE, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.SCRAP, ArmorItem.Type.CHESTPLATE)));
+    public static final DeferredItem<Item> SCRAP_LEGGINGS = REGISTER.register("scrap_leggings", () -> new ArmorItem(ModArmorMaterials.SCRAP, ArmorItem.Type.LEGGINGS, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.SCRAP, ArmorItem.Type.LEGGINGS)));
+    public static final DeferredItem<Item> SCRAP_BOOTS = REGISTER.register("scrap_boots", () -> new ArmorItem(ModArmorMaterials.SCRAP, ArmorItem.Type.BOOTS, ModArmorMaterials.withDurability(new Item.Properties(), ModArmorMaterials.SCRAP, ArmorItem.Type.BOOTS)));
     public static final DeferredItem<Item> ANTIQUE_BLUEPRINT = REGISTER.register("antique_blueprint", () -> new BlueprintItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<Item> FRONTIER_BLUEPRINT = REGISTER.register("frontier_blueprint", () -> new BlueprintItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<Item> COPPER_BLUEPRINT = REGISTER.register("copper_blueprint", () -> new BlueprintItem(new Item.Properties().stacksTo(1)));
@@ -1506,6 +1825,7 @@ public class ModItems {
     public static final DeferredItem<Item> END_BLUEPRINT = REGISTER.register("end_blueprint", () -> new BlueprintItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<Item> SCORCHED_BLUEPRINT = REGISTER.register("scorched_blueprint", () -> new GlintedBlueprintItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<Item> EXO_SUIT_BLUEPRINT = REGISTER.register("exo_suit_blueprint", () -> new BlueprintItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final DeferredItem<Item> BLUEPRINT_SCRAP = REGISTER.register("blueprint_scrap", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> STANDARD_BULLET = REGISTER.register("standard_bullet", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> ADVANCED_BULLET = REGISTER.register("hardened_bullet", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> SYRINGE = REGISTER.register("syringe", () -> new Item(new Item.Properties()));
@@ -1526,6 +1846,7 @@ public class ModItems {
             () -> new BucketItem(ModFluids.VICIOUS_ACID_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final DeferredItem<Item> BUCKSHOT = REGISTER.register("buckshot", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> FLECHETTE = REGISTER.register("flechette", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> NEEDLE = REGISTER.register("needle", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> NITRO_BUCKSHOT = REGISTER.register("nitro_buckshot", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> RAW_PHOSPHOR = REGISTER.register("raw_phosphor", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> GUNPOWDER_DUST = REGISTER.register("gunpowder_dust", () -> new Item(new Item.Properties()));
@@ -1562,6 +1883,9 @@ public class ModItems {
     public static final DeferredItem<Item> SCORCHED_INGOT = REGISTER.register("scorched_ingot", () -> new ScorchedItem(new Item.Properties()));
     public static final DeferredItem<Item> CHARGED_AMETHYST_SHARD = REGISTER.register("charged_amethyst_shard", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> EMPTY_TANK = REGISTER.register("empty_tank", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> AIR_CANISTER = REGISTER.register("air_canister", () -> new AirCanisterItem(new Item.Properties().stacksTo(1), 1700));
+    public static final DeferredItem<Item> REINFORCED_AIR_CANISTER = REGISTER.register("reinforced_air_canister", () -> new AirCanisterItem(new Item.Properties().stacksTo(1), 3200));
+    public static final DeferredItem<Item> CREATIVE_AIR_CANISTER = REGISTER.register("creative_air_canister", () -> new CreativeAirCanisterItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<Item> EMPTY_CORE = REGISTER.register("empty_core", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> ENERGY_CORE = REGISTER.register("energy_core", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> DEPLETED_ENERGY_CORE = REGISTER.register("depleted_energy_core", () -> new Item(new Item.Properties()));
@@ -1597,6 +1921,7 @@ public class ModItems {
     public static final DeferredItem<Item> LARGE_IRON_CASING = REGISTER.register("large_iron_casing", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> EMPTY_CELL = REGISTER.register("empty_cell", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> SHULKER_CASING = REGISTER.register("shulker_casing", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> SHULKER_CORE = REGISTER.register("shulker_core", () -> new TooltipItem(new Item.Properties(), "item.scguns.shulker_core.tooltip", "item.scguns.shulker_core.tooltip_2"));
     public static final DeferredItem<Item> SMALL_DIAMOND_STEEL_CASING = REGISTER.register("small_diamond_steel_casing", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> MEDIUM_DIAMOND_STEEL_CASING = REGISTER.register("medium_diamond_steel_casing", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> SMALL_BRASS_CASING = REGISTER.register("small_brass_casing", () -> new Item(new Item.Properties()));
@@ -1630,6 +1955,7 @@ public class ModItems {
             ));
 
     public static final DeferredItem<Item> SHOTBALL = REGISTER.register("shotball", () -> new ThrowableShotballItem(new Item.Properties()));
+    public static final DeferredItem<Item> FROG_DART = REGISTER.register("frog_dart", () -> new TooltipAmmo(new Item.Properties(), "tooltip.scguns.water"));
     public static final DeferredItem<Item> ENERGY_CELL = REGISTER.register("energy_cell", () -> new AmmoItem(new Item.Properties()));
     public static final DeferredItem<Item> SCULK_CELL = REGISTER.register("sculk_cell",
             () -> new TooltipAmmo(new Item.Properties(), 6));
@@ -1660,9 +1986,19 @@ public class ModItems {
     public static final DeferredItem<Item> UNFINISHED_HEAVY_GUN_PARTS = REGISTER.register("unfinished_heavy_gun_parts", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> UNFINISHED_PLASMA_CORE = REGISTER.register("unfinished_plasma_core", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> UNFINISHED_OSBORNE_SLUG = REGISTER.register("unfinished_osborne_slug", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> UNFINISHED_FROG_DART = REGISTER.register("unfinished_frog_dart", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> UNFINISHED_HE_GRENADE_ROUND = REGISTER.register("unfinished_he_grenade_round", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> UNFINISHED_GAS_GRENADE_ROUND = REGISTER.register("unfinished_gas_grenade_round", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> UNFINISHED_BOUNCY_GRENADE_ROUND = REGISTER.register("unfinished_bouncy_grenade_round", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> UNFINISHED_FIRE_GRENADE_ROUND = REGISTER.register("unfinished_fire_grenade_round", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> ROCKET = REGISTER.register("rocket", () -> new AmmoItem(new Item.Properties().stacksTo(32)));
     public static final DeferredItem<Item> OSBORNE_SLUG = REGISTER.register("osborne_slug", () -> new AmmoItem(new Item.Properties().stacksTo(4)));
+    public static final DeferredItem<Item> HE_GRENADE_ROUND = REGISTER.register("he_grenade_round", () -> new AmmoItem(new Item.Properties()));
+    public static final DeferredItem<Item> GAS_GRENADE_ROUND = REGISTER.register("gas_grenade_round", () -> new AmmoItem(new Item.Properties()));
+    public static final DeferredItem<Item> BOUNCY_GRENADE_ROUND = REGISTER.register("bouncy_grenade_round", () -> new AmmoItem(new Item.Properties()));
+    public static final DeferredItem<Item> FIRE_GRENADE_ROUND = REGISTER.register("fire_grenade_round", () -> new AmmoItem(new Item.Properties()));
     public static final DeferredItem<Item> PEBBLES = REGISTER.register("pebbles", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> WEIRD_FLESH = REGISTER.register("weird_flesh", WeirdFleshItem::new);
     public static final DeferredItem<Item> NETHERITE_SCRAP_CHUNK = REGISTER.register("netherite_scrap_chunk", () -> new ScorchedItem(new Item.Properties()));
 
     public static final DeferredItem<Item> PLASMA = REGISTER.register("plasma", () -> new FuelItem(new Item.Properties(), 1800));
@@ -1687,6 +2023,7 @@ public class ModItems {
     public static final DeferredItem<Item> CHOKE_BOMB = REGISTER.register("choke_bomb", () -> new ChokeBombItem(new Item.Properties().stacksTo(32), 72000));
     public static final DeferredItem<Item> SWARM_BOMB = REGISTER.register("swarm_bomb", () -> new SwarmBombItem(new Item.Properties().stacksTo(32), 72000));
     public static final DeferredItem<Item> NAIL_BOMB = REGISTER.register("nail_bomb", () -> new NailBombItem(new Item.Properties().stacksTo(32), 72000));
+    public static final DeferredItem<Item> HELLFIRE_BOMB = REGISTER.register("hellfire_bomb", () -> new HellfireBombItem(new Item.Properties().stacksTo(32), 72000));
     public static final DeferredItem<Item> GAS_GRENADE = REGISTER.register("gas_grenade", () -> new GasGrenadeItem(new Item.Properties().stacksTo(32), 72000));
     public static final DeferredItem<Item> BEACON_GRENADE = REGISTER.register("beacon_grenade", () -> new BeaconGrenadeItem(new Item.Properties().stacksTo(32), 72000));
 
@@ -1712,6 +2049,7 @@ public class ModItems {
     public static final DeferredItem<Item> LIGHT_STOCK = REGISTER.register("light_stock", () -> new StockItem(Stock.create(GunModifiers.LIGHT_STOCK_MODIFIER), new Item.Properties().stacksTo(1).durability(1300), false));
     public static final DeferredItem<Item> WEIGHTED_STOCK = REGISTER.register("weighted_stock", () -> new StockItem(Stock.create(GunModifiers.WEIGHTED_STOCK_MODIFIER), new Item.Properties().stacksTo(1).durability(1700)));
     public static final DeferredItem<Item> WOODEN_STOCK = REGISTER.register("wooden_stock", () -> new StockItem(Stock.create(GunModifiers.WOODEN_STOCK_MODIFIER), new Item.Properties().stacksTo(1).durability(1550), false));
+    public static final DeferredItem<Item> BUMP_STOCK = REGISTER.register("bump_stock", () -> new StockItem(Stock.create(GunModifiers.BUMP_STOCK_MODIFIER), new Item.Properties().stacksTo(1).durability(1200), true));
     // Barrel Attachments
     public static final DeferredItem<Item> SILENCER = REGISTER.register("silencer", () -> new BarrelItem(Barrel.create(0.0F, GunModifiers.SILENCER_MODIFIER, GunModifiers.SILENCED, GunModifiers.REDUCED_DAMAGE), new Item.Properties().stacksTo(1).durability(550)));
     public static final DeferredItem<Item> ADVANCED_SILENCER = REGISTER.register("advanced_silencer", () -> new BarrelItem(Barrel.create(0.0F, GunModifiers.ADVANCED_SILENCER_MODIFIER, GunModifiers.SILENCED), new Item.Properties().stacksTo(1).durability(1200)));
@@ -1735,6 +2073,7 @@ public class ModItems {
     public static final DeferredItem<Item> REPAIR_KIT = REGISTER.register("repair_kit", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> TURRET_PLATFORM = REGISTER.register("turret_platform", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<Item> SCAMP_PACKAGE = REGISTER.register("scamp_package", () -> new ScampPackageItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<Item> VIVENTRUM_PACKAGE = REGISTER.register("viventrum_package", () -> new ViventrumPackageItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<Item> COG_LOCATOR = REGISTER.register("cog_locator", () -> new CogLocatorItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<Item> THE_PACT = REGISTER.register("the_pact", () -> new ThePactItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
     // Mobs
@@ -1750,6 +2089,13 @@ public class ModItems {
     public static final DeferredItem<Item> HORNLIN_SPAWN_EGG = REGISTER.register("hornlin_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.HORNLIN, 0xa2593a, 0x9c3f69, new Item.Properties()));
     public static final DeferredItem<Item> ZOMBIFIED_HORNLIN_SPAWN_EGG = REGISTER.register("zombified_hornlin_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.ZOMBIFIED_HORNLIN, 0xe67973, 0x9c3f69, new Item.Properties()));
     public static final DeferredItem<Item> BLUNDERER_SPAWN_EGG = REGISTER.register("blunderer_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.BLUNDERER, 0x32663c, 0x98a2a2, new Item.Properties()));
+    public static final DeferredItem<Item> ADJUDICATOR_SPAWN_EGG = REGISTER.register("adjudicator_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.ADJUDICATOR, 0x202428, 0xd7d7d7, new Item.Properties()));
+    public static final DeferredItem<Item> SUBJUGATOR_SPAWN_EGG = REGISTER.register("subjugator_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SUBJUGATOR, 0x2b2440, 0x8a6be8, new Item.Properties()));
+    public static final DeferredItem<Item> FINFORCER_SPAWN_EGG = REGISTER.register("finforcer_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.FINFORCER, 0x202428, 0x2f9fa8, new Item.Properties()));
+    public static final DeferredItem<Item> PRAETOR_SPAWN_EGG = REGISTER.register("praetor_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.PRAETOR, 0x202428, 0xd0b36a, new Item.Properties()));
+    public static final DeferredItem<Item> MOTHER_GHAST_SPAWN_EGG = REGISTER.register("mother_ghast_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.MOTHER_GHAST, 0xf7cb6c, 0x4f4f4f, new Item.Properties()));
+    public static final DeferredItem<Item> VIVENTRUM_SPAWN_EGG = REGISTER.register("viventrum_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.VIVENTRUM, 0x202428, 0xd0d0d0, new Item.Properties()));
+    public static final DeferredItem<Item> SULFURHEAD_SPAWN_EGG = REGISTER.register("sulfurhead_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SULFURHEAD, 0x3f3a29, 0xd6c341, new Item.Properties()));
     public static final DeferredItem<Item> THE_MERCHANT_SPAWN_EGG = REGISTER.register("the_merchant_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.THE_MERCHANT, 0x202428, 0x8b5a2b, new Item.Properties()));
     public static final DeferredItem<Item> SIGNAL_BEACON_SPAWN_EGG = REGISTER.register("signal_beacon_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SIGNAL_BEACON, 0xf7cb6c, 0xED1127, new Item.Properties()));
     public static final DeferredItem<Item> SCAMP_TANK_SPAWN_EGG = REGISTER.register("scamp_tank_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SCAMP_TANK, 0xffeb8c, 0x4f4f4f, new Item.Properties()));

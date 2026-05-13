@@ -95,6 +95,10 @@ public class ScGunsWeapon implements IWeapon {
         return fireSound;
     }
 
+    public boolean hasMuzzleFlash() {
+        return gun.getDisplay().getFlash() != null;
+    }
+
     @Override
     public SoundEvent getLoadSound() {
         if (loadSound == null)

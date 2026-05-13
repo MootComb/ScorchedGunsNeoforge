@@ -279,6 +279,20 @@
           ],
           "name": "scguns:anthralite_leggings",
           "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 2,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:blueprint_scrap"
         }
       ],
       "rolls": {

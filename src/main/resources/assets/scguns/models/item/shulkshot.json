@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/shulkshot",
+		"0": "scguns:item/shulkshot",
 		"particle": "scguns:item/shulkshot"
 	},
 	"loader": "neoforge:separate_transforms",

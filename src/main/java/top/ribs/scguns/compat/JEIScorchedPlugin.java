@@ -4,7 +4,6 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.*;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
@@ -80,6 +79,7 @@ public class JEIScorchedPlugin implements IModPlugin {
         registration.addIngredientInfo(new ItemStack(ModBlocks.BASIC_TURRET.get()), VanillaTypes.ITEM_STACK, getTranslation("jei.info.basic_turret"));
         registration.addIngredientInfo(new ItemStack(ModBlocks.AUTO_TURRET.get()), VanillaTypes.ITEM_STACK, getTranslation("jei.info.auto_turret"));
         registration.addIngredientInfo(new ItemStack(ModBlocks.SHOTGUN_TURRET.get()), VanillaTypes.ITEM_STACK, getTranslation("jei.info.shotgun_turret"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.SNIPER_TURRET.get()), VanillaTypes.ITEM_STACK, getTranslation("jei.info.sniper_turret"));
         registration.addIngredientInfo(new ItemStack(ModItems.TEAM_LOG.get()), VanillaTypes.ITEM_STACK, getTranslation("jei.info.team_log"));
         registration.addIngredientInfo(new ItemStack(ModItems.ENEMY_LOG.get()), VanillaTypes.ITEM_STACK, getTranslation("jei.info.enemy_log"));
 
@@ -102,18 +102,17 @@ public class JEIScorchedPlugin implements IModPlugin {
 
 
 
-        List<GunBenchRecipe> gunBenchRecipes = recipeManager.getAllRecipesFor(GunBenchRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).toList();
-        List<MaceratorRecipe> maceratorRecipes = recipeManager.getAllRecipesFor(MaceratorRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).toList();
-        List<PoweredMaceratorRecipe> poweredMaceratorRecipes = recipeManager.getAllRecipesFor(PoweredMaceratorRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).toList();
-        List<MechanicalPressRecipe> mechanicalPressRecipes = recipeManager.getAllRecipesFor(MechanicalPressRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).toList();
-
-        List<PoweredMechanicalPressRecipe> poweredMechanicalPressRecipes = recipeManager.getAllRecipesFor(PoweredMechanicalPressRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).toList();
+        List<RecipeHolder<GunBenchRecipe>> gunBenchRecipes = recipeManager.getAllRecipesFor(GunBenchRecipe.Type.INSTANCE);
+        List<RecipeHolder<MaceratorRecipe>> maceratorRecipes = recipeManager.getAllRecipesFor(MaceratorRecipe.Type.INSTANCE);
+        List<RecipeHolder<PoweredMaceratorRecipe>> poweredMaceratorRecipes = recipeManager.getAllRecipesFor(PoweredMaceratorRecipe.Type.INSTANCE);
+        List<RecipeHolder<MechanicalPressRecipe>> mechanicalPressRecipes = recipeManager.getAllRecipesFor(MechanicalPressRecipe.Type.INSTANCE);
+        List<RecipeHolder<PoweredMechanicalPressRecipe>> poweredMechanicalPressRecipes = recipeManager.getAllRecipesFor(PoweredMechanicalPressRecipe.Type.INSTANCE);
         registration.addRecipes(GunBenchCategory.GUN_BENCH_TYPE, gunBenchRecipes);
         registration.addRecipes(MaceratorCategory.MACERATING_TYPE, maceratorRecipes);
         registration.addRecipes(PoweredMaceratorCategory.POWERED_MACERATING_TYPE, poweredMaceratorRecipes);
         registration.addRecipes(MechanicalPressCategory.MECHANICAL_PRESS_TYPE, mechanicalPressRecipes);
         registration.addRecipes(PoweredMechanicalPressCategory.POWERED_MECHANICAL_PRESS_TYPE, poweredMechanicalPressRecipes);
-        registration.addRecipes(LightningBatteryCategory.LIGHTNING_BATTERY_TYPE, recipeManager.getAllRecipesFor(LightningBatteryRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).toList());
+        registration.addRecipes(LightningBatteryCategory.LIGHTNING_BATTERY_TYPE, recipeManager.getAllRecipesFor(LightningBatteryRecipe.Type.INSTANCE));
 
 
     }
@@ -138,4 +137,3 @@ public class JEIScorchedPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.LIGHTNING_BATTERY.get()), LightningBatteryCategory.LIGHTNING_BATTERY_TYPE);
     }
 }
-

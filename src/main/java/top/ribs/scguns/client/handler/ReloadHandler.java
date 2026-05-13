@@ -279,7 +279,7 @@ public class ReloadHandler {
                     if (tag.getInt("AmmoCount") >= GunModifierHelper.getModifiedAmmoCapacity(stack, gun)) {
                         return;
                     }
-                    if (Gun.findAmmo(player, gun.getProjectile().getItem()).stack().isEmpty()) {
+                    if (Gun.findAmmo(player, gun).stack().isEmpty()) {
                         return;
                     }
 

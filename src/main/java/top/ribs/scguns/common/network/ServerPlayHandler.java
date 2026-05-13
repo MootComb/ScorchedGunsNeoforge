@@ -90,6 +90,7 @@ public class ServerPlayHandler {
 
         Gun modifiedGun = item.getModifiedGun(heldItem);
         if (modifiedGun == null) return;
+        Gun.Projectile activeProjectile = Gun.getLoadedProjectile(heldItem, modifiedGun);
         if (NeoForge.EVENT_BUS.post(new GunFireEvent.Pre(player, heldItem)).isCanceled())
             return;
         player.setYRot(Mth.wrapDegrees(message.getRotationYaw()));
@@ -109,16 +110,16 @@ public class ServerPlayHandler {
                 FireMode.SEMI_BEAM.equals(modifiedGun.getGeneral().getFireMode())) {
             handleBeamWeapon(player, heldItem, modifiedGun);
         }
-        else if (modifiedGun.getProjectile().firesArrows()) {
+        else if (activeProjectile.firesArrows()) {
             int count = modifiedGun.getGeneral().getProjectileAmount();
             for (int i = 0; i < count; i++) {
-                Arrow arrow = getArrow(player, world, modifiedGun);
+                Arrow arrow = getArrow(player, world, activeProjectile);
                 arrow.pickup = Arrow.Pickup.ALLOWED;
 
                 world.addFreshEntity(arrow);
             }
         }else {
-            fireProjectiles(world, player, heldItem, item, modifiedGun);
+            fireProjectiles(world, player, heldItem, item, modifiedGun, activeProjectile);
         }
 
         if (!player.isCreative()) {
@@ -127,14 +128,18 @@ public class ServerPlayHandler {
                 int level = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.RECLAIMED, heldItem);
                 if (level == 0 || player.level().random.nextInt(4 - Mth.clamp(level, 1, 2)) != 0) {
                     int currentAmmo = tag.getInt("AmmoCount");
-                    tag.putInt("AmmoCount", Math.max(0, currentAmmo - 1));
+                    int newAmmo = Math.max(0, currentAmmo - 1);
+                    tag.putInt("AmmoCount", newAmmo);
                     setCustomData(heldItem, tag);
+                    if (newAmmo == 0) {
+                        Gun.clearLoadedProjectileItem(heldItem);
+                    }
                 }
             }
         }
         if (Config.COMMON.gameplay.spawnCasings.get()) {
-            if (modifiedGun.getProjectile().casingType != null && !player.getAbilities().instabuild && !modifiedGun.getProjectile().ejectDuringReload()) {
-                ItemStack casingStack = new ItemStack(Objects.requireNonNull(BuiltInRegistries.ITEM.getOptional(modifiedGun.getProjectile().casingType).orElse(null)));
+            if (activeProjectile.casingType != null && !player.getAbilities().instabuild && !activeProjectile.ejectDuringReload()) {
+                ItemStack casingStack = new ItemStack(Objects.requireNonNull(BuiltInRegistries.ITEM.getOptional(activeProjectile.casingType).orElse(null)));
 
                 double baseChance = 0.4;
                 int enchantmentLevel = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.SHELL_CATCHER, heldItem);
@@ -182,10 +187,10 @@ public class ServerPlayHandler {
         }
     }
     @NotNull
-    private static Arrow getArrow(ServerPlayer player, Level world, Gun modifiedGun) {
+    private static Arrow getArrow(ServerPlayer player, Level world, Gun.Projectile projectile) {
         Arrow arrow = new Arrow(world, player, Items.ARROW.getDefaultInstance(), null);
 
-        float speed = (float) modifiedGun.getProjectile().getSpeed() * 0.35f;
+        float speed = (float) projectile.getSpeed() * 0.35f;
         float pitch = player.getXRot();
         float yaw = player.getYRot();
         float f = -Mth.sin(yaw * ((float)Math.PI / 180F)) * Mth.cos(pitch * ((float)Math.PI / 180F));
@@ -206,13 +211,12 @@ public class ServerPlayHandler {
         arrow.yRotO = arrow.getYRot();
         arrow.xRotO = arrow.getXRot();
 
-        arrow.setBaseDamage(modifiedGun.getProjectile().getDamage() * 0.15);
+        arrow.setBaseDamage(projectile.getDamage() * 0.15);
         return arrow;
     }
 
-    private static void fireProjectiles(Level world, ServerPlayer player, ItemStack heldItem, GunItem item, Gun modifiedGun) {
+    private static void fireProjectiles(Level world, ServerPlayer player, ItemStack heldItem, GunItem item, Gun modifiedGun, Gun.Projectile projectileProps) {
         int count = modifiedGun.getGeneral().getProjectileAmount();
-        Gun.Projectile projectileProps = modifiedGun.getProjectile();
         ProjectileEntity[] spawnedProjectiles = new ProjectileEntity[count];
 
         for (int i = 0; i < count; i++) {
@@ -508,10 +512,12 @@ public class ServerPlayHandler {
             if (gun.getReloads().getReloadType() != ReloadType.SINGLE_ITEM) {
                 if (tag != null && tag.contains("AmmoCount", Tag.TAG_INT)) {
                     int count = tag.getInt("AmmoCount");
+                    Item loadedAmmoItem = Gun.getLoadedProjectileItem(stack, gun);
                     tag.putInt("AmmoCount", 0);
                     setCustomData(stack, tag);
+                    Gun.clearLoadedProjectileItem(stack);
 
-                    ResourceLocation id = BuiltInRegistries.ITEM.getKey(gun.getProjectile().getItem());
+                    ResourceLocation id = BuiltInRegistries.ITEM.getKey(loadedAmmoItem);
                     Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
                     if (item == null) return;
 
@@ -562,7 +568,7 @@ public class ServerPlayHandler {
                     tag.putInt("AmmoCount", modifiedCapacity);
                     setCustomData(stack, tag);
                     if (!hasCreativeBox) {
-                        ResourceLocation id = BuiltInRegistries.ITEM.getKey(gun.getProjectile().getItem());
+                        ResourceLocation id = BuiltInRegistries.ITEM.getKey(Gun.getLoadedProjectileItem(stack, gun));
                         Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
                         if (item != null) {
                             int residue = currentAmmo - modifiedCapacity;

@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/bearpack_shell",
+		"0": "scguns:item/bearpack_shell",
 		"particle": "scguns:item/bearpack_shell"
 	},
 	"loader": "neoforge:separate_transforms",

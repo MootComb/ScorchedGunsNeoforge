@@ -106,6 +106,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("shotgun_turret", () ->
                     BlockEntityType.Builder.of(ShotgunTurretBlockEntity::new,
                             ModBlocks.SHOTGUN_TURRET.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SniperTurretBlockEntity>> SNIPER_TURRET =
+            BLOCK_ENTITIES.register("sniper_turret", () ->
+                    BlockEntityType.Builder.of(SniperTurretBlockEntity::new,
+                            ModBlocks.SNIPER_TURRET.get()).build(null));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ShellCatcherModuleBlockEntity>> SHELL_CATCHER_MODULE =
             BLOCK_ENTITIES.register("shell_catcher_module", () ->

@@ -73,6 +73,11 @@ public class GunBenchRecipe implements Recipe<GunBenchRecipe.Input> {
         return Type.INSTANCE;
     }
 
+    @Override
+    public boolean isSpecial() {
+        return true;
+    }
+
     public NonNullList<Ingredient> getIngredients() {
         return recipeItems;
     }

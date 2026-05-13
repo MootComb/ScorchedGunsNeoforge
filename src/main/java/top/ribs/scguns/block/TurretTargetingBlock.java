@@ -103,9 +103,7 @@ public class TurretTargetingBlock extends BaseEntityBlock {
     private Direction getCorrectFacingForTurret(BlockGetter world, BlockPos pos) {
         for (Direction direction : Direction.Plane.HORIZONTAL) {
             BlockPos neighborPos = pos.relative(direction);
-            if (world.getBlockState(neighborPos).getBlock() instanceof BasicTurretBlock ||
-                    world.getBlockState(neighborPos).getBlock() instanceof ShotgunTurretBlock ||
-                    world.getBlockState(neighborPos).getBlock() instanceof AutoTurretBlock) {
+            if (isTurretBlock(world.getBlockState(neighborPos).getBlock())) {
                 return direction.getOpposite();
             }
         }
@@ -115,13 +113,18 @@ public class TurretTargetingBlock extends BaseEntityBlock {
     private boolean isAdjacentToTurret(BlockGetter world, BlockPos pos) {
         for (Direction direction : Direction.Plane.HORIZONTAL) {
             BlockPos neighborPos = pos.relative(direction);
-            if (world.getBlockState(neighborPos).getBlock() instanceof BasicTurretBlock ||
-                    world.getBlockState(neighborPos).getBlock() instanceof ShotgunTurretBlock ||
-                    world.getBlockState(neighborPos).getBlock() instanceof AutoTurretBlock) {
+            if (isTurretBlock(world.getBlockState(neighborPos).getBlock())) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static boolean isTurretBlock(Block block) {
+        return block instanceof BasicTurretBlock
+                || block instanceof ShotgunTurretBlock
+                || block instanceof AutoTurretBlock
+                || block instanceof SniperTurretBlock;
     }
 
     @Nullable

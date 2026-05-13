@@ -48,35 +48,36 @@ public class BlueprintScreen extends Screen {
 
     private static final List<String> GUN_ORDER = Arrays.asList(
             // ANTIQUE
-            "flintlock_pistol", "handcannon", "musket", "blunderbuss", "doublet", "repeating_musket",
-            "laser_musket", "plasmabuss",
+            "flintlock_pistol", "handcannon", "musket", "blunderbuss", "fencer_carabine", "fencer_thumper", "doublet", "repeating_musket", "longarm",
+            "laser_musket", "teslock_rifle", "plasmabuss",
 
             //FRONTIER
-            "pax", "winnie", "callwell", "callwell_conversion", "callwell_terminal", "saketini",
-            "big_bore",
+            "pax", "winnie", "winnie_millend", "callwell", "callwell_conversion", "callwell_terminal", "saketini",
+            "red_raydar", "kiln_gun", "big_bore",
 
             // COPPER
             "scrapper", "rusty_gnat", "umax_pistol", "makeshift_rifle", "boomstick", "bruiser",
-            "llr_director", "birdfeeder", "arc_worker",
+            "llr_director", "birdfeeder", "whistler", "blooper", "arc_worker",
 
             // IRON
             "defender_pistol", "trenchur", "greaser_smg", "m3_carabine", "m3_marksman","combat_shotgun", "venturi",
             "iron_javelin", "iron_spear", "auvtomag", "pulsar", "gyrojet_pistol", "brawler",
-            "crusader", "mk43_rifle", "rocket_rifle", "ultra_knight_hawk",
+            "crusader", "mk43_rifle", "triquetra", "rocket_rifle", "ultra_knight_hawk",
 
             // OCEAN
-            "floundergat", "marlin", "bomb_lance", "hullbreaker", "sequoia",
+            "floundergat", "marlin", "bomb_lance", "hullbreaker", "sequoia", "spirulida", "hyperbaria",
 
             // WRECKER
-            "mokova", "mak_mkii", "turnpike", "killer_23", "homemaker", "kalaskah", "basker", "tl_runner", "stigg",
+            "mokova", "mak_mkii", "railworker", "whizzbanger", "turnpike", "killer_23", "homemaker", "kalaskah", "basker", "tl_runner", "stigg",
 
             // DIAMOND STEEL
-            "krauser", "soul_drummer", "uppercut", "micina", "valora", "prush_gun", "lockewood", "rg_jigsaw", "inertial",
-            "mas_55", "plasgun", "cyclone", "shard_culler",
+            "krauser", "soul_drummer", "uppercut", "micina", "valora", "prush_gun", "drill", "drill_conversion",
+            "lockewood", "rg_jigsaw", "nailer", "inertial", "minksy", "mas_peddler", "mas_55", "inquisitor",
+            "plasgun", "cyclone", "zilk_45", "truant", "shard_culler",
 
             // TREATED BRASS
-            "m22_waltz", "waltz_conversion", "osgood_50", "grandle_og", "grandle", "cogloader", "gale", "jackhammer",
-            "howler", "howler_conversion", "gauss_rifle", "niami", "spitfire", "gattaler",
+            "m22_waltz", "waltz_conversion", "osgood_50", "grandle_og", "grandle", "cogloader", "gale", "jr_wristbreaker", "jackhammer",
+            "hammer_gl", "howler", "howler_conversion", "gauss_rifle", "libertas", "niami", "spitfire", "gattaler",
             "thunderhead", "scratches", "cr4k_mining_laser", "dozier_rl",
 
             // PIGLIN
@@ -90,7 +91,7 @@ public class BlueprintScreen extends Screen {
 
             // SCORCHED
                 "prima_materia", "rat_king_and_queen", "locust", "newborn_cyst", "earths_corpse",
-            "flayed_god", "nervepinch", "terra_incognita", "astella",
+            "sterilizer", "flayed_god", "nervepinch", "terra_incognita", "astella",
 
             //EXOSUIT
             "exo_suit_helmet", "exo_suit_chestplate", "exo_suit_leggings", "exo_suit_boots"

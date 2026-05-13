@@ -42,7 +42,9 @@ public class ExoSuitFlightHandler {
     public static void onLivingUpdate(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
-        if (player.getAbilities().flying && !player.isCreative() && !player.isSpectator() && isUsingJetpack(player)) {
+        if (isJetpackFlightActive(player)) {
+            player.resetFallDistance();
+
             if (player.isSprinting()) {
                 player.setSprinting(false);
             }
@@ -52,6 +54,10 @@ public class ExoSuitFlightHandler {
                 disableFlight(player);
             }
         }
+    }
+
+    public static boolean isJetpackFlightActive(Player player) {
+        return player.getAbilities().flying && !player.isCreative() && !player.isSpectator() && isUsingJetpack(player);
     }
 
     private static boolean isUsingJetpack(Player player) {

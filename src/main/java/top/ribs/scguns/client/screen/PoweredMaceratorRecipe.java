@@ -97,6 +97,11 @@ public class PoweredMaceratorRecipe implements Recipe<PoweredMaceratorRecipe.Inp
         return Type.INSTANCE;
     }
 
+    @Override
+    public boolean isSpecial() {
+        return true;
+    }
+
     public NonNullList<Ingredient> getIngredients() {
         return inputItems;
     }

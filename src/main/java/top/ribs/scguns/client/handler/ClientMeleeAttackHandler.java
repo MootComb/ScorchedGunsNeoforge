@@ -16,10 +16,6 @@ import top.ribs.scguns.item.GunItem;
 public class ClientMeleeAttackHandler {
     public static void startMeleeAnimation(GunItem gunItem, ItemStack heldItem) {
         if (Minecraft.getInstance().player != null) {
-            boolean isOnCooldown = MeleeAttackHandler.isMeleeOnCooldown(Minecraft.getInstance().player, heldItem);
-            if (isOnCooldown) {
-                return;
-            }
             GunRenderingHandler.get().startMeleeAnimation(heldItem);
 
             if (gunItem.hasBayonet(heldItem)) {

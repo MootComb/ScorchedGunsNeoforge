@@ -34,6 +34,8 @@ import top.ribs.scguns.config.GunnerMobSpawner;
 import top.ribs.scguns.compat.CreateModCondition;
 import top.ribs.scguns.compat.FarmersDelightModCondition;
 import top.ribs.scguns.compat.IEModCondition;
+import top.ribs.scguns.config.RaidConfig;
+import top.ribs.scguns.config.RaidFlareConfig;
 import top.ribs.scguns.event.SculkHordeEvents;
 import top.ribs.scguns.config.MerchantTradeConfig;
 import top.ribs.scguns.config.ProjectileAdvantageConfig;
@@ -45,6 +47,7 @@ import top.ribs.scguns.event.*;
 import top.ribs.scguns.init.ModBlockEntities;
 import top.ribs.scguns.client.ClientHandler;
 import top.ribs.scguns.entity.config.CogMinionConfig;
+import top.ribs.scguns.entity.raid.RaidManager;
 import top.ribs.scguns.init.*;
 import top.ribs.scguns.network.PacketHandler;
 import top.ribs.scguns.world.VillageStructures;
@@ -146,7 +149,11 @@ public class ScorchedGuns {
         NeoForge.EVENT_BUS.register(GunnerMobSpawner.class);
         NeoForge.EVENT_BUS.register(GunProgressionEventHandler.class);
         NeoForge.EVENT_BUS.register(RaidEventHandler.class);
+        NeoForge.EVENT_BUS.register(RaidConfig.class);
+        NeoForge.EVENT_BUS.register(RaidFlareConfig.class);
+        NeoForge.EVENT_BUS.register(RaidManager.class);
         NeoForge.EVENT_BUS.register(GuanoItemEventHandler.class);
+        NeoForge.EVENT_BUS.register(CogMaceEventHandler.class);
 
 
         if (SCULK_HORDE_LOADED) {
@@ -211,6 +218,7 @@ public class ScorchedGuns {
             ProjectileManager.getInstance().registerFactory(ModItems.BLAZE_FUEL.get(), (worldIn, entity, weapon, item, modifiedGun) -> new FireRoundEntity(ModEntities.FIRE_ROUND_PROJECTILE.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.SCULK_CELL.get(), (worldIn, entity, weapon, item, modifiedGun) -> new SculkCellEntity(ModEntities.SCULK_CELL.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.SHOCK_CELL.get(), (worldIn, entity, weapon, item, modifiedGun) -> new LightningProjectileEntity(ModEntities.PROJECTILE.get(), worldIn, entity, weapon, item, modifiedGun));
+            ProjectileManager.getInstance().registerFactory(ModItems.FROG_DART.get(), (worldIn, entity, weapon, item, modifiedGun) -> new ProjectileEntity(ModEntities.PROJECTILE.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.SHULKSHOT.get(), (worldIn, entity, weapon, item, modifiedGun) -> new ShulkshotProjectileEntity(ModEntities.SHULKSHOT.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.ENERGY_CELL.get(), (worldIn, entity, weapon, item, modifiedGun) -> new PlasmaProjectileEntity(ModEntities.PLASMA_PROJECTILE.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.OSBORNE_SLUG.get(), (worldIn, entity, weapon, item, modifiedGun) -> new OsborneSlugProjectileEntity(ModEntities.OSBORNE_SLUG_PROJECTILE.get(), worldIn, entity, weapon, item, modifiedGun));
@@ -222,6 +230,10 @@ public class ScorchedGuns {
             ProjectileManager.getInstance().registerFactory(ModItems.NITRO_BUCKSHOT.get(), (worldIn, entity, weapon, item, modifiedGun) -> new BuckshotProjectileEntity(ModEntities.BUCKSHOT_PROJECTILE.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.SHOTBALL.get(), (worldIn, entity, weapon, item, modifiedGun) -> new ShotballProjectileEntity(ModEntities.SHOTBALL_PROJECTILE.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.ROCKET.get(), (worldIn, entity, weapon, item, modifiedGun) -> new RocketEntity(ModEntities.ROCKET.get(), worldIn, entity, weapon, item, modifiedGun));
+            ProjectileManager.getInstance().registerFactory(ModItems.HE_GRENADE_ROUND.get(), (worldIn, entity, weapon, item, modifiedGun) -> new HeGrenadeRoundEntity(ModEntities.HE_GRENADE_ROUND.get(), worldIn, entity, weapon, item, modifiedGun));
+            ProjectileManager.getInstance().registerFactory(ModItems.FIRE_GRENADE_ROUND.get(), (worldIn, entity, weapon, item, modifiedGun) -> new FireGrenadeRoundEntity(ModEntities.FIRE_GRENADE_ROUND.get(), worldIn, entity, weapon, item, modifiedGun));
+            ProjectileManager.getInstance().registerFactory(ModItems.GAS_GRENADE_ROUND.get(), (worldIn, entity, weapon, item, modifiedGun) -> new GasGrenadeRoundEntity(ModEntities.GAS_GRENADE_ROUND.get(), worldIn, entity, weapon, item, modifiedGun));
+            ProjectileManager.getInstance().registerFactory(ModItems.BOUNCY_GRENADE_ROUND.get(), (worldIn, entity, weapon, item, modifiedGun) -> new BouncyGrenadeRoundEntity(ModEntities.BOUNCY_GRENADE_ROUND.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.MICROJET.get(), (worldIn, entity, weapon, item, modifiedGun) -> new MicroJetEntity(ModEntities.MICROJET.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.GRENADE.get(), (worldIn, entity, weapon, item, modifiedGun) -> new GrenadeEntity(ModEntities.GRENADE.get(), worldIn, entity, weapon, item, modifiedGun));
             useEnergyGuns = Config.COMMON.gameplay.forceEnergyGuns.get();

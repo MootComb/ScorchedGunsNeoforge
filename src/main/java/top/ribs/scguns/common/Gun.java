@@ -57,10 +57,23 @@ import java.util.function.Supplier;
 
 public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
     private static final HolderLookup.Provider BUILT_IN_REGISTRIES = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+    private static final String LOADED_PROJECTILE_KEY = "scguns:LoadedProjectile";
 
     protected General general = new General();
     protected Reloads reloads = new Reloads();
     protected Projectile projectile = new Projectile();
+    @Optional
+    @Nullable
+    protected Projectile projectile_1;
+    @Optional
+    @Nullable
+    protected Projectile projectile_2;
+    @Optional
+    @Nullable
+    protected Projectile projectile_3;
+    @Optional
+    @Nullable
+    protected Projectile projectile_4;
     protected Sounds sounds = new Sounds();
     protected Display display = new Display();
     protected Modules modules = new Modules();
@@ -183,6 +196,74 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
 
     public Projectile getProjectile() {
         return this.projectile;
+    }
+
+    public List<Projectile> getAcceptedProjectiles() {
+        List<Projectile> projectiles = new ArrayList<>();
+        addAcceptedProjectile(projectiles, this.projectile);
+        addAcceptedProjectile(projectiles, this.projectile_1);
+        addAcceptedProjectile(projectiles, this.projectile_2);
+        addAcceptedProjectile(projectiles, this.projectile_3);
+        addAcceptedProjectile(projectiles, this.projectile_4);
+        return projectiles;
+    }
+
+    private static void addAcceptedProjectile(List<Projectile> projectiles, @Nullable Projectile projectile) {
+        if (projectile != null && projectile.item != null && projectile.getItem() != null) {
+            projectiles.add(projectile);
+        }
+    }
+
+    public boolean acceptsProjectileItem(Item item) {
+        return this.getProjectileForItem(item) != this.projectile || this.projectile.getItem() == item;
+    }
+
+    public Projectile getProjectileForItem(@Nullable Item item) {
+        if (item != null) {
+            for (Projectile projectile : this.getAcceptedProjectiles()) {
+                if (projectile.getItem() == item) {
+                    return projectile;
+                }
+            }
+        }
+        return this.projectile;
+    }
+
+    public static Item getLoadedProjectileItem(ItemStack stack, Gun gun) {
+        CompoundTag tag = getStackTag(stack);
+        if (tag != null && tag.contains(LOADED_PROJECTILE_KEY, Tag.TAG_STRING)) {
+            ResourceLocation id = ResourceLocation.tryParse(tag.getString(LOADED_PROJECTILE_KEY));
+            if (id != null) {
+                Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+                if (item != null && gun.acceptsProjectileItem(item)) {
+                    return item;
+                }
+            }
+        }
+        return gun.getProjectile().getItem();
+    }
+
+    public static Projectile getLoadedProjectile(ItemStack stack, Gun gun) {
+        return gun.getProjectileForItem(getLoadedProjectileItem(stack, gun));
+    }
+
+    public static void setLoadedProjectileItem(ItemStack stack, Gun gun, Item item) {
+        CompoundTag tag = getOrCreateStackTag(stack);
+        Item defaultItem = gun.getProjectile().getItem();
+        if (item == null || !gun.acceptsProjectileItem(item) || item == defaultItem) {
+            tag.remove(LOADED_PROJECTILE_KEY);
+        } else {
+            tag.putString(LOADED_PROJECTILE_KEY, BuiltInRegistries.ITEM.getKey(item).toString());
+        }
+        setStackTag(stack, tag);
+    }
+
+    public static void clearLoadedProjectileItem(ItemStack stack) {
+        CompoundTag tag = getStackTag(stack);
+        if (tag != null && tag.contains(LOADED_PROJECTILE_KEY, Tag.TAG_STRING)) {
+            tag.remove(LOADED_PROJECTILE_KEY);
+            setStackTag(stack, tag);
+        }
     }
 
     public Sounds getSounds() {
@@ -2398,6 +2479,18 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         tag.put("General", this.general.serializeNBT(registries));
         tag.put("Reloads", this.reloads.serializeNBT(registries));
         tag.put("Projectile", this.projectile.serializeNBT(registries));
+        if (this.projectile_1 != null) {
+            tag.put("Projectile_1", this.projectile_1.serializeNBT(registries));
+        }
+        if (this.projectile_2 != null) {
+            tag.put("Projectile_2", this.projectile_2.serializeNBT(registries));
+        }
+        if (this.projectile_3 != null) {
+            tag.put("Projectile_3", this.projectile_3.serializeNBT(registries));
+        }
+        if (this.projectile_4 != null) {
+            tag.put("Projectile_4", this.projectile_4.serializeNBT(registries));
+        }
         tag.put("Sounds", this.sounds.serializeNBT(registries));
         tag.put("Display", this.display.serializeNBT(registries));
         tag.put("Modules", this.modules.serializeNBT(registries));
@@ -2409,6 +2502,18 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         tag.put("General", this.general.serializeNBT());
         tag.put("Reloads", this.reloads.serializeNBT());
         tag.put("Projectile", this.projectile.serializeNBT());
+        if (this.projectile_1 != null) {
+            tag.put("Projectile_1", this.projectile_1.serializeNBT());
+        }
+        if (this.projectile_2 != null) {
+            tag.put("Projectile_2", this.projectile_2.serializeNBT());
+        }
+        if (this.projectile_3 != null) {
+            tag.put("Projectile_3", this.projectile_3.serializeNBT());
+        }
+        if (this.projectile_4 != null) {
+            tag.put("Projectile_4", this.projectile_4.serializeNBT());
+        }
         tag.put("Sounds", this.sounds.serializeNBT());
         tag.put("Display", this.display.serializeNBT());
         tag.put("Modules", this.modules.serializeNBT());
@@ -2425,6 +2530,22 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         }
         if (tag.contains("Projectile", Tag.TAG_COMPOUND)) {
             this.projectile.deserializeNBT(registries, tag.getCompound("Projectile"));
+        }
+        if (tag.contains("Projectile_1", Tag.TAG_COMPOUND)) {
+            this.projectile_1 = new Projectile();
+            this.projectile_1.deserializeNBT(registries, tag.getCompound("Projectile_1"));
+        }
+        if (tag.contains("Projectile_2", Tag.TAG_COMPOUND)) {
+            this.projectile_2 = new Projectile();
+            this.projectile_2.deserializeNBT(registries, tag.getCompound("Projectile_2"));
+        }
+        if (tag.contains("Projectile_3", Tag.TAG_COMPOUND)) {
+            this.projectile_3 = new Projectile();
+            this.projectile_3.deserializeNBT(registries, tag.getCompound("Projectile_3"));
+        }
+        if (tag.contains("Projectile_4", Tag.TAG_COMPOUND)) {
+            this.projectile_4 = new Projectile();
+            this.projectile_4.deserializeNBT(registries, tag.getCompound("Projectile_4"));
         }
         if (tag.contains("Sounds", Tag.TAG_COMPOUND)) {
             this.sounds.deserializeNBT(registries, tag.getCompound("Sounds"));
@@ -2447,6 +2568,22 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         if (tag.contains("Projectile", Tag.TAG_COMPOUND)) {
             this.projectile.deserializeNBT(tag.getCompound("Projectile"));
         }
+        if (tag.contains("Projectile_1", Tag.TAG_COMPOUND)) {
+            this.projectile_1 = new Projectile();
+            this.projectile_1.deserializeNBT(tag.getCompound("Projectile_1"));
+        }
+        if (tag.contains("Projectile_2", Tag.TAG_COMPOUND)) {
+            this.projectile_2 = new Projectile();
+            this.projectile_2.deserializeNBT(tag.getCompound("Projectile_2"));
+        }
+        if (tag.contains("Projectile_3", Tag.TAG_COMPOUND)) {
+            this.projectile_3 = new Projectile();
+            this.projectile_3.deserializeNBT(tag.getCompound("Projectile_3"));
+        }
+        if (tag.contains("Projectile_4", Tag.TAG_COMPOUND)) {
+            this.projectile_4 = new Projectile();
+            this.projectile_4.deserializeNBT(tag.getCompound("Projectile_4"));
+        }
         if (tag.contains("Sounds", Tag.TAG_COMPOUND)) {
             this.sounds.deserializeNBT(tag.getCompound("Sounds"));
         }
@@ -2463,6 +2600,10 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         object.add("general", this.general.toJsonObject());
         object.add("reloads", this.reloads.toJsonObject());
         object.add("projectile", this.projectile.toJsonObject());
+        if (this.projectile_1 != null) object.add("projectile_1", this.projectile_1.toJsonObject());
+        if (this.projectile_2 != null) object.add("projectile_2", this.projectile_2.toJsonObject());
+        if (this.projectile_3 != null) object.add("projectile_3", this.projectile_3.toJsonObject());
+        if (this.projectile_4 != null) object.add("projectile_4", this.projectile_4.toJsonObject());
         GunJsonUtil.addObjectIfNotEmpty(object, "sounds", this.sounds.toJsonObject());
         GunJsonUtil.addObjectIfNotEmpty(object, "display", this.display.toJsonObject());
         GunJsonUtil.addObjectIfNotEmpty(object, "modules", this.modules.toJsonObject());
@@ -2488,6 +2629,10 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         gun.general = this.general.copy();
         gun.reloads = this.reloads.copy();
         gun.projectile = this.projectile.copy();
+        gun.projectile_1 = this.projectile_1 != null ? this.projectile_1.copy() : null;
+        gun.projectile_2 = this.projectile_2 != null ? this.projectile_2.copy() : null;
+        gun.projectile_3 = this.projectile_3 != null ? this.projectile_3.copy() : null;
+        gun.projectile_4 = this.projectile_4 != null ? this.projectile_4.copy() : null;
         gun.sounds = this.sounds.copy();
         gun.display = this.display.copy();
         gun.modules = this.modules.copy();
@@ -2694,6 +2839,75 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         return ammoContextRef.get();
     }
 
+    public static AmmoContext findAmmo(Player player, Gun gun) {
+        if (player.isCreative()) {
+            for (Projectile projectile : gun.getAcceptedProjectiles()) {
+                Item item = projectile.getItem();
+                if (item == null) {
+                    continue;
+                }
+                for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
+                    ItemStack stack = player.getInventory().getItem(i);
+                    if (isAmmo(stack, item)) {
+                        return new AmmoContext(new ItemStack(item, Integer.MAX_VALUE), null);
+                    }
+                }
+            }
+            Item defaultItem = gun.getProjectile().getItem();
+            return defaultItem != null ? new AmmoContext(new ItemStack(defaultItem, Integer.MAX_VALUE), null) : AmmoContext.NONE;
+        }
+
+        for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (!stack.isEmpty() && gun.acceptsProjectileItem(stack.getItem())) {
+                return new AmmoContext(stack, player.getInventory());
+            }
+        }
+
+        for (ItemStack itemStack : player.getInventory().items) {
+            if (itemStack.getItem() instanceof AmmoBoxItem) {
+                List<ItemStack> contents = AmmoBoxItem.getContents(itemStack).toList();
+                for (ItemStack ammoStack : contents) {
+                    if (!ammoStack.isEmpty() && gun.acceptsProjectileItem(ammoStack.getItem())) {
+                        return new AmmoContext(ammoStack, null);
+                    }
+                }
+            }
+        }
+
+        for (Projectile projectile : gun.getAcceptedProjectiles()) {
+            Item item = projectile.getItem();
+            if (item != null) {
+                ItemStack exoSuitAmmo = ExoSuitAmmoHelper.findAmmoInExoSuit(player, item);
+                if (!exoSuitAmmo.isEmpty()) {
+                    return new AmmoContext(exoSuitAmmo, null);
+                }
+            }
+        }
+
+        AtomicReference<AmmoContext> ammoContextRef = new AtomicReference<>(AmmoContext.NONE);
+        CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
+            IItemHandlerModifiable curios = handler.getEquippedCurios();
+            for (int i = 0; i < curios.getSlots(); i++) {
+                ItemStack stack = curios.getStackInSlot(i);
+                if (stack.getItem() instanceof AmmoBoxItem) {
+                    List<ItemStack> contents = AmmoBoxItem.getContents(stack).toList();
+                    for (ItemStack ammoStack : contents) {
+                        if (!ammoStack.isEmpty() && gun.acceptsProjectileItem(ammoStack.getItem())) {
+                            ammoContextRef.set(new AmmoContext(ammoStack, null));
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+        if (!ammoContextRef.get().stack().isEmpty()) {
+            return ammoContextRef.get();
+        }
+
+        return AmmoContext.NONE;
+    }
+
 
     public static boolean isAmmo(ItemStack stack, Item item) {
         return stack != null && stack.getItem() == item;
@@ -2748,6 +2962,14 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         return ammoStacks.toArray(new ItemStack[0]);
     }
 
+    public static ItemStack[] findAmmoStack(Player player, Gun gun) {
+        AmmoContext context = findAmmo(player, gun);
+        if (context.stack().isEmpty()) {
+            return new ItemStack[0];
+        }
+        return findAmmoStack(player, context.stack().getItem());
+    }
+
     public static int getReserveAmmoCount(Player player, Item item) {
         if (player.isCreative()) {
             return Integer.MAX_VALUE;
@@ -2796,6 +3018,23 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         });
 
         return ammoCount.get();
+    }
+
+    public static int getReserveAmmoCount(Player player, Gun gun) {
+        if (player.isCreative()) {
+            return Integer.MAX_VALUE;
+        }
+
+        int count = 0;
+        List<Item> countedItems = new ArrayList<>();
+        for (Projectile projectile : gun.getAcceptedProjectiles()) {
+            Item item = projectile.getItem();
+            if (item != null && !countedItems.contains(item)) {
+                countedItems.add(item);
+                count += getReserveAmmoCount(player, item);
+            }
+        }
+        return count;
     }
 
 

@@ -5,9 +5,13 @@
     "scguns:flintlock_pistol",
     "scguns:handcannon",
     "scguns:blunderbuss",
+    "scguns:fencer_carabine",
+    "scguns:fencer_thumper",
     "scguns:doublet",
     "scguns:repeating_musket",
+    "scguns:longarm",
     "scguns:laser_musket",
+    "scguns:teslock_rifle",
     "scguns:plasmabuss"
   ]
 }

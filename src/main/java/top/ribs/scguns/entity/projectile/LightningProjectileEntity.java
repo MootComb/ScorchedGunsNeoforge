@@ -24,14 +24,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.registries.BuiltInRegistries;
-import top.ribs.scguns.block.AutoTurretBlock;
-import top.ribs.scguns.block.BasicTurretBlock;
 import top.ribs.scguns.block.EnemyTurretBlock;
-import top.ribs.scguns.block.ShotgunTurretBlock;
-import top.ribs.scguns.blockentity.AutoTurretBlockEntity;
-import top.ribs.scguns.blockentity.BasicTurretBlockEntity;
 import top.ribs.scguns.blockentity.EnemyTurretBlockEntity;
-import top.ribs.scguns.blockentity.ShotgunTurretBlockEntity;
+import top.ribs.scguns.blockentity.TurretBlockEntity;
 import top.ribs.scguns.common.Gun;
 import top.ribs.scguns.init.ModDamageTypes;
 import top.ribs.scguns.item.GunItem;
@@ -184,26 +179,11 @@ public class LightningProjectileEntity extends ProjectileEntity {
 
     @Override
     protected void onHitBlock(BlockState state, BlockPos pos, Direction face, double x, double y, double z) {
-        if (state.getBlock() instanceof AutoTurretBlock) {
-            BlockEntity blockEntity = level().getBlockEntity(pos);
-            if (blockEntity instanceof AutoTurretBlockEntity turret) {
-                turret.onHitByLightningProjectile();
-            }
-        }
-        if (state.getBlock() instanceof BasicTurretBlock) {
-            BlockEntity blockEntity = level().getBlockEntity(pos);
-            if (blockEntity instanceof BasicTurretBlockEntity turret) {
-                turret.onHitByLightningProjectile();
-            }
-        }
-        if (state.getBlock() instanceof ShotgunTurretBlock) {
-            BlockEntity blockEntity = level().getBlockEntity(pos);
-            if (blockEntity instanceof ShotgunTurretBlockEntity turret) {
-                turret.onHitByLightningProjectile();
-            }
+        BlockEntity blockEntity = level().getBlockEntity(pos);
+        if (blockEntity instanceof TurretBlockEntity turret) {
+            turret.onHitByLightningProjectile();
         }
         if (state.getBlock() instanceof EnemyTurretBlock) {
-            BlockEntity blockEntity = level().getBlockEntity(pos);
             if (blockEntity instanceof EnemyTurretBlockEntity turret) {
                 turret.onHitByLightningProjectile();
             }
@@ -351,7 +331,7 @@ public class LightningProjectileEntity extends ProjectileEntity {
                 net.minecraft.world.level.material.FluidState fluidState = blockState.getFluidState();
 
                 if (fluidState.is(net.minecraft.tags.FluidTags.WATER)) {
-                    if (top.ribs.scguns.Config.CLIENT.particle.enableWaterImpactParticles.get()) {
+                    if (isWaterImpactParticlesEnabled()) {
                         this.onWaterImpact(fluidResult.getLocation());
                     } else {
                         this.level().playSound(null, fluidResult.getLocation().x, fluidResult.getLocation().y, fluidResult.getLocation().z,

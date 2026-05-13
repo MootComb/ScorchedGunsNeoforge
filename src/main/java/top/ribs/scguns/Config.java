@@ -177,7 +177,7 @@ public class Config
         {
             builder.comment("Properties relating to controls").push("controls");
             {
-                this.aimDownSightSensitivity = builder.comment("A value to multiple the mouse sensitivity by when aiming down weapon sights. Go to (Options > Controls > Mouse Settings > ADS Sensitivity) in game to change this!").defineInRange("aimDownSightSensitivity", 0.75, 0.0, 1.0);
+                this.aimDownSightSensitivity = builder.comment("A value to multiply the mouse sensitivity by when aiming down weapon sights.").defineInRange("aimDownSightSensitivity", 0.75, 0.0, 1.0);
                 this.flipControls = builder.comment("When enabled, switches the shoot and aim controls of weapons. Due to technical reasons, you won't be able to use offhand items if you enable this setting.").define("flipControls", false);
             }
             builder.pop();
@@ -204,6 +204,7 @@ public class Config
         public final AggroMobs aggroMobs;
         public final FleeingMobs fleeingMobs;
         public final GunnerMobs gunnerMobs;
+        public final Raids raids;
         public final Rockets rockets;
         public final Grenades grenades;
         public final StunGrenades stunGrenades;
@@ -221,6 +222,7 @@ public class Config
                 this.aggroMobs = new AggroMobs(builder);
                 this.fleeingMobs = new FleeingMobs(builder);
                 this.gunnerMobs = new GunnerMobs(builder);
+                this.raids = new Raids(builder);
                 this.rockets = new Rockets(builder);
                 this.grenades = new Grenades(builder);
                 this.stunGrenades = new StunGrenades(builder);
@@ -456,6 +458,24 @@ public class Config
                         "Base chance for Elite Gunners to spawn (0.0 = never, 1.0 = always).",
                         "This is the spawn chance on NORMAL difficulty."
                 ).defineInRange("eliteChance", 0.2, 0.0, 1.0);
+            }
+            builder.pop();
+        }
+    }
+
+    public static class Raids {
+        public final ModConfigSpec.BooleanValue raidsEnabled;
+        public final ModConfigSpec.DoubleValue nightlyRaidChance;
+        public final ModConfigSpec.IntValue minDaysBetweenRaids;
+        public final ModConfigSpec.IntValue raidTimeoutMinutes;
+
+        public Raids(ModConfigSpec.Builder builder) {
+            builder.comment("Scorched Guns raid configuration").push("raids");
+            {
+                this.raidsEnabled = builder.comment("If enabled, Scorched Guns raid flares and nightly raid scheduling can start custom raids.").define("raidsEnabled", true);
+                this.nightlyRaidChance = builder.comment("Chance each night to schedule a progression raid for an eligible player.").defineInRange("nightlyRaidChance", 0.2, 0.0, 1.0);
+                this.minDaysBetweenRaids = builder.comment("Minimum in-game days between automatic nightly raids per dimension.").defineInRange("minDaysBetweenRaids", 2, 0, Integer.MAX_VALUE);
+                this.raidTimeoutMinutes = builder.comment("Minutes before an active custom raid times out. Use 0 to disable timeout.").defineInRange("raidTimeoutMinutes", 20, 0, Integer.MAX_VALUE);
             }
             builder.pop();
         }

@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "0": "scguns:items/shotball",
+    "0": "scguns:item/shotball",
     "particle": "scguns:item/shotball"
   },
   "loader": "neoforge:separate_transforms",

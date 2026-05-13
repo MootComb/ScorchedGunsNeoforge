@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/blaze_fuel",
+		"0": "scguns:item/blaze_fuel",
 		"particle": "scguns:item/blaze_fuel"
 	},
 	"loader": "neoforge:separate_transforms",

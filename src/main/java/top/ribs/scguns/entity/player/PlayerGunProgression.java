@@ -41,6 +41,17 @@ public class PlayerGunProgression {
         return tiers;
     }
 
+    public int getCurrentRaidLevel() {
+        return switch (currentTier) {
+            case NONE -> 0;
+            case ANTIQUE, FRONTIER -> 1;
+            case COPPER -> 2;
+            case IRON, WRECKER, OCEAN -> 3;
+            case DIAMOND_STEEL, TREATED_BRASS, PIGLIN, DEEP_DARK -> 4;
+            case END, SCORCHED -> 5;
+        };
+    }
+
     public boolean canMobSpawnWithTier(GunTier tier) {
         return tier != GunTier.NONE && tier.ordinal() <= getMaxMobTier().ordinal();
     }

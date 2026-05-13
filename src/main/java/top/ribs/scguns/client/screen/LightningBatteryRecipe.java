@@ -72,6 +72,11 @@ public class LightningBatteryRecipe implements Recipe<SingleRecipeInput> {
         return Type.INSTANCE;
     }
 
+    @Override
+    public boolean isSpecial() {
+        return true;
+    }
+
     public static class Type implements RecipeType<LightningBatteryRecipe> {
         public static final Type INSTANCE = new Type();
         public static final String ID = "lightning_battery";

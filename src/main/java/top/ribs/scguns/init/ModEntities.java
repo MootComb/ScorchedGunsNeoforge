@@ -65,6 +65,10 @@ public class ModEntities
     public static final DeferredHolder<EntityType<?>, EntityType<AdvancedRoundProjectileEntity>> ADVANCED_ROUND_PROJECTILE = registerBasic("advanced_round_projectile", AdvancedRoundProjectileEntity::new);
     public static final DeferredHolder<EntityType<?>, EntityType<GibbsRoundProjectileEntity>> GIBBS_ROUND_PROJECTILE = registerBasic("gibbs_round_projectile", GibbsRoundProjectileEntity::new);
     public static final DeferredHolder<EntityType<?>, EntityType<ShotballProjectileEntity>> SHOTBALL_PROJECTILE = registerBasic("shotball_projectile", ShotballProjectileEntity::new);
+    public static final DeferredHolder<EntityType<?>, EntityType<HeGrenadeRoundEntity>> HE_GRENADE_ROUND = registerBasic("he_grenade_round", HeGrenadeRoundEntity::new);
+    public static final DeferredHolder<EntityType<?>, EntityType<FireGrenadeRoundEntity>> FIRE_GRENADE_ROUND = registerBasic("fire_grenade_round", FireGrenadeRoundEntity::new);
+    public static final DeferredHolder<EntityType<?>, EntityType<GasGrenadeRoundEntity>> GAS_GRENADE_ROUND = registerBasic("gas_grenade_round", GasGrenadeRoundEntity::new);
+    public static final DeferredHolder<EntityType<?>, EntityType<BouncyGrenadeRoundEntity>> BOUNCY_GRENADE_ROUND = registerBasic("bouncy_grenade_round", BouncyGrenadeRoundEntity::new);
     public static final DeferredHolder<EntityType<?>, EntityType<ThrowableGrenadeEntity>> THROWABLE_GRENADE = registerBasic("throwable_grenade", ThrowableGrenadeEntity::new);
     public static final DeferredHolder<EntityType<?>, EntityType<ThrowableStunGrenadeEntity>> THROWABLE_STUN_GRENADE = registerBasic("throwable_stun_grenade", ThrowableStunGrenadeEntity::new);
     public static final DeferredHolder<EntityType<?>, EntityType<ThrowableMolotovCocktailEntity>> THROWABLE_MOLOTOV_COCKTAIL = registerBasic("throwable_molotov_cocktail", ThrowableMolotovCocktailEntity::new);
@@ -74,6 +78,14 @@ public class ModEntities
     public static final DeferredHolder<EntityType<?>, EntityType<ThrowableSwarmBombEntity>> THROWABLE_SWARM_BOMB = registerBasic("throwable_swarm_bomb", ThrowableSwarmBombEntity::new);
     public static final DeferredHolder<EntityType<?>, EntityType<ThrowableShotballEntity>> THROWABLE_SHOTBALL = registerBasic("throwable_shotball", ThrowableShotballEntity::new);
     public static final DeferredHolder<EntityType<?>, EntityType<ThrowableNailBombEntity>> THROWABLE_NAIL_BOMB = registerBasic("throwable_nail_bomb", ThrowableNailBombEntity::new);
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrowableHellfireBombEntity>> THROWABLE_HELLFIRE_BOMB = registerBasic("throwable_hellfire_bomb", ThrowableHellfireBombEntity::new);
+    public static final DeferredHolder<EntityType<?>, EntityType<RaidFlareEntity>> RAID_FLARE = REGISTER.register("raid_flare", () ->
+            EntityType.Builder.<RaidFlareEntity>of(RaidFlareEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .setTrackingRange(64)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build("raid_flare"));
     /* Mobs */
     public static final DeferredHolder<EntityType<?>, EntityType<CogMinionEntity>> COG_MINION = REGISTER.register("cog_minion", () -> EntityType.Builder.of(CogMinionEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("cog_minion"));
     public static final DeferredHolder<EntityType<?>, EntityType<CogKnightEntity>> COG_KNIGHT = REGISTER.register("cog_knight", () -> EntityType.Builder.of(CogKnightEntity::new, MobCategory.MONSTER).sized(0.8F, 2.2F).build("cog_knight"));
@@ -90,6 +102,13 @@ public class ModEntities
                     .sized(1.5F, 2.25F)
                     .build("the_merchant"));
     public static final DeferredHolder<EntityType<?>, EntityType<BlundererEntity>> BLUNDERER = REGISTER.register("blunderer", () -> EntityType.Builder.of(BlundererEntity::new, MobCategory.MONSTER).sized(0.8F, 1.7F).build("blunderer"));
+    public static final DeferredHolder<EntityType<?>, EntityType<AdjudicatorEntity>> ADJUDICATOR = REGISTER.register("adjudicator", () -> EntityType.Builder.of(AdjudicatorEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("adjudicator"));
+    public static final DeferredHolder<EntityType<?>, EntityType<SubjugatorEntity>> SUBJUGATOR = REGISTER.register("subjugator", () -> EntityType.Builder.of(SubjugatorEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("subjugator"));
+    public static final DeferredHolder<EntityType<?>, EntityType<FinforcerEntity>> FINFORCER = REGISTER.register("finforcer", () -> EntityType.Builder.of(FinforcerEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("finforcer"));
+    public static final DeferredHolder<EntityType<?>, EntityType<PraetorEntity>> PRAETOR = REGISTER.register("praetor", () -> EntityType.Builder.of(PraetorEntity::new, MobCategory.MONSTER).sized(1.2F, 2.8F).build("praetor"));
+    public static final DeferredHolder<EntityType<?>, EntityType<MotherGhastEntity>> MOTHER_GHAST = REGISTER.register("mother_ghast", () -> EntityType.Builder.of(MotherGhastEntity::new, MobCategory.MONSTER).sized(4.0F, 4.0F).fireImmune().clientTrackingRange(10).build("mother_ghast"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ViventrumEntity>> VIVENTRUM = REGISTER.register("viventrum", () -> EntityType.Builder.of(ViventrumEntity::new, MobCategory.CREATURE).sized(0.8F, 1.2F).build("viventrum"));
+    public static final DeferredHolder<EntityType<?>, EntityType<SulfurheadEntity>> SULFURHEAD = REGISTER.register("sulfurhead", () -> EntityType.Builder.of(SulfurheadEntity::new, MobCategory.MONSTER).sized(0.9F, 1.2F).build("sulfurhead"));
     public static final DeferredHolder<EntityType<?>, EntityType<TraumaUnitEntity>> TRAUMA_UNIT = REGISTER.register("trauma_unit", () -> EntityType.Builder.of(TraumaUnitEntity::new, MobCategory.MONSTER).sized(0.6F, 1.95F).build("trauma_unit"));
     public static final DeferredHolder<EntityType<?>, EntityType<ScampTankEntity>> SCAMP_TANK = REGISTER.register("scamp_tank", () -> EntityType.Builder.of(ScampTankEntity::new, MobCategory.MONSTER).sized(5.0F, 4F).build("scamp_tank"));
     public static final DeferredHolder<EntityType<?>, EntityType<SignalBeaconEntity>> SIGNAL_BEACON = REGISTER.register("signal_beacon", () -> EntityType.Builder.of(SignalBeaconEntity::new, MobCategory.MISC).sized(1.0F, 1.0F).build("signal_beacon"));

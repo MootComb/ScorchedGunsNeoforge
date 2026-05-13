@@ -18,6 +18,13 @@ public class ModCommonEventBus {
         event.put(ModEntities.REDCOAT.get(), RedcoatEntity.createAttributes().build());
         event.put(ModEntities.SCAMP_TANK.get(), ScampTankEntity.createAttributes().build());
         event.put(ModEntities.BLUNDERER.get(), BlundererEntity.createAttributes().build());
+        event.put(ModEntities.ADJUDICATOR.get(), AdjudicatorEntity.createAttributes().build());
+        event.put(ModEntities.SUBJUGATOR.get(), SubjugatorEntity.createAttributes().build());
+        event.put(ModEntities.FINFORCER.get(), FinforcerEntity.createAttributes().build());
+        event.put(ModEntities.PRAETOR.get(), PraetorEntity.createAttributes().build());
+        event.put(ModEntities.MOTHER_GHAST.get(), MotherGhastEntity.createAttributes().build());
+        event.put(ModEntities.VIVENTRUM.get(), ViventrumEntity.createAttributes().build());
+        event.put(ModEntities.SULFURHEAD.get(), SulfurheadEntity.createAttributes().build());
         event.put(ModEntities.HIVE.get(), HiveEntity.createAttributes().build());
         event.put(ModEntities.SWARM.get(), SwarmEntity.createAttributes().build());
         event.put(ModEntities.SIGNAL_BEACON.get(), SignalBeaconEntity.createAttributes().build());
@@ -80,6 +87,13 @@ public class ModCommonEventBus {
                 RedcoatEntity::checkMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
+        event.register(
+                ModEntities.PRAETOR.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.WORLD_SURFACE,
+                PraetorEntity::checkMonsterSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.OR
+        );
 
         event.register(
                 ModEntities.HIVE.get(),
@@ -100,6 +114,13 @@ public class ModCommonEventBus {
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
                 HornlinEntity::checkMonsterSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.OR
+        );
+        event.register(
+                ModEntities.SULFURHEAD.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.WORLD_SURFACE,
+                SulfurheadEntity::checkMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
     }

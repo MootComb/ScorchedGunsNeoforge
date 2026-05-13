@@ -32,6 +32,10 @@ public final class ModArmorMaterials {
             SoundEvents.ARMOR_EQUIP_IRON, 0.0f, 0.15f, () -> Ingredient.of(ModItems.ANCIENT_BRASS.get()));
     public static final Holder<ArmorMaterial> EXO_SUIT = register("exo_suit", 200, new int[]{1, 1, 1, 1}, 6,
             SoundEvents.ARMOR_EQUIP_NETHERITE, 0.0f, 0.0f, () -> Ingredient.of(ModItems.TREATED_IRON_INGOT.get()));
+    public static final Holder<ArmorMaterial> REDCOAT = register("redcoat", 12, new int[]{2, 4, 3, 2}, 9,
+            SoundEvents.ARMOR_EQUIP_LEATHER, 0.0f, 0.0f, () -> Ingredient.of(net.minecraft.world.item.Items.LEATHER));
+    public static final Holder<ArmorMaterial> SCRAP = register("scrap", 6, new int[]{5, 6, 6, 4}, 9,
+            SoundEvents.ARMOR_EQUIP_IRON, 0.5f, 0.05f, () -> Ingredient.of(net.minecraft.world.item.Items.IRON_INGOT));
 
     private ModArmorMaterials() {
     }

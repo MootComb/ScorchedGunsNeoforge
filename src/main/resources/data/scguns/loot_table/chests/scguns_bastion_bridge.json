@@ -9,8 +9,8 @@
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 2.0,
-                "max": 16.0,
+                "min": 2,
+                "max": 16,
                 "type": "minecraft:uniform"
               }
             }
@@ -20,6 +20,10 @@
         {
           "type": "minecraft:item",
           "name": "scguns:piglin_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "scguns:blueprint_scrap"
         }
       ]
     }

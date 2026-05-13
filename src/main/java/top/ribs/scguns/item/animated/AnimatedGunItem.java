@@ -754,7 +754,7 @@ public class AnimatedGunItem extends GunItem implements GeoAnimatable, GeoItem {
         int currentAmmo = nbt.getInt("AmmoCount");
         int maxAmmo = GunModifierHelper.getModifiedAmmoCapacity(stack, modifiedGun);
         boolean ammoFull = currentAmmo >= maxAmmo;
-        boolean hasNoAmmo = Gun.findAmmo(player, modifiedGun.getProjectile().getItem()).stack().isEmpty();
+        boolean hasNoAmmo = Gun.findAmmo(player, modifiedGun).stack().isEmpty();
 
         if (currentState.isEmpty() || currentState.equals("NONE")) {
             currentState = ReloadState.NONE.name();

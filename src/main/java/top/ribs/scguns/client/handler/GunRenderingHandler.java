@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -73,7 +72,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class GunRenderingHandler {
-    protected static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.withDefaultNamespace("textures/gui/icons.png");
+    private static final ResourceLocation COOLDOWN_BACKGROUND_SPRITE = ResourceLocation.withDefaultNamespace("hud/crosshair_attack_indicator_background");
+    private static final ResourceLocation COOLDOWN_PROGRESS_SPRITE = ResourceLocation.withDefaultNamespace("hud/crosshair_attack_indicator_progress");
     private final Map<Integer, Integer> entityShotCount = new HashMap<>();
 
 
@@ -219,15 +219,13 @@ public class GunRenderingHandler {
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                    RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                    RenderSystem.setShaderTexture(0, GUI_ICONS_LOCATION);
 
                     PoseStack stack = new PoseStack();
                     stack.scale(scale, scale, scale);
                     GuiGraphics guiGraphics = new GuiGraphics(mc, mc.renderBuffers().bufferSource());
                     int progress = (int) Math.ceil((coolDown + 0.05) * 17.0F) - 1;
-                    guiGraphics.blit(GUI_ICONS_LOCATION, j, i, 36, 94, 16, 4, 256, 256);
-                    guiGraphics.blit(GUI_ICONS_LOCATION, j, i, 52, 94, progress, 4, 256, 256);
+                    guiGraphics.blitSprite(COOLDOWN_BACKGROUND_SPRITE, j, i, 16, 4);
+                    guiGraphics.blitSprite(COOLDOWN_PROGRESS_SPRITE, 16, 4, 0, 0, j, i, progress, 4);
 
                     RenderSystem.disableBlend();
                 }
@@ -419,15 +417,13 @@ public class GunRenderingHandler {
         long currentTime = System.currentTimeMillis();
         LocalPlayer player = Minecraft.getInstance().player;
 
-        if (heldItem.getItem() instanceof GunItem gunItem) {
-            assert player != null;
-            if (MeleeAttackHandler.isMeleeOnCooldown(player, heldItem)) {
-
-                return;
-            }
-            MeleeAttackHandler.setMeleeCooldown(player, heldItem, gunItem);
+        if (player == null) {
+            return;
         }
         if (currentTime - meleeStartTime >= MELEE_DURATION) {
+            if (heldItem.getItem() instanceof GunItem gunItem) {
+                MeleeAttackHandler.setMeleeCooldown(player, heldItem, gunItem);
+            }
             this.isMeleeAttacking = true;
             this.meleeStartTime = currentTime;
             this.meleeProgress = 0;

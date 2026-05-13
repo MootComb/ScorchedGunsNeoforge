@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"0": "scguns:items/compact_copper_round",
+		"0": "scguns:item/compact_copper_round",
 		"particle": "scguns:item/compact_copper_round"
 	},
 	"loader": "neoforge:separate_transforms",

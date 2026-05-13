@@ -86,7 +86,7 @@ public class CogMinionEntity extends Monster implements IEntityCanReload {
     }
     private void explodeIfHoldingExplosive() {
         if (isHoldingExplosiveBlock() && !this.level().isClientSide) {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 5.0F, false, Level.ExplosionInteraction.MOB);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 5.0F, false, Level.ExplosionInteraction.NONE);
             this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
     }
