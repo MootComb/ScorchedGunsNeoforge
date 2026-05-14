@@ -12,4 +12,4 @@ NeoForge 1.21.1 port of Scorched Guns.
 
 ## Installation
 
-Place ScorchedGuns-1.3.0.jar into your mods folder together with the required dependencies.
+Place ScorchedGuns.jar into your mods folder together with the required dependencies.
