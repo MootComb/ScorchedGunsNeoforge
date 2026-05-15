@@ -21,7 +21,8 @@
     "meleeReach": 4.5,
     "hotBarrelRate": 100,
     "criticalChance": 0.05,
-    "speedModifier": 1.1
+    "speedModifier": 1.1,
+    "allowAmmoChange": true
   },
   "modules": {
     "attachments": {
@@ -38,6 +39,19 @@
     "ejectsCasing": true,
     "gravity": false,
     "item": "scguns:microjet",
+    "casingType": "scguns:small_iron_casing",
+    "life": 45,
+    "size": 0.05,
+    "speed": 3.0,
+    "trailLengthMultiplier": 2.0
+  },
+  "projectile_1": {
+    "advantage": "scguns:fire",
+    "damage": 17.5,
+    "ejectsCasing": true,
+    "visible": true,
+    "gravity": false,
+    "item": "scguns:frog_dart",
     "casingType": "scguns:small_iron_casing",
     "life": 45,
     "size": 0.05,

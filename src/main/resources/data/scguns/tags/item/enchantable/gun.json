@@ -1,0 +1,17 @@
+﻿{
+    "replace":  false,
+    "values":  [
+                   "#scguns:antique_gun_tier",
+                   "#scguns:frontier_gun_tier",
+                   "#scguns:copper_gun_tier",
+                   "#scguns:iron_gun_tier",
+                   "#scguns:wrecker_gun_tier",
+                   "#scguns:ocean_gun_tier",
+                   "#scguns:diamond_steel_gun_tier",
+                   "#scguns:treated_brass_gun_tier",
+                   "#scguns:piglin_gun_tier",
+                   "#scguns:deep_dark_gun_tier",
+                   "#scguns:end_gun_tier",
+                   "#scguns:scorched_gun_tier"
+               ]
+}

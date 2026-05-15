@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -26,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.tuple.Pair;
 import top.ribs.scguns.ScorchedGuns;
 import top.ribs.scguns.Reference;
@@ -58,6 +60,7 @@ import java.util.function.Supplier;
 public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
     private static final HolderLookup.Provider BUILT_IN_REGISTRIES = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
     private static final String LOADED_PROJECTILE_KEY = "scguns:LoadedProjectile";
+    private static final String SELECTED_PROJECTILE_KEY = "scguns:SelectedProjectile";
 
     protected General general = new General();
     protected Reloads reloads = new Reloads();
@@ -103,6 +106,16 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
     }
 
     private static ItemStack parseStack(CompoundTag tag) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            return ItemStack.parseOptional(server.registryAccess(), tag);
+        }
+        if (FMLEnvironment.dist.isClient()) {
+            Minecraft minecraft = Minecraft.getInstance();
+            if (minecraft.level != null) {
+                return ItemStack.parseOptional(minecraft.level.registryAccess(), tag);
+            }
+        }
         return ItemStack.parseOptional(BUILT_IN_REGISTRIES, tag);
     }
 
@@ -229,10 +242,37 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         return this.projectile;
     }
 
-    public static Item getLoadedProjectileItem(ItemStack stack, Gun gun) {
+    private static String getStackScopedProjectileKey(ItemStack stack, String key) {
+        return key + ":" + BuiltInRegistries.ITEM.getKey(stack.getItem());
+    }
+
+    private static Item getProjectileItemFromTag(ItemStack stack, Gun gun, String key, boolean allowLegacyKey) {
         CompoundTag tag = getStackTag(stack);
-        if (tag != null && tag.contains(LOADED_PROJECTILE_KEY, Tag.TAG_STRING)) {
-            ResourceLocation id = ResourceLocation.tryParse(tag.getString(LOADED_PROJECTILE_KEY));
+        if (tag != null) {
+            String scopedKey = getStackScopedProjectileKey(stack, key);
+            String lookupKey = tag.contains(scopedKey, Tag.TAG_STRING) ? scopedKey : allowLegacyKey ? key : null;
+            if (lookupKey != null && tag.contains(lookupKey, Tag.TAG_STRING)) {
+                ResourceLocation id = ResourceLocation.tryParse(tag.getString(lookupKey));
+                if (id != null) {
+                    Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+                    if (item != null && gun.acceptsProjectileItem(item)) {
+                        return item;
+                    }
+                }
+            }
+        }
+        return gun.getProjectile().getItem();
+    }
+
+    private static Item getProjectileItemFromTag(ItemStack stack, Gun gun, String key) {
+        return getProjectileItemFromTag(stack, gun, key, true);
+    }
+
+    private static Item getSelectedProjectileItemFromTag(ItemStack stack, Gun gun) {
+        CompoundTag tag = getStackTag(stack);
+        if (tag != null) {
+            String scopedKey = getStackScopedProjectileKey(stack, SELECTED_PROJECTILE_KEY);
+            ResourceLocation id = tag.contains(scopedKey, Tag.TAG_STRING) ? ResourceLocation.tryParse(tag.getString(scopedKey)) : null;
             if (id != null) {
                 Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
                 if (item != null && gun.acceptsProjectileItem(item)) {
@@ -243,24 +283,98 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         return gun.getProjectile().getItem();
     }
 
+    public static Item getLoadedProjectileItem(ItemStack stack, Gun gun) {
+        return getProjectileItemFromTag(stack, gun, LOADED_PROJECTILE_KEY);
+    }
+
     public static Projectile getLoadedProjectile(ItemStack stack, Gun gun) {
         return gun.getProjectileForItem(getLoadedProjectileItem(stack, gun));
     }
 
-    public static void setLoadedProjectileItem(ItemStack stack, Gun gun, Item item) {
+    public static Item getSelectedProjectileItem(ItemStack stack, Gun gun) {
+        return getSelectedProjectileItemFromTag(stack, gun);
+    }
+
+    public static Projectile getSelectedProjectile(ItemStack stack, Gun gun) {
+        return gun.getProjectileForItem(getSelectedProjectileItem(stack, gun));
+    }
+
+    public static Item getDisplayProjectileItem(ItemStack stack, Gun gun) {
+        return getAmmoCount(stack) > 0 ? getLoadedProjectileItem(stack, gun) : getSelectedProjectileItem(stack, gun);
+    }
+
+    public static Projectile getDisplayProjectile(ItemStack stack, Gun gun) {
+        return gun.getProjectileForItem(getDisplayProjectileItem(stack, gun));
+    }
+
+    private static void setProjectileItem(ItemStack stack, Gun gun, Item item, String key) {
         CompoundTag tag = getOrCreateStackTag(stack);
+        String scopedKey = getStackScopedProjectileKey(stack, key);
         Item defaultItem = gun.getProjectile().getItem();
         if (item == null || !gun.acceptsProjectileItem(item) || item == defaultItem) {
-            tag.remove(LOADED_PROJECTILE_KEY);
+            tag.remove(scopedKey);
+            tag.remove(key);
         } else {
-            tag.putString(LOADED_PROJECTILE_KEY, BuiltInRegistries.ITEM.getKey(item).toString());
+            tag.putString(scopedKey, BuiltInRegistries.ITEM.getKey(item).toString());
+            tag.remove(key);
         }
         setStackTag(stack, tag);
     }
 
+    public static void setLoadedProjectileItem(ItemStack stack, Gun gun, Item item) {
+        setProjectileItem(stack, gun, item, LOADED_PROJECTILE_KEY);
+    }
+
+    public static void setSelectedProjectileItem(ItemStack stack, Gun gun, Item item) {
+        setProjectileItem(stack, gun, item, SELECTED_PROJECTILE_KEY);
+    }
+
+    public static Item cycleSelectedProjectileItem(ItemStack stack, Gun gun) {
+        List<Projectile> projectiles = gun.getAcceptedProjectiles();
+        if (projectiles.isEmpty()) {
+            return gun.getProjectile().getItem();
+        }
+
+        Item current = getSelectedProjectileItem(stack, gun);
+        int currentIndex = 0;
+        for (int i = 0; i < projectiles.size(); i++) {
+            if (projectiles.get(i).getItem() == current) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        Item selected = projectiles.get((currentIndex + 1) % projectiles.size()).getItem();
+        setSelectedProjectileItem(stack, gun, selected);
+        return selected;
+    }
+
+    @Nullable
+    public static Item cycleSelectedAvailableProjectileItem(Player player, ItemStack stack, Gun gun) {
+        List<Item> availableItems = new ArrayList<>();
+        for (Projectile projectile : gun.getAcceptedProjectiles()) {
+            Item item = projectile.getItem();
+            if (item != null && !availableItems.contains(item) &&
+                    (player.isCreative() || !findAmmo(player, item).stack().isEmpty())) {
+                availableItems.add(item);
+            }
+        }
+
+        if (availableItems.isEmpty()) {
+            return null;
+        }
+
+        Item current = getSelectedProjectileItem(stack, gun);
+        int currentIndex = availableItems.indexOf(current);
+        Item selected = availableItems.get((currentIndex + 1) % availableItems.size());
+        setSelectedProjectileItem(stack, gun, selected);
+        return selected;
+    }
+
     public static void clearLoadedProjectileItem(ItemStack stack) {
         CompoundTag tag = getStackTag(stack);
-        if (tag != null && tag.contains(LOADED_PROJECTILE_KEY, Tag.TAG_STRING)) {
+        if (tag != null) {
+            tag.remove(getStackScopedProjectileKey(stack, LOADED_PROJECTILE_KEY));
             tag.remove(LOADED_PROJECTILE_KEY);
             setStackTag(stack, tag);
         }
@@ -378,6 +492,8 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         private boolean isSilenced = false;
         @Optional
         private boolean enableGunLight = true;
+        @Optional
+        private boolean allowAmmoChange = false;
         @Override
         public CompoundTag serializeNBT(HolderLookup.Provider registries) {
             return this.serializeNBT();
@@ -436,6 +552,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             tag.putFloat("SpeedModifier", this.speedModifier);
             tag.putBoolean("IsSilenced", this.isSilenced);
             tag.putBoolean("EnableGunLight", this.enableGunLight);
+            tag.putBoolean("AllowAmmoChange", this.allowAmmoChange);
             return tag;
         }
 
@@ -562,6 +679,9 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             if (tag.contains("EnableGunLight", Tag.TAG_ANY_NUMERIC)) {
                 this.enableGunLight = tag.getBoolean("EnableGunLight");
             }
+            if (tag.contains("AllowAmmoChange", Tag.TAG_ANY_NUMERIC)) {
+                this.allowAmmoChange = tag.getBoolean("AllowAmmoChange");
+            }
         }
 
         public JsonObject toJsonObject() {
@@ -652,6 +772,9 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             if (!this.enableGunLight) {
                 object.addProperty("enableGunLight", false);
             }
+            if (this.allowAmmoChange) {
+                object.addProperty("allowAmmoChange", true);
+            }
             return object;
         }
 
@@ -700,11 +823,16 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             general.speedModifier = this.speedModifier;
             general.isSilenced = this.isSilenced;
             general.enableGunLight = this.enableGunLight;
+            general.allowAmmoChange = this.allowAmmoChange;
             return general;
         }
 
         public boolean isEnableGunLight() {
             return this.enableGunLight;
+        }
+
+        public boolean allowsAmmoChange() {
+            return this.allowAmmoChange;
         }
         public float getSpeedModifier() {
             return this.speedModifier;
@@ -2908,6 +3036,12 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         return AmmoContext.NONE;
     }
 
+    public static AmmoContext findReloadAmmo(Player player, ItemStack stack, Gun gun) {
+        if (gun.getGeneral().allowsAmmoChange()) {
+            return findAmmo(player, getSelectedProjectileItem(stack, gun));
+        }
+        return findAmmo(player, gun);
+    }
 
     public static boolean isAmmo(ItemStack stack, Item item) {
         return stack != null && stack.getItem() == item;
@@ -3037,6 +3171,12 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         return count;
     }
 
+    public static int getReserveAmmoCount(Player player, ItemStack stack, Gun gun) {
+        if (gun.getGeneral().allowsAmmoChange()) {
+            return getReserveAmmoCount(player, getSelectedProjectileItem(stack, gun));
+        }
+        return getReserveAmmoCount(player, gun);
+    }
 
     public static float getFovModifier(ItemStack stack, Gun modifiedGun) {
         float modifier = 0.0F;

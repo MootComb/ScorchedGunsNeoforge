@@ -15,6 +15,8 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import top.ribs.scguns.Reference;
 import top.ribs.scguns.init.ModSounds;
 import top.ribs.scguns.item.animated.ExoSuitItem;
+import top.ribs.scguns.network.PacketHandler;
+import top.ribs.scguns.network.message.C2SMessageJetpackFlightState;
 
 @EventBusSubscriber(modid = Reference.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ExoSuitFlightClientHandler {
@@ -39,6 +41,9 @@ public class ExoSuitFlightClientHandler {
     private static long lastJumpPressTime = 0;
     private static final long DOUBLE_TAP_WINDOW = 300;
     private static boolean jetpackActive = false;
+    private static boolean previousMayfly = false;
+    private static boolean previousFlying = false;
+    private static float previousFlyingSpeed = 0.05f;
     private static long lastEnergyConsumptionTime = 0;
     private static final long ENERGY_CONSUMPTION_INTERVAL = 1000;
     private static long lastLoopSoundTime = 0;
@@ -73,8 +78,8 @@ public class ExoSuitFlightClientHandler {
         }
         ItemStack chestplate = player.getInventory().getArmor(2);
         if (!(chestplate.getItem() instanceof ExoSuitItem)) {
-            if (player.getAbilities().flying && !player.isCreative()) {
-                disableFlightAndStopSounds(player);
+            if (jetpackActive) {
+                deactivateJetpackFlight(player);
             }
             return;
         }
@@ -86,9 +91,8 @@ public class ExoSuitFlightClientHandler {
         boolean canFunction = ExoSuitPowerManager.canUpgradeFunction(player, "utility");
 
         if (!hasFlightCapability || !utilityEnabled || !canFunction) {
-            if (player.getAbilities().flying && !player.isCreative()) {
-                disableFlightAndStopSounds(player);
-                jetpackActive = false;
+            if (jetpackActive) {
+                deactivateJetpackFlight(player);
             }
             return;
         }
@@ -98,12 +102,16 @@ public class ExoSuitFlightClientHandler {
             flightSpeed = 0.1f;
         }
 
-        if (!player.getAbilities().mayfly) {
+        if (jetpackActive && !player.getAbilities().mayfly) {
             ExoSuitFlightHandler.enableFlight(player, flightSpeed);
         }
 
         Minecraft mc = Minecraft.getInstance();
         if (jetpackActive && player.getAbilities().mayfly) {
+            if (player.onGround() && !mc.options.keyJump.isDown()) {
+                deactivateJetpackFlight(player);
+                return;
+            }
             if (player.getAbilities().flying && !player.isCreative()) {
                 handleFlightMovement(player, mc, flightSpeed);
             }
@@ -113,11 +121,12 @@ public class ExoSuitFlightClientHandler {
     private static void handleFlightMovement(Player player, Minecraft mc, float flightSpeed) {
         if (!player.getAbilities().flying || !jetpackActive || player.isSpectator()) return;
 
+        ExoSuitFlightHandler.markJetpackFlight(player);
+
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastEnergyConsumptionTime >= ENERGY_CONSUMPTION_INTERVAL) {
             if (!ExoSuitPowerManager.canUpgradeFunction(player, "utility")) {
-                disableFlightAndStopSounds(player);
-                jetpackActive = false;
+                deactivateJetpackFlight(player);
 
                 player.level().playLocalSound(
                         player.getX(), player.getY(), player.getZ(),
@@ -210,8 +219,8 @@ public class ExoSuitFlightClientHandler {
         ItemStack chestplate = player.getInventory().getArmor(2);
 
         if (!(chestplate.getItem() instanceof ExoSuitItem)) {
-            if (player.getAbilities().flying && !player.isCreative()) {
-                disableFlightAndStopSounds(player);
+            if (jetpackActive) {
+                deactivateJetpackFlight(player);
             }
             return;
         }
@@ -223,9 +232,8 @@ public class ExoSuitFlightClientHandler {
         boolean canFunction = ExoSuitPowerManager.canUpgradeFunction(player, "utility");
 
         if (!hasFlightCapability || !utilityEnabled || !canFunction) {
-            if (player.getAbilities().flying && !player.isCreative()) {
-                disableFlightAndStopSounds(player);
-                jetpackActive = false;
+            if (jetpackActive) {
+                deactivateJetpackFlight(player);
             }
             return;
         }
@@ -243,14 +251,10 @@ public class ExoSuitFlightClientHandler {
             long timeSinceLastPress = currentTime - lastJumpPressTime;
 
             if (timeSinceLastPress <= DOUBLE_TAP_WINDOW) {
-                jetpackActive = !jetpackActive;
-
-                if (jetpackActive) {
-                    ExoSuitFlightHandler.enableFlight(player, flightSpeed);
-                    player.getAbilities().flying = true;
-                    player.onUpdateAbilities();
+                if (!jetpackActive) {
+                    activateJetpackFlight(player, flightSpeed);
                 } else {
-                    disableFlightAndStopSounds(player);
+                    deactivateJetpackFlight(player);
                 }
             }
 
@@ -260,6 +264,10 @@ public class ExoSuitFlightClientHandler {
         wasJumpPressed = jumpPressed;
 
         if (jetpackActive && player.getAbilities().mayfly) {
+            if (player.onGround() && !jumpPressed) {
+                deactivateJetpackFlight(player);
+                return;
+            }
             if (player.getAbilities().flying && !player.isCreative()) {
                 handleFlightMovement(player, mc, flightSpeed);
                 spawnJetpackParticles(player, mc);
@@ -270,8 +278,35 @@ public class ExoSuitFlightClientHandler {
         }
     }
 
-    private static void disableFlightAndStopSounds(Player player) {
-        ExoSuitFlightHandler.disableFlight(player);
+    private static void activateJetpackFlight(Player player, float flightSpeed) {
+        previousMayfly = player.getAbilities().mayfly;
+        previousFlying = player.getAbilities().flying;
+        previousFlyingSpeed = player.getAbilities().getFlyingSpeed();
+        jetpackActive = true;
+        ExoSuitFlightHandler.enableFlight(player, flightSpeed);
+        player.getAbilities().flying = true;
+        player.onUpdateAbilities();
+        PacketHandler.getPlayChannel().sendToServer(new C2SMessageJetpackFlightState(true));
+    }
+
+    private static void deactivateJetpackFlight(Player player) {
+        if (jetpackActive) {
+            ExoSuitFlightHandler.markJetpackFlight(player);
+            player.resetFallDistance();
+            PacketHandler.getPlayChannel().sendToServer(new C2SMessageJetpackFlightState(false));
+            if (previousMayfly) {
+                player.getAbilities().mayfly = true;
+                player.getAbilities().flying = previousFlying;
+                player.getAbilities().setFlyingSpeed(previousFlyingSpeed);
+                player.onUpdateAbilities();
+            } else {
+                ExoSuitFlightHandler.disableFlight(player);
+            }
+        }
+        jetpackActive = false;
+        previousMayfly = false;
+        previousFlying = false;
+        previousFlyingSpeed = 0.05f;
         stopJetpackSounds();
     }
 

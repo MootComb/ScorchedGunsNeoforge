@@ -55,6 +55,7 @@ public class ExoSuitEventHandler {
             ExoSuitNightVisionHandler.onPlayerLogout(event.getEntity());
         }
         ExoSuitPowerManager.cleanupPlayerData(event.getEntity().getUUID());
+        ExoSuitFlightHandler.cleanupPlayerData(event.getEntity().getUUID());
     }
 
     /**

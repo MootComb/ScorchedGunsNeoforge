@@ -29,6 +29,7 @@ import top.ribs.scguns.common.BoundingBoxManager;
 import top.ribs.scguns.common.ProjectileManager;
 import top.ribs.scguns.common.exosuit.ExoSuitUpgradeManager;
 import top.ribs.scguns.config.EliteTierConfig;
+import top.ribs.scguns.config.GunMobValues;
 import top.ribs.scguns.config.GunnerMobConfig;
 import top.ribs.scguns.config.GunnerMobSpawner;
 import top.ribs.scguns.compat.CreateModCondition;
@@ -94,6 +95,7 @@ public class ScorchedGuns {
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.serverSpec);
         IEventBus bus = modEventBus;
         modEventBus.addListener(this::onConfigLoad);
+        modEventBus.addListener(this::onConfigReload);
         ModFluids.FLUID_TYPES.register(bus);
         ModFluids.FLUIDS.register(bus);
         ModItems.REGISTER.register(bus);
@@ -161,7 +163,22 @@ public class ScorchedGuns {
         }
     }
     private void onConfigLoad(ModConfigEvent.Loading event) {
-        if (event.getConfig().getType() == ModConfig.Type.SERVER) {
+        handleConfigEvent(event.getConfig());
+    }
+
+    private void onConfigReload(ModConfigEvent.Reloading event) {
+        handleConfigEvent(event.getConfig());
+    }
+
+    private void handleConfigEvent(ModConfig config) {
+        if (!MOD_ID.equals(config.getModId())) {
+            return;
+        }
+        if (config.getType() == ModConfig.Type.COMMON) {
+            GunMobValues.init();
+            return;
+        }
+        if (config.getType() == ModConfig.Type.SERVER) {
             // Only call RecoilHandler on client side
             if (FMLEnvironment.dist == Dist.CLIENT) {
                 RecoilHandler.get().updateConfig();

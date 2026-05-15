@@ -108,7 +108,6 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.7:processor'
 
     compileOnly "maven.modrinth:geckolib:${geckolib_version}"
-    // Stage 3P verified Framework's NeoForge 1.21.1 API jar for compile-surface inspection.
     compileOnly "curse.maven:framework-549225:7530361"
     // Optional integration APIs are compile-only; runtime dependencies remain external.
     compileOnly "maven.modrinth:curios:${curios_version}"
@@ -119,6 +118,7 @@ dependencies {
     localRuntime "maven.modrinth:geckolib:${geckolib_version}"
     localRuntime "curse.maven:framework-549225:7530361"
     localRuntime "maven.modrinth:curios:${curios_version}"
+    localRuntime "maven.modrinth:sound-physics-remastered:${sound_physics_remastered_version}"
 
     // Deferred optional mod integrations should stay external unless deliberately enabled.
 }

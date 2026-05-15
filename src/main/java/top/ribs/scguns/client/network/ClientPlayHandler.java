@@ -32,7 +32,6 @@ import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animation.AnimationController;
 import top.ribs.scguns.Config;
-import top.ribs.scguns.ScorchedGuns;
 import top.ribs.scguns.client.BulletTrail;
 import top.ribs.scguns.client.CustomGunManager;
 import top.ribs.scguns.client.audio.GunShotSound;
@@ -153,7 +152,7 @@ public class ClientPlayHandler {
 
         int currentAmmo = tag.getInt("AmmoCount");
         int maxAmmo = GunModifierHelper.getModifiedAmmoCapacity(heldItem, modifiedGun);
-        boolean hasNoAmmo = Gun.findAmmo(player, modifiedGun).stack().isEmpty();
+        boolean hasNoAmmo = Gun.findReloadAmmo(player, heldItem, modifiedGun).stack().isEmpty();
 
         if (animationController != null && (currentAmmo >= maxAmmo || hasNoAmmo)) {
             tag.putString("scguns:ReloadState", "STOPPING");

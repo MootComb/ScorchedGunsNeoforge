@@ -182,12 +182,58 @@ public class AnimatedGunItem extends GunItem implements GeoAnimatable, GeoItem {
     @OnlyIn(Dist.CLIENT)
     private void clientInventoryTick(ItemStack stack, Entity entity, int slot, boolean selected) {
         CompoundTag nbtCompound = getOrCreateStackTag(stack);
-        handleReloadStateSynchronization(stack, entity, nbtCompound);
-        handleAnimationControllerUpdates(stack, entity, nbtCompound);
         if (entity instanceof Player player) {
+            if (!selected) {
+                handleInactiveInventoryStack(stack, nbtCompound);
+                setStackTag(stack, nbtCompound);
+                return;
+            }
+            handleReloadStateSynchronization(stack, entity, nbtCompound);
+            handleAnimationControllerUpdates(stack, entity, nbtCompound);
             handlePlayerSpecificLogic(stack, player, nbtCompound);
+        } else {
+            handleReloadStateSynchronization(stack, entity, nbtCompound);
+            handleAnimationControllerUpdates(stack, entity, nbtCompound);
         }
         setStackTag(stack, nbtCompound);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void handleInactiveInventoryStack(ItemStack stack, CompoundTag nbtCompound) {
+        boolean hadTransientState = nbtCompound.getBoolean("IsDrawn")
+                || nbtCompound.getBoolean("IsReloading")
+                || nbtCompound.getBoolean("scguns:IsReloading")
+                || nbtCompound.getBoolean("InCriticalReloadPhase")
+                || nbtCompound.contains(RELOAD_STATE)
+                || nbtCompound.getBoolean("IsShooting")
+                || nbtCompound.getBoolean("IsInspecting")
+                || nbtCompound.getBoolean("IsAiming")
+                || nbtCompound.getBoolean("IsRunning");
+
+        cleanupAllReloadTags(nbtCompound);
+        nbtCompound.remove("IsDrawn");
+        nbtCompound.remove("IsDrawing");
+        nbtCompound.remove("DrawnTick");
+        nbtCompound.remove("IsShooting");
+        nbtCompound.remove("IsInspecting");
+        nbtCompound.remove("IsAiming");
+        nbtCompound.remove("IsRunning");
+        nbtCompound.remove("loaded");
+
+        if (!hadTransientState) {
+            return;
+        }
+
+        long id = GeoItem.getId(stack);
+        AnimationController<GeoAnimatable> animationController = this.getAnimatableInstanceCache()
+                .getManagerForId(id)
+                .getAnimationControllers()
+                .get("controller");
+
+        if (animationController != null) {
+            animationController.forceAnimationReset();
+            animationController.tryTriggerAnimation(isInCarbineMode(stack) ? "carbine_idle" : "idle");
+        }
     }
     @OnlyIn(Dist.CLIENT)
     private void handleReloadStateSynchronization(ItemStack stack, Entity entity, CompoundTag nbtCompound) {
@@ -754,7 +800,7 @@ public class AnimatedGunItem extends GunItem implements GeoAnimatable, GeoItem {
         int currentAmmo = nbt.getInt("AmmoCount");
         int maxAmmo = GunModifierHelper.getModifiedAmmoCapacity(stack, modifiedGun);
         boolean ammoFull = currentAmmo >= maxAmmo;
-        boolean hasNoAmmo = Gun.findAmmo(player, modifiedGun).stack().isEmpty();
+        boolean hasNoAmmo = Gun.findReloadAmmo(player, stack, modifiedGun).stack().isEmpty();
 
         if (currentState.isEmpty() || currentState.equals("NONE")) {
             currentState = ReloadState.NONE.name();

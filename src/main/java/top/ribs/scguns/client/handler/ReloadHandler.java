@@ -1,10 +1,12 @@
 package top.ribs.scguns.client.handler;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -71,6 +73,15 @@ public class ReloadHandler {
             stack.remove(DataComponents.CUSTOM_DATA);
         } else {
             stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        }
+    }
+
+    private static void prepareAmmoSwapReload(ItemStack stack) {
+        CompoundTag tag = getOrCreateStackTag(stack);
+        if (tag.getInt("AmmoCount") > 0) {
+            tag.putInt("AmmoCount", 0);
+            setStackTag(stack, tag);
+            Gun.clearLoadedProjectileItem(stack);
         }
     }
 
@@ -178,8 +189,33 @@ public class ReloadHandler {
         ItemStack stack = player.getMainHandItem();
         if (stack.getItem() instanceof GunItem) {
             CompoundTag tag = getOrCreateStackTag(stack);
-            ((GunItem) stack.getItem()).getModifiedGun(stack);
+            Gun gun = ((GunItem) stack.getItem()).getModifiedGun(stack);
             tag.getBoolean("InCriticalReloadPhase");
+
+            if (KeyBinds.KEY_SWAP_AMMO.consumeClick() && event.getAction() == GLFW.GLFW_PRESS) {
+                if (ModSyncedDataKeys.RELOADING.getValue(player)) {
+                    return;
+                }
+                if (!gun.getGeneral().allowsAmmoChange() || gun.getAcceptedProjectiles().size() <= 1) {
+                    Item current = Gun.getSelectedProjectileItem(stack, gun);
+                    PacketHandler.getPlayChannel().sendToServer(new C2SMessageSwapAmmo(BuiltInRegistries.ITEM.getKey(current)));
+                    return;
+                }
+                Item current = Gun.getSelectedProjectileItem(stack, gun);
+                Item selected = Gun.cycleSelectedAvailableProjectileItem(player, stack, gun);
+                if (selected == null) {
+                    player.displayClientMessage(Component.translatable("message.scguns.ammo_swap.no_available").withStyle(ChatFormatting.RED), true);
+                    return;
+                }
+                if (selected == current) {
+                    return;
+                }
+                PacketHandler.getPlayChannel().sendToServer(new C2SMessageSwapAmmo(BuiltInRegistries.ITEM.getKey(selected)));
+                prepareAmmoSwapReload(stack);
+                setReloading(true);
+                HUDRenderHandler.stageReserveAmmoUpdate();
+                return;
+            }
 
             if (KeyBinds.KEY_RELOAD.isDown() && event.getAction() == GLFW.GLFW_PRESS) {
                 boolean currentlyReloading = ModSyncedDataKeys.RELOADING.getValue(player);
@@ -279,7 +315,7 @@ public class ReloadHandler {
                     if (tag.getInt("AmmoCount") >= GunModifierHelper.getModifiedAmmoCapacity(stack, gun)) {
                         return;
                     }
-                    if (Gun.findAmmo(player, gun).stack().isEmpty()) {
+                    if (Gun.findReloadAmmo(player, stack, gun).stack().isEmpty()) {
                         return;
                     }
 

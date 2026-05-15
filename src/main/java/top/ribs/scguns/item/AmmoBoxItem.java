@@ -1,5 +1,6 @@
 package top.ribs.scguns.item;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -28,8 +29,10 @@ import top.ribs.scguns.Config;
 import top.ribs.scguns.common.Gun;
 import top.ribs.scguns.item.ammo_boxes.CreativeAmmoBoxItem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AmmoBoxItem extends Item {
@@ -152,6 +155,73 @@ public abstract class AmmoBoxItem extends Item {
         return getContents(stack).mapToInt(ItemStack::getCount).sum();
     }
 
+    public static int getAmmoCount(ItemStack stack, Item ammoItem) {
+        if (!(stack.getItem() instanceof AmmoBoxItem)) {
+            return 0;
+        }
+        if (stack.getItem() instanceof CreativeAmmoBoxItem) {
+            TagKey<Item> ammoTag = ItemTags.create(((CreativeAmmoBoxItem) stack.getItem()).getAmmoTag());
+            return ammoItem.builtInRegistryHolder().is(ammoTag) ? Integer.MAX_VALUE : 0;
+        }
+        return getContents(stack)
+                .filter(contained -> !contained.isEmpty() && contained.getItem() == ammoItem)
+                .mapToInt(ItemStack::getCount)
+                .sum();
+    }
+
+    public static boolean containsAmmo(ItemStack stack, Item ammoItem) {
+        return getAmmoCount(stack, ammoItem) > 0;
+    }
+
+    public static int shrinkAmmo(ItemStack stack, Item ammoItem, int amount, HolderLookup.Provider provider) {
+        if (amount <= 0 || !(stack.getItem() instanceof AmmoBoxItem)) {
+            return 0;
+        }
+        if (stack.getItem() instanceof CreativeAmmoBoxItem) {
+            return containsAmmo(stack, ammoItem) ? amount : 0;
+        }
+
+        int remaining = amount;
+        List<ItemStack> contents = getContents(stack).collect(Collectors.toCollection(ArrayList::new));
+        for (ItemStack contained : contents) {
+            if (remaining <= 0) {
+                break;
+            }
+            if (!contained.isEmpty() && contained.getItem() == ammoItem) {
+                int consumed = Math.min(remaining, contained.getCount());
+                contained.shrink(consumed);
+                remaining -= consumed;
+            }
+        }
+
+        int consumed = amount - remaining;
+        if (consumed > 0) {
+            setContents(stack, contents, provider);
+        }
+        return consumed;
+    }
+
+    public static void setContents(ItemStack stack, List<ItemStack> contents, HolderLookup.Provider provider) {
+        if (!(stack.getItem() instanceof AmmoBoxItem) || stack.getItem() instanceof CreativeAmmoBoxItem) {
+            return;
+        }
+
+        CompoundTag compoundTag = getCustomData(stack);
+        ListTag listTag = new ListTag();
+        for (ItemStack contained : contents) {
+            if (!contained.isEmpty()) {
+                listTag.add(saveStack(contained, provider));
+            }
+        }
+
+        if (listTag.isEmpty()) {
+            compoundTag.remove(TAG_ITEMS);
+        } else {
+            compoundTag.put(TAG_ITEMS, listTag);
+        }
+        setCustomData(stack, compoundTag);
+    }
+
     private static Optional<ItemStack> removeOne(ItemStack stack) {
         CompoundTag compoundTag = getCustomData(stack);
         if (!compoundTag.contains(TAG_ITEMS)) {
@@ -227,7 +297,11 @@ public abstract class AmmoBoxItem extends Item {
     }
 
     private static CompoundTag saveStack(ItemStack stack) {
-        return (CompoundTag) stack.save(Gun.builtInRegistryProvider(), new CompoundTag());
+        return saveStack(stack, Gun.builtInRegistryProvider());
+    }
+
+    private static CompoundTag saveStack(ItemStack stack, HolderLookup.Provider provider) {
+        return (CompoundTag) stack.save(provider, new CompoundTag());
     }
 
     private static CompoundTag getCustomData(ItemStack stack) {

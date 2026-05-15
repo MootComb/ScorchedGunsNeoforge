@@ -14,7 +14,6 @@ import top.ribs.scguns.item.animated.ExoSuitItem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ExoSuitAmmoHelper {
 
@@ -213,26 +212,31 @@ public class ExoSuitAmmoHelper {
     /**
      * Shrink ammo from exo suit pouches
      */
-    public static void shrinkAmmoInExoSuit(Player player, Item ammoItem, int amountToShrink) {
+    public static int shrinkAmmoInExoSuit(Player player, Item ammoItem, int amountToShrink) {
+        if (amountToShrink <= 0) {
+            return 0;
+        }
+
         ItemStack chestplate = getEquippedChestplate(player);
         if (chestplate.isEmpty()) {
-            return;
+            return 0;
         }
 
         ItemStack pouchUpgrade = findPouchUpgrade(chestplate);
         if (pouchUpgrade.isEmpty()) {
-            return;
+            return 0;
         }
 
         ExoSuitUpgrade upgrade = ExoSuitUpgradeManager.getUpgradeForItem(pouchUpgrade);
         if (upgrade == null) {
-            return;
+            return 0;
         }
 
         String pouchId = getPouchId(pouchUpgrade);
         ItemStackHandler pouchInventory = getPouchInventory(chestplate, pouchId, upgrade.getDisplay().getStorageSize());
 
         int remainingToShrink = amountToShrink;
+        int consumedTotal = 0;
 
         // First, shrink from direct ammo stacks in pouch inventory
         for (int i = 0; i < pouchInventory.getSlots() && remainingToShrink > 0; i++) {
@@ -241,6 +245,7 @@ public class ExoSuitAmmoHelper {
                 int shrinkAmount = Math.min(remainingToShrink, stack.getCount());
                 stack.shrink(shrinkAmount);
                 remainingToShrink -= shrinkAmount;
+                consumedTotal += shrinkAmount;
 
                 if (stack.isEmpty()) {
                     pouchInventory.setStackInSlot(i, ItemStack.EMPTY);
@@ -251,60 +256,11 @@ public class ExoSuitAmmoHelper {
             ItemStack stack = pouchInventory.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() instanceof AmmoBoxItem) {
                 try {
-                    List<ItemStack> contents = AmmoBoxItem.getContents(stack).toList();
-                    boolean hasAmmo = false;
-                    for (ItemStack ammoStack : contents) {
-                        if (!ammoStack.isEmpty() && ammoStack.getItem() == ammoItem) {
-                            hasAmmo = true;
-                            break;
-                        }
-                    }
-
-                    if (hasAmmo) {
-                        new ItemStack(ammoItem, remainingToShrink);
-
-                        CompoundTag tag = getCustomData(stack);
-                        if (tag.contains(AmmoBoxItem.TAG_ITEMS)) {
-                            int ammoInBox = 0;
-                            for (ItemStack ammoStack : contents) {
-                                if (!ammoStack.isEmpty() && ammoStack.getItem() == ammoItem) {
-                                    ammoInBox += ammoStack.getCount();
-                                }
-                            }
-
-                            if (ammoInBox > 0) {
-                                int toExtract = Math.min(remainingToShrink, ammoInBox);
-
-                                ItemStack newAmmoBox = stack.copy();
-                                CompoundTag newAmmoBoxTag = getCustomData(newAmmoBox);
-                                newAmmoBoxTag.remove(AmmoBoxItem.TAG_ITEMS);
-                                setCustomData(newAmmoBox, newAmmoBoxTag);
-
-                                int extracted = 0;
-                                for (ItemStack ammoStack : contents) {
-                                    if (extracted >= toExtract) {
-                                        if (!ammoStack.isEmpty()) {
-                                            AmmoBoxItem.add(newAmmoBox, ammoStack);
-                                        }
-                                    } else if (ammoStack.getItem() == ammoItem) {
-                                        int canExtract = Math.min(toExtract - extracted, ammoStack.getCount());
-                                        extracted += canExtract;
-
-                                        if (ammoStack.getCount() > canExtract) {
-                                            ItemStack remaining = ammoStack.copy();
-                                            remaining.setCount(ammoStack.getCount() - canExtract);
-                                            AmmoBoxItem.add(newAmmoBox, remaining);
-                                        }
-                                    } else {
-                                        if (!ammoStack.isEmpty()) {
-                                            AmmoBoxItem.add(newAmmoBox, ammoStack);
-                                        }
-                                    }
-                                }
-                                pouchInventory.setStackInSlot(i, newAmmoBox);
-                                remainingToShrink -= extracted;
-                            }
-                        }
+                    int consumed = AmmoBoxItem.shrinkAmmo(stack, ammoItem, remainingToShrink, player.registryAccess());
+                    if (consumed > 0) {
+                        pouchInventory.setStackInSlot(i, stack);
+                        remainingToShrink -= consumed;
+                        consumedTotal += consumed;
                     }
                 } catch (Exception e) {
                     System.out.println("Error shrinking ammo from AmmoBox: " + e.getMessage());
@@ -313,7 +269,10 @@ public class ExoSuitAmmoHelper {
             }
         }
 
-        savePouchInventory(chestplate, pouchId, pouchInventory);
+        if (consumedTotal > 0) {
+            savePouchInventory(chestplate, pouchId, pouchInventory);
+        }
+        return consumedTotal;
     }
 
     private static ItemStack getEquippedChestplate(Player player) {

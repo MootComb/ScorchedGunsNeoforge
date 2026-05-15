@@ -20,6 +20,11 @@ public class Validator
      */
     public static <T> boolean isValidObject(T t) throws IllegalAccessException, InvalidObjectException
     {
+        if(isInternalJavaClass(t.getClass()))
+        {
+            return true;
+        }
+
         Field[] fields = t.getClass().getDeclaredFields();
         for(Field field : fields)
         {
@@ -41,5 +46,11 @@ public class Validator
             }
         }
         return true;
+    }
+
+    private static boolean isInternalJavaClass(Class<?> clazz)
+    {
+        String name = clazz.getName();
+        return name.startsWith("com.sun.") || name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("jdk.") || name.startsWith("sun.");
     }
 }

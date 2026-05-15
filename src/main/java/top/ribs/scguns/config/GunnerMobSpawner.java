@@ -100,7 +100,7 @@ public class GunnerMobSpawner {
         Player nearestPlayer = level.getNearestPlayer(mob, 128.0D);
 
         if (thematic != null) {
-            if (mob.getRandom().nextDouble() > thematic.getSpawnChance()) {
+            if (mob.getRandom().nextDouble() > GunMobValues.getThematicGunnerSpawnChance(thematic.getSpawnChance(), level.getDifficulty())) {
                 return;
             }
             equipThematicGun(mob, thematic);

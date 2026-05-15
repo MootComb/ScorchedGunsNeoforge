@@ -1,0 +1,11 @@
+﻿{
+    "replace":  false,
+    "values":  [
+                   "scguns:collateral",
+                   "scguns:accelerator",
+                   "scguns:puncturing",
+                   "scguns:heavy_shot",
+                   "scguns:waterproof",
+                   "scguns:hot_barrel"
+               ]
+}

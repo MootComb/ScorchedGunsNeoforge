@@ -19,6 +19,7 @@ import top.ribs.scguns.Config;
         public static final KeyMapping KEY_ENABLE_EXO_HELMET = new KeyMapping("key.scguns.enable_exo_helmet", GLFW.GLFW_KEY_B, "key.categories.scguns");
         public static final KeyMapping KEY_ENABLE_EXO_BOOTS = new KeyMapping("key.scguns.enable_exo_boots", GLFW.GLFW_KEY_N, "key.categories.scguns");
         public static final KeyMapping KEY_ENABLE_EXO_CHESTPLATE = new KeyMapping("key.scguns.enable_exo_chestplate", GLFW.GLFW_KEY_M, "key.categories.scguns");
+        public static final KeyMapping KEY_SWAP_AMMO = new KeyMapping("key.scguns.swap_ammo", GLFW.GLFW_KEY_H, "key.categories.scguns");
         public static void registerKeyMappings(RegisterKeyMappingsEvent event)
         {
             event.register(KEY_RELOAD);
@@ -29,6 +30,7 @@ import top.ribs.scguns.Config;
             event.register(KEY_ENABLE_EXO_HELMET);
             event.register(KEY_ENABLE_EXO_CHESTPLATE);
             event.register(KEY_ENABLE_EXO_BOOTS);
+            event.register(KEY_SWAP_AMMO);
         }
 
         public static KeyMapping getAimMapping()

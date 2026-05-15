@@ -446,8 +446,8 @@ public class Config
             {
                 this.gunnerMobSpawning = builder.comment("If enabled, mobs will have a chance to spawn with guns.").define("gunnerMobSpawning", true);
                 this.gunnerSpawnChance = builder.comment(
-                        "Base chance for progression-based gunner mobs to spawn (0.0 = never, 1.0 = always).",
-                        "This is the spawn chance on NORMAL difficulty. Thematic mobs use their own config."
+                        "Global chance multiplier for mobs spawning with guns (0.0 = never, 1.0 = full configured chance).",
+                        "Progression-based gunner mobs use this as their base chance. Thematic mob JSON spawn chances are multiplied by this value."
                 ).defineInRange("gunnerSpawnChance", 0.3, 0.0, 1.0);
                 this.scaleToDifficulty = builder.comment(
                         "If enabled, spawn chances scale with game difficulty.",
@@ -770,7 +770,7 @@ public class Config
                 builder.pop();
 
                 this.enableCameraRecoil = builder.comment("If true, enables camera recoil when firing a weapon").define("enableCameraRecoil", true);
-                this.cooldownThreshold = builder.comment("The maximum amount of cooldown time remaining before the server will accept another shoot packet from a client. This allows for a litle slack since the server may be lagging").defineInRange("cooldownThreshold", 0, 75, 1000);
+                this.cooldownThreshold = builder.comment("The maximum amount of cooldown time remaining before the server will accept another shoot packet from a client. This allows for a litle slack since the server may be lagging").defineInRange("cooldownThreshold", 0, 0, 1000);
 
                 this.experimental = new Experimental(builder);
             }

@@ -2,7 +2,9 @@ package top.ribs.scguns.init;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -11,16 +13,36 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import top.ribs.scguns.Reference;
-import top.ribs.scguns.ScorchedGuns;
 import top.ribs.scguns.item.EnergyGunItem;
 import top.ribs.scguns.item.GunItem;
+
+import java.util.List;
 
 public class ModCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Reference.MOD_ID);
+
+    private static final List<DeferredHolder<Enchantment, Enchantment>> SCORCHED_GUNS_ENCHANTMENTS = List.of(
+            ModEnchantments.QUICK_HANDS,
+            ModEnchantments.TRIGGER_FINGER,
+            ModEnchantments.LIGHTWEIGHT,
+            ModEnchantments.COLLATERAL,
+            ModEnchantments.RECLAIMED,
+            ModEnchantments.ACCELERATOR,
+            ModEnchantments.PUNCTURING,
+            ModEnchantments.SHELL_CATCHER,
+            ModEnchantments.BANZAI,
+            ModEnchantments.HEAVY_SHOT,
+            ModEnchantments.ELEMENTAL_POP,
+            ModEnchantments.WATER_PROOF,
+            ModEnchantments.HOT_BARREL,
+            ModEnchantments.CORRODED,
+            ModEnchantments.GUN_RUST
+    );
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SCORCHED_GUNS_TAB = CREATIVE_MODE_TABS.register("scorched_guns_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.M3_CARABINE.get()))
@@ -509,21 +531,7 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModItems.EXTENDED_MAG.get());
                         pOutput.accept(ModItems.SPEED_MAG.get());
                         // pOutput.accept(ModItems.PLUS_P_MAG.get());
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.QUICK_HANDS);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.TRIGGER_FINGER);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.LIGHTWEIGHT);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.COLLATERAL);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.RECLAIMED);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.ACCELERATOR);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.PUNCTURING);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.SHELL_CATCHER);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.BANZAI);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.HEAVY_SHOT);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.ELEMENTAL_POP);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.WATER_PROOF);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.HOT_BARREL);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.CORRODED);
-                        CreativeTabHelper.addEnchantmentBook(pParameters, pOutput, ModEnchantments.GUN_RUST);
+                        CreativeTabHelper.addAllEnchantmentBookVariants(pParameters, pOutput);
                         pOutput.accept(ModItems.MASS_PRODUCTION_MUSIC_DISC.get());
                         pOutput.accept(ModItems.MASS_DESTRUCTION_MUSIC_DISC.get());
                         pOutput.accept(ModItems.MASS_DESTRUCTION_EXTENDED_MUSIC_DISC.get());
@@ -714,7 +722,47 @@ public class ModCreativeModeTabs {
 
     public static void register(IEventBus eventBus) {
         CREATIVE_MODE_TABS.register(eventBus);
+        eventBus.addListener(ModCreativeModeTabs::addEnchantmentBooksToVanillaSearch);
     }
+
+    private static void addEnchantmentBooksToVanillaSearch(BuildCreativeModeTabContentsEvent event) {
+        if (!CreativeModeTabs.INGREDIENTS.equals(event.getTabKey())) {
+            return;
+        }
+
+        SCORCHED_GUNS_ENCHANTMENTS.forEach(enchantment -> addEnchantmentBookVariants(event, enchantment));
+    }
+
+    private static void addEnchantmentBookVariants(BuildCreativeModeTabContentsEvent event, DeferredHolder<Enchantment, Enchantment> enchantment) {
+        event.getParameters().holders().lookup(Registries.ENCHANTMENT)
+                .flatMap(enchantments -> enchantments.get(enchantment.getKey()))
+                .ifPresent(holder -> addEnchantmentBookVariants(event, holder));
+    }
+
+    private static void addEnchantmentBookVariants(BuildCreativeModeTabContentsEvent event, Holder<Enchantment> enchantment) {
+        int maxLevel = enchantment.value().getMaxLevel();
+        ItemStack maxLevelBook = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, maxLevel));
+        acceptIfAbsent(event, maxLevelBook, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY);
+
+        for (int level = enchantment.value().getMinLevel(); level <= maxLevel; level++) {
+            ItemStack book = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, level));
+            acceptIfAbsent(event, book, CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
+        }
+    }
+
+    private static void acceptIfAbsent(BuildCreativeModeTabContentsEvent event, ItemStack stack, CreativeModeTab.TabVisibility visibility) {
+        boolean parentPresent = event.getParentEntries().contains(stack);
+        boolean searchPresent = event.getSearchEntries().contains(stack);
+        boolean shouldAdd = switch (visibility) {
+            case PARENT_AND_SEARCH_TABS -> !parentPresent && !searchPresent;
+            case PARENT_TAB_ONLY -> !parentPresent;
+            case SEARCH_TAB_ONLY -> !searchPresent;
+        };
+        if (shouldAdd) {
+            event.accept(stack, visibility);
+        }
+    }
+
     public static class CreativeTabHelper {
         public static void addItemWithFullAmmo(CreativeModeTab.Output output, Item item) {
             if (item instanceof GunItem gunItem) {
@@ -741,10 +789,23 @@ public class ModCreativeModeTabs {
             output.accept(stack);
         }
 
-        public static void addEnchantmentBook(CreativeModeTab.ItemDisplayParameters parameters, CreativeModeTab.Output output, DeferredHolder<Enchantment, Enchantment> enchantment) {
+        public static void addAllEnchantmentBookVariants(CreativeModeTab.ItemDisplayParameters parameters, CreativeModeTab.Output output) {
+            SCORCHED_GUNS_ENCHANTMENTS.forEach(enchantment -> addEnchantmentBookVariants(parameters, output, enchantment));
+        }
+
+        private static void addEnchantmentBookVariants(CreativeModeTab.ItemDisplayParameters parameters, CreativeModeTab.Output output, DeferredHolder<Enchantment, Enchantment> enchantment) {
             parameters.holders().lookup(Registries.ENCHANTMENT)
                     .flatMap(enchantments -> enchantments.get(enchantment.getKey()))
-                    .ifPresent(holder -> output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(holder, holder.value().getMaxLevel()))));
+                    .ifPresent(holder -> addEnchantmentBookVariants(output, holder));
+        }
+
+        private static void addEnchantmentBookVariants(CreativeModeTab.Output output, Holder<Enchantment> enchantment) {
+            int maxLevel = enchantment.value().getMaxLevel();
+            output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, maxLevel)), CreativeModeTab.TabVisibility.PARENT_TAB_ONLY);
+
+            for (int level = enchantment.value().getMinLevel(); level <= maxLevel; level++) {
+                output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, level)), CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
+            }
         }
     }
 

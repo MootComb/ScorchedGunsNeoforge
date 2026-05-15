@@ -19,11 +19,15 @@ public class GunMobValues {
     }
 
     public static double getGunnerSpawnChance(Difficulty difficulty) {
-        return scaleToDifficulty ? gunnerSpawnChance * getDifficultyMultiplier(difficulty) : gunnerSpawnChance;
+        return clampChance(scaleToDifficulty ? gunnerSpawnChance * getDifficultyMultiplier(difficulty) : gunnerSpawnChance);
+    }
+
+    public static double getThematicGunnerSpawnChance(double baseChance, Difficulty difficulty) {
+        return clampChance(baseChance * getGunnerSpawnChance(difficulty));
     }
 
     public static double getEliteChance(Difficulty difficulty) {
-        return scaleToDifficulty ? eliteChance * getDifficultyMultiplier(difficulty) : eliteChance;
+        return clampChance(scaleToDifficulty ? eliteChance * getDifficultyMultiplier(difficulty) : eliteChance);
     }
 
     private static double getDifficultyMultiplier(Difficulty difficulty) {
@@ -33,5 +37,9 @@ public class GunMobValues {
             case NORMAL -> 1.0;
             case HARD -> 1.5;
         };
+    }
+
+    private static double clampChance(double chance) {
+        return Math.max(0.0D, Math.min(1.0D, chance));
     }
 }

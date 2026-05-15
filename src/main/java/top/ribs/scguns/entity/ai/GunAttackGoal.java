@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import top.ribs.scguns.Config;
@@ -20,6 +21,12 @@ import top.ribs.scguns.util.GunModifierHelper;
 import java.util.EnumSet;
 
 public class GunAttackGoal<T extends PathfinderMob> extends Goal {
+    private static final double DEFAULT_MAX_ATTACK_RANGE = 32.0D;
+    private static final double MIN_MAX_ATTACK_RANGE = 8.0D;
+    private static final double MAX_MAX_ATTACK_RANGE = 48.0D;
+    private static final double CLOSE_STOP_RANGE_SQR = 36.0D;
+    private static final double PREFERRED_STOP_RANGE_SQR = 196.0D;
+
     private final T shooter;
     private final int aiDifficulty;
     private int seeTime;
@@ -76,18 +83,27 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         }
 
         double distance = shooter.distanceToSqr(target);
+        double maxAttackRange = getMaxAttackRange();
+        double maxAttackRangeSqr = maxAttackRange * maxAttackRange;
         boolean canSee = shooter.getSensing().hasLineOfSight(target);
         seeTime = canSee ? seeTime + 1 : 0;
 
-        if (distance < 36.0D) {
+        if (distance < CLOSE_STOP_RANGE_SQR) {
             shooter.getNavigation().stop();
-        } else if (distance > 196.0D) {
+        } else if (distance > PREFERRED_STOP_RANGE_SQR) {
             shooter.getNavigation().moveTo(target, weapon != null ? weapon.getMoveSpeedAmp() : 0.4D);
         } else {
             shooter.getNavigation().stop();
         }
 
         shooter.getLookControl().setLookAt(target, 30.0F, 30.0F);
+
+        if (distance > maxAttackRangeSqr) {
+            seeTime = 0;
+            remainingBursts = 0;
+            burstTimer = 0;
+            return;
+        }
 
         if (!canSee || seeTime < 5) {
             return;
@@ -129,7 +145,7 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
     }
 
     private void shoot(LivingEntity target) {
-        if (weapon == null || !weapon.isLoaded()) {
+        if (weapon == null || !weapon.isLoaded() || !isTargetWithinAttackRange(target)) {
             return;
         }
 
@@ -148,6 +164,19 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
 
     private int getWeaponCooldown() {
         return weapon != null ? Math.max(1, weapon.getAttackCooldown()) : 20;
+    }
+
+    private boolean isTargetWithinAttackRange(LivingEntity target) {
+        double maxAttackRange = getMaxAttackRange();
+        return shooter.distanceToSqr(target) <= maxAttackRange * maxAttackRange;
+    }
+
+    private double getMaxAttackRange() {
+        double followRange = shooter.getAttributeValue(Attributes.FOLLOW_RANGE);
+        if (!Double.isFinite(followRange) || followRange <= 0.0D) {
+            return DEFAULT_MAX_ATTACK_RANGE;
+        }
+        return Math.max(MIN_MAX_ATTACK_RANGE, Math.min(MAX_MAX_ATTACK_RANGE, followRange));
     }
 
     private void playShootSound(SoundEvent sound) {

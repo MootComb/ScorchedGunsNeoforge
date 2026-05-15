@@ -11,6 +11,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -18,10 +21,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.joml.Matrix4f;
@@ -31,14 +33,22 @@ import top.ribs.scguns.Reference;
 import top.ribs.scguns.client.handler.GunRenderingHandler;
 import top.ribs.scguns.client.screen.widget.MiniButton;
 import top.ribs.scguns.client.util.RenderUtil;
+import top.ribs.scguns.common.FireMode;
+import top.ribs.scguns.common.GripType;
+import top.ribs.scguns.common.Gun;
+import top.ribs.scguns.common.ReloadType;
 import top.ribs.scguns.common.container.AttachmentContainer;
 import top.ribs.scguns.common.container.slot.AttachmentSlot;
 import top.ribs.scguns.item.GunItem;
 import top.ribs.scguns.item.attachment.IAttachment;
+import top.ribs.scguns.util.GunCompositeStatHelper;
+import top.ribs.scguns.util.GunEnchantmentHelper;
+import top.ribs.scguns.util.GunModifierHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Author: MrCrayfish
@@ -64,7 +74,8 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
         super(screenContainer, playerInventory, titleIn);
         this.playerInventory = playerInventory;
         this.weaponInventory = screenContainer.getWeaponInventory();
-        this.imageHeight = 184;
+        this.imageWidth = 188;
+        this.imageHeight = 192;
     }
 
     @Override
@@ -72,34 +83,12 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
     {
         super.init();
 
-        List<MiniButton> buttons = this.gatherButtons();
-        for(int i = 0; i < buttons.size(); i++)
-        {
-            MiniButton button = buttons.get(i);
-            switch(Config.CLIENT.buttonAlignment.get())
-            {
-                case LEFT -> {
-                    int titleWidth = this.minecraft.font.width(this.title);
-                    button.setX(this.leftPos + titleWidth + 8 + 3 + i * 13);
-                }
-                case RIGHT -> {
-                    button.setX(this.leftPos + this.imageWidth - 7 - 10 - (buttons.size() - 1 - i) * 13);
-                }
-            }
-            button.setY(this.topPos + 5);
-            this.addRenderableWidget(button);
-        }
+        this.gatherButtons().forEach(this::addRenderableWidget);
     }
 
     private List<MiniButton> gatherButtons()
     {
         List<MiniButton> buttons = new ArrayList<>();
-        if(!Config.CLIENT.hideConfigButton.get())
-        {
-            MiniButton configButton = new MiniButton(0, 0, 192, 0, GUI_TEXTURES, onPress -> this.openConfigScreen());
-            configButton.setTooltip(Tooltip.create(CONFIG_TOOLTIP));
-            buttons.add(configButton);
-        }
         return buttons;
     }
 
@@ -123,13 +112,15 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
         super.render(pGuiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(pGuiGraphics, mouseX, mouseY); //Render tool tips
 
-        int startX = (this.width - this.imageWidth) / 2;
-        int startY = (this.height - this.imageHeight) / 2;
+        int startX = (this.width - this.imageWidth) / 2 - 6;
+        int startY = (this.height - this.imageHeight) / 2 + 19;
+        int numSlots = IAttachment.Type.values().length;
+        int centerX = 88 - (numSlots * 18) / 2 + 18 - 5;
 
-        for(int i = 0; i < IAttachment.Type.values().length; i++)
+        for(int i = 0; i < numSlots; i++)
         {
-            int x = i < 4 ? 8 : 152; // Adjust x coordinate for right side slots
-            int y = 17 + (i % 4) * 18; // Adjust y coordinate for slots
+            int x = centerX + i * 18;
+            int y = 89;
             if(RenderUtil.isMouseWithin(mouseX, mouseY, startX + x, startY + y, 18, 18))
             {
                 IAttachment.Type type = IAttachment.Type.values()[i];
@@ -148,14 +139,12 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
     @Override
     protected void renderLabels(GuiGraphics pGuiGraphics, int mouseX, int mouseY) {
         Minecraft minecraft = Minecraft.getInstance();
-        pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        pGuiGraphics.drawString(this.font, this.playerInventory.getDisplayName(), this.inventoryLabelX, this.inventoryLabelY + 19, 4210752, false);
 
-        int left = (this.width - this.imageWidth) / 2;
-        int top = (this.height - this.imageHeight) / 2;
-        pGuiGraphics.enableScissor(left + 26, top + 17, left + 26 + 124, top + 17 + 70);
+        int left = (this.width - this.imageWidth) / 2 - 6;
+        int top = (this.height - this.imageHeight) / 2 + 19;
+        pGuiGraphics.enableScissor(left - 6, top - 65, left + 210, top + 88);
         pGuiGraphics.pose().pushPose();
-        pGuiGraphics.pose().translate(96, 50, 150);
+        pGuiGraphics.pose().translate(96, 48, 150);
         pGuiGraphics.pose().translate(this.windowX + (this.mouseGrabbed && this.mouseGrabbedButton == 0 ? mouseX - this.mouseClickedX : 0), 0, 0);
         pGuiGraphics.pose().translate(0, this.windowY + (this.mouseGrabbed && this.mouseGrabbedButton == 0 ? mouseY - this.mouseClickedY : 0), 0);
         pGuiGraphics.pose().mulPose(Axis.XP.rotationDegrees(-30F));
@@ -180,57 +169,131 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
         RenderSystem.applyModelViewMatrix();
         pGuiGraphics.disableScissor();
 
-        if (this.showHelp) {
-            pGuiGraphics.pose().pushPose();
-            pGuiGraphics.pose().scale(0.5F, 0.5F, 0.5F);
-            pGuiGraphics.drawString(minecraft.font, I18n.get("container.scguns.attachments.window_help"), 56, 38, 0xFFFFFF);
-            pGuiGraphics.pose().popPose();
-        }
+        pGuiGraphics.flush();
+        this.renderGunStats(pGuiGraphics);
     }
 
     @Override
     protected void renderBg(GuiGraphics pGuiGraphics, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, GUI_TEXTURES);
-        int left = (this.width - this.imageWidth) / 2;
-        int top = (this.height - this.imageHeight) / 2;
+        int left = (this.width - this.imageWidth) / 2 - 6;
+        int top = (this.height - this.imageHeight) / 2 + 19;
         pGuiGraphics.blit(GUI_TEXTURES, left, top, 0, 0, this.imageWidth, this.imageHeight);
 
         /* Draws the icons for each attachment slot. If not applicable
          * for the weapon, it will draw a cross instead. */
-        for (int i = 0; i < IAttachment.Type.values().length; i++) {
-            int x = i < 4 ? 8 : 152; // Adjust x coordinate for right side slots
-            int y = 17 + (i % 4) * 18; // Adjust y coordinate for slots
-            if (!this.canPlaceAttachmentInSlot(this.menu.getCarried(), this.menu.getSlot(i))) {
-                pGuiGraphics.blit(GUI_TEXTURES, left + x, top + y, 176, 0, 16, 16);
+        int numSlots = IAttachment.Type.values().length;
+        int centerX = 88 - (numSlots * 18) / 2 + 18 - 5;
+        for (int i = 0; i < numSlots; i++) {
+            int x = centerX + i * 18;
+            int y = 89;
+            if (!this.menu.getSlot(i).isActive()) {
+                pGuiGraphics.blit(GUI_TEXTURES, left + x, top + y, 192, 0, 16, 16);
             } else if (this.weaponInventory.getItem(i).isEmpty()) {
-                pGuiGraphics.blit(GUI_TEXTURES, left + x, top + y, 176, 16 + (i % 5) * 16, 16, 16);
+                pGuiGraphics.blit(GUI_TEXTURES, left + x, top + y, 192, 16 + i * 16, 16, 16);
             }
         }
     }
 
-    private boolean canPlaceAttachmentInSlot(ItemStack stack, Slot slot)
-    {
-        if(!slot.isActive())
-            return false;
+    private void renderGunStats(GuiGraphics graphics) {
+        if (this.minecraft == null || this.minecraft.player == null) {
+            return;
+        }
 
-        if(!slot.equals(this.getSlotUnderMouse()))
-            return true;
+        ItemStack gunStack = this.minecraft.player.getMainHandItem();
+        if (!(gunStack.getItem() instanceof GunItem gunItem)) {
+            return;
+        }
 
-        if(!slot.getItem().isEmpty())
-            return true;
+        Gun modifiedGun = gunItem.getModifiedGun(gunStack);
+        Gun.Projectile projectile = Gun.getDisplayProjectile(gunStack, modifiedGun);
+        Gun.General general = modifiedGun.getGeneral();
+        Gun.Reloads reloads = modifiedGun.getReloads();
 
-        if(!(slot instanceof AttachmentSlot s))
-            return true;
+        int startX = -60;
+        int startY = 0;
+        int lineHeight = 7;
+        float scale = 0.6F;
 
+        graphics.pose().pushPose();
+        graphics.pose().scale(scale, scale, scale);
 
-        if(!(stack.getItem() instanceof IAttachment<?> a))
-            return true;
+        int scaledX = (int) (startX / scale);
+        int currentY = (int) (startY / scale);
 
-        if(!s.getType().equals(a.getType()))
-            return true;
+        String gunName = Component.translatable(gunStack.getDescriptionId()).getString();
+        graphics.drawString(this.font, gunName, scaledX, currentY, 0xFFFFFF, false);
+        graphics.fill(scaledX, currentY + 8, scaledX + this.font.width(gunName), currentY + 9, 0xFFFFFFFF);
+        currentY += (int) ((lineHeight + 3) / scale);
 
-        return s.mayPlace(stack);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.damage").getString(), formatOne(getDisplayDamage(gunStack, projectile)));
+        currentY += (int) (lineHeight / scale);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.critical_chance").getString(), formatOne(GunModifierHelper.getCriticalChance(gunStack) * 100.0F) + "%");
+        currentY += (int) (lineHeight / scale);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.critical_multiplier").getString(), formatOne(Config.COMMON.gameplay.criticalDamageMultiplier.get().floatValue()) + "x");
+        currentY += (int) (lineHeight / scale);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.armor_penetration").getString(), formatOne(GunEnchantmentHelper.getPuncturingArmorBypass(gunStack)));
+        currentY += (int) (lineHeight / scale);
+
+        FireMode fireMode = general.getFireMode();
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.fire_mode").getString(), Component.translatable("fire_mode." + fireMode.id()).getString());
+        currentY += (int) (lineHeight / scale);
+
+        int rate = Math.max(GunCompositeStatHelper.getCompositeRate(gunStack, modifiedGun), 1);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.fire_rate").getString(), String.format(Locale.ROOT, "%.0f RPM", (20.0F / rate) * 60.0F));
+        currentY += (int) (lineHeight / scale);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.max_ammo").getString(), Integer.toString(GunModifierHelper.getModifiedAmmoCapacity(gunStack, modifiedGun)));
+        currentY += (int) (lineHeight / scale);
+
+        ReloadType reloadType = reloads.getReloadType();
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.reload_type").getString(), Component.translatable("reload_type." + reloadType.id().toString().replace(":", ".")).getString());
+        currentY += (int) (lineHeight / scale);
+
+        GripType gripType = modifiedGun.determineGripType(gunStack);
+        String gripKey = gripType == GripType.ONE_HANDED ? "info.scguns.grip_one_handed" : "info.scguns.grip_two_handed";
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.grip_type").getString(), Component.translatable(gripKey).getString());
+        currentY += (int) (lineHeight / scale);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.spread").getString(), formatTwo(GunModifierHelper.getModifiedSpread(gunStack, general.getSpread())));
+        currentY += (int) (lineHeight / scale);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.recoil_angle").getString(), formatOne(general.getRecoilAngle()));
+        currentY += (int) (lineHeight / scale);
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.falloff_range").getString(), Component.translatable("info.scguns.falloff_none").getString());
+
+        graphics.pose().popPose();
+    }
+
+    private static void drawStatLine(GuiGraphics graphics, int x, int y, String label, String value) {
+        graphics.drawString(Minecraft.getInstance().font, label + ": " + value, x, y, 0xFFFFFF, false);
+    }
+
+    private static float getDisplayDamage(ItemStack gunStack, Gun.Projectile projectile) {
+        float damage = projectile.getDamage();
+        damage = GunModifierHelper.getModifiedProjectileDamage(gunStack, damage);
+        damage = GunEnchantmentHelper.getAcceleratorDamage(gunStack, damage);
+        damage = GunEnchantmentHelper.getHeavyShotDamage(gunStack, damage);
+        damage = GunEnchantmentHelper.getPuncturingDamageReductionForTooltip(gunStack, damage);
+        damage *= Config.COMMON.gameplay.globalDamageMultiplier.get().floatValue();
+
+        CompoundTag tag = getStackTag(gunStack);
+        if (tag != null && tag.contains("AdditionalDamage", Tag.TAG_ANY_NUMERIC)) {
+            damage += tag.getFloat("AdditionalDamage");
+        }
+        damage += GunModifierHelper.getAdditionalDamage(gunStack, false);
+        return damage;
+    }
+
+    private static CompoundTag getStackTag(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data != null && !data.isEmpty() ? data.copyTag() : null;
+    }
+
+    private static String formatOne(float value) {
+        return String.format(Locale.ROOT, "%.1f", value);
+    }
+
+    private static String formatTwo(float value) {
+        return String.format(Locale.ROOT, "%.2f", value);
     }
 
     private boolean isCompatible(ItemStack stack, AttachmentSlot slot)
@@ -245,18 +308,21 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
         if(!attachment.getType().equals(slot.getType()))
             return true;
 
-        if(!attachment.canAttachTo(stack))
+        if(this.minecraft == null || this.minecraft.player == null)
             return false;
 
-        return slot.mayPlace(stack);
+        if(!attachment.canAttachTo(this.minecraft.player.getMainHandItem()))
+            return false;
+
+        return slot.isActive();
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY)
     {
-        int startX = (this.width - this.imageWidth) / 2;
-        int startY = (this.height - this.imageHeight) / 2;
-        if(RenderUtil.isMouseWithin((int) mouseX, (int) mouseY, startX + 26, startY + 17, 124, 70))
+        int startX = (this.width - this.imageWidth) / 2 - 6;
+        int startY = (this.height - this.imageHeight) / 2 + 19;
+        if(RenderUtil.isMouseWithin((int) mouseX, (int) mouseY, startX - 6, startY - 65, 216, 153))
         {
             if(scrollY < 0 && this.windowZoom > 0)
             {
@@ -275,10 +341,10 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        int startX = (this.width - this.imageWidth) / 2;
-        int startY = (this.height - this.imageHeight) / 2;
+        int startX = (this.width - this.imageWidth) / 2 - 6;
+        int startY = (this.height - this.imageHeight) / 2 + 19;
 
-        if(RenderUtil.isMouseWithin((int) mouseX, (int) mouseY, startX + 26, startY + 17, 124, 70))
+        if(RenderUtil.isMouseWithin((int) mouseX, (int) mouseY, startX - 6, startY - 65, 216, 153))
         {
             if(!this.mouseGrabbed && (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT))
             {

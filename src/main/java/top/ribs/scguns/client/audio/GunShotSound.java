@@ -21,6 +21,7 @@ public class GunShotSound extends AbstractSoundInstance
         this.z = z;
         this.pitch = pitch;
         this.attenuation = Attenuation.NONE;
+        this.volume = volume;
 
         LocalPlayer player = Minecraft.getInstance().player;
         if(player != null)

@@ -34,16 +34,13 @@ public class NiterGlassBlock extends TransparentBlock {
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         if (!world.isClientSide) {
-            boolean isPowered = world.hasNeighborSignal(pos);
-            if (state.getValue(TRANSPARENT) != isPowered) {
-                updateStateAndNeighbors(world, pos, state, isPowered);
-            }
+            updateStateAndNeighbors(world, pos);
         }
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        boolean isPowered = context.getLevel().hasNeighborSignal(context.getClickedPos());
+        boolean isPowered = hasRedstoneSignal(context.getLevel(), context.getClickedPos());
         return this.defaultBlockState().setValue(TRANSPARENT, isPowered);
     }
 
@@ -65,19 +62,23 @@ public class NiterGlassBlock extends TransparentBlock {
         return state.getValue(TRANSPARENT) ? 0 : world.getMaxLightLevel();
     }
 
-    private void updateStateAndNeighbors(Level world, BlockPos pos, BlockState initialState, boolean isPowered) {
+    private static boolean hasRedstoneSignal(Level world, BlockPos pos) {
+        return world.hasNeighborSignal(pos) || world.getDirectSignalTo(pos) > 0;
+    }
+
+    private void updateStateAndNeighbors(Level world, BlockPos pos) {
         Queue<BlockPos> queue = new ArrayDeque<>();
         Set<BlockPos> visited = new HashSet<>();
         queue.add(pos);
         visited.add(pos);
+        boolean isPowered = false;
 
         while (!queue.isEmpty()) {
             BlockPos currentPos = queue.poll();
             BlockState currentState = world.getBlockState(currentPos);
 
-            if (currentState.getValue(TRANSPARENT) != isPowered) {
-                BlockState newState = currentState.setValue(TRANSPARENT, isPowered);
-                world.setBlock(currentPos, newState, 2);
+            if (hasRedstoneSignal(world, currentPos)) {
+                isPowered = true;
             }
 
             for (Direction direction : Direction.values()) {
@@ -86,6 +87,13 @@ public class NiterGlassBlock extends TransparentBlock {
                     queue.add(neighborPos);
                     visited.add(neighborPos);
                 }
+            }
+        }
+
+        for (BlockPos currentPos : visited) {
+            BlockState currentState = world.getBlockState(currentPos);
+            if (currentState.getBlock() instanceof NiterGlassBlock && currentState.getValue(TRANSPARENT) != isPowered) {
+                world.setBlock(currentPos, currentState.setValue(TRANSPARENT, isPowered), Block.UPDATE_ALL);
             }
         }
     }

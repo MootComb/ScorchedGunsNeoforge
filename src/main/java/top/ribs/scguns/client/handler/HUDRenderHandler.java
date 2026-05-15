@@ -378,7 +378,7 @@ public class HUDRenderHandler {
         int reserveAmmoPosY = ammoPosY + 10;
         guiGraphics.drawString(mc.font, reserveAmmoValue, ammoPosX, reserveAmmoPosY, (reserveAmmo <= 0 && !Gun.hasUnlimitedReloads(heldItem) ? 0x555555 : 0xAAAAAA));
 
-        ItemStack ammoItemStack = new ItemStack(Objects.requireNonNull(Gun.getLoadedProjectile(heldItem, cachedGun).getItem()));
+        ItemStack ammoItemStack = new ItemStack(Objects.requireNonNull(Gun.getDisplayProjectile(heldItem, cachedGun).getItem()));
         renderAmmoTypeTexture(ammoItemStack, ammoPosX - 20, ammoPosY, guiGraphics, mc);
 
         RenderSystem.disableBlend();
@@ -453,7 +453,8 @@ public class HUDRenderHandler {
     }
 
     private static void fetchReserveAmmo(Player player, Gun gun) {
-        reserveAmmo = Gun.getReserveAmmoCount(player, gun);
+        ItemStack stack = player.getMainHandItem();
+        reserveAmmo = Gun.getReserveAmmoCount(player, stack, gun);
         ammoAutoUpdateTimer = 0;
     }
 

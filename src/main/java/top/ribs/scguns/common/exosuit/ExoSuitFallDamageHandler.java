@@ -24,7 +24,7 @@ public class ExoSuitFallDamageHandler {
             return;
         }
 
-        if (ExoSuitFlightHandler.isJetpackFlightActive(player)) {
+        if (ExoSuitFlightHandler.isJetpackFlightActive(player) || ExoSuitFlightHandler.wasRecentlyJetpackFlying(player)) {
             player.resetFallDistance();
             event.setDistance(0.0F);
             event.setDamageMultiplier(0.0F);

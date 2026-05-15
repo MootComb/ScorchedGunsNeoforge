@@ -28,7 +28,8 @@
     "playerKnockBack": true,
     "playerKnockBackStrength": 0.5,
     "meleeReach": 3.5,
-    "speedModifier": 0.85
+    "speedModifier": 0.85,
+    "allowAmmoChange": true
   },
   "modules": {
     "attachments": {
@@ -43,6 +44,18 @@
     "size": 100.0,
     "speed": 3.0,
     "trailLengthMultiplier": 0.5
+  },
+  "projectile_1": {
+    "visible": true,
+    "advantage": "scguns:none",
+    "damage": 28.0,
+    "ejectsCasing": false,
+    "gravity": true,
+    "item": "scguns:rocket",
+    "life": 55,
+    "size": 0.05,
+    "speed": 5.0,
+    "trailLengthMultiplier": 2.0
   },
   "reloads": {
     "emptyMagTimer": 10,

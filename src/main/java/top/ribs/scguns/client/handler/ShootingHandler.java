@@ -290,7 +290,7 @@ public class ShootingHandler
                         if (gun.getReloads().getReloadType() == ReloadType.SINGLE_ITEM) {
                             hasAmmoAvailable = !Gun.findAmmo(player, gun.getReloads().getReloadItem()).stack().isEmpty();
                         } else {
-                            hasAmmoAvailable = !Gun.findAmmo(player, gun).stack().isEmpty();
+                            hasAmmoAvailable = !Gun.findReloadAmmo(player, heldItem, gun).stack().isEmpty();
                         }
                         boolean isReloading = ModSyncedDataKeys.RELOADING.getValue(player);
                         int currentAmmo = Gun.getAmmoCount(heldItem);

@@ -2,6 +2,54 @@
 
 All notable public changes to Scorched Guns are recorded in this file.
 
+## Unreleased
+
+### Added
+
+### Fixed
+
+## 1.3.2 - 2026-05-15
+
+### Added
+
+- Restored the configurable ammo-type swap keybind for multi-ammo weapons. Blooper, Hammer GL, Truant, Triquetra, Thunderhead, Hullbreaker and Bomb Lance can now cycle their supported ammo types through the controls menu keybind.
+
+### Fixed
+
+- Fixed gun/custom-gun JSON validation compatibility with newer Java versions by preventing the reflection validator from recursing into internal JDK classes. Thanks to `unilock` for the pull request.
+- Fixed ExoSuit jetpack landing protection so accumulated fall distance is still cleared when the player touches down on the same tick that vanilla/server flight state stops being active.
+- Fixed ExoSuit jetpack flight cleanup so Scorched Guns no longer disables survival flight granted by other mods when the player is not using the ExoSuit jetpack.
+- Fixed ExoSuit jetpack battery persistence so active flight is reported to the server and power core charge no longer restores to full after re-entering a world.
+- Fixed ExoSuit jetpack landing cleanup so normal sprinting is restored after touching down.
+- Fixed Niter Glass redstone updates so connected panes switch to their transparent state when powered and reliably redraw on clients.
+- Restored upstream Geo armor models, renderers, animations and textures for Redcoat and Scrap armor so both sets render with their intended equipped models instead of falling back to broken vanilla armor layers.
+- Made the common gunner mob spawn chance meaningfully scale thematic gunner mobs from `gunner_mobs.json`, so lowering `gunnerSpawnChance` reduces both progression-based and themed vanilla mob gun spawns.
+- Fixed Scorched Guns config validation and reload handling so server cooldown settings no longer auto-correct from an invalid default range, and gunner mob settings refresh when the common config is reloaded.
+- Fixed ammo-type swapping so weapons skip unavailable ammo types instead of cycling through every configured projectile, and restored automatic reload start after switching to a new ammo type without reintroducing the broken infinite reload animation.
+- Fixed ammo-type swap state isolation so switching ammo on one weapon no longer reuses stale reload tracking or selected-ammo data on other multi-ammo weapons.
+- Fixed animated gun reload visuals leaking to other weapons in the player's inventory while only one weapon is actually being reloaded.
+- Fixed AmmoBox reload consumption so reloading from inventory, Curios-equipped, or ExoSuit-stored ammo boxes no longer deletes stored ammo or leaves the weapon stuck in a reload animation.
+- Limited gunner mob firing range to their follow-range attribute, preventing aggroed gunner mobs from shooting across unlimited line-of-sight distances.
+- Fixed animated item textures for Cog Heart, Sculk Tome, Ocean Flare and Sculk Flare by restoring their upstream animation metadata.
+
+## 1.3.1 - 2026-05-14
+
+### Fixed
+
+- Fixed a rare client JVM crash when removing and reinserting weapon magazine attachments by moving attachment-slot compatibility checks out of the per-frame render overlay path.
+- Fixed crashes when inserting enchanted attachments into weapons by saving and reading attached ItemStacks with the active world/player registry access instead of the built-in registry snapshot.
+- Fixed old Silk Touch loot predicates on Scorched Guns ores and related mineable blocks so normal mining drops the intended raw/resources again while Silk Touch still drops the block.
+- Fixed Scorched Guns enchantment availability so custom enchanted books appear in the mod creative tab and can be selected by vanilla loot/trade/equipment enchantment pools without crashing the creative inventory.
+- Fixed Scorched Guns enchanted book search visibility by adding all custom enchantment book levels to the vanilla Ingredients/search creative output with duplicate protection.
+- Fixed Scorched Guns enchanted book creative-tab output so the books are added through the current creative-tab holder lookup and all levels are searchable.
+- Fixed Scorched Guns enchantments not appearing in creative or the enchanting table by restoring their Minecraft 1.21.1 data-driven enchantment definitions and supported-item tags.
+- Fixed mojibake in the English localization where symbols such as bullets, section formatting, check marks, warning icons, hearts and energy icons displayed as corrupted text.
+
+### Changed
+
+- Updated the attachment workbench screen to match the newer upstream layout with a larger weapon preview, horizontal attachment slots and a weapon stat readout.
+- Raised the public version to `1.3.1`.
+
 ## 1.3.0 - 2026-05-13
 
 ### Added
@@ -19,6 +67,7 @@ All notable public changes to Scorched Guns are recorded in this file.
 - Restored visual/resource parity for throwable grenades and bombs, Scorched Block, temporary fake soul fire for Hellfire effects and optional Create recipe parity.
 - Updated the first targeted weapon asset parity batch for RG Jigsaw, Birdfeeder and M3 Marksman, including upstream special models and animated gun resources.
 - Improved JEI recipe integration for Scorched Guns machine and GunBench recipes by preserving recipe IDs through `RecipeHolder`, enabling advanced tooltip IDs and recipe bookmarking. Thanks to `gisellevonbingen` for the pull request.
+- Added optional compatibility with Sound Physics Remastered so remote Scorched Guns shots are handled as world-positioned sounds while local shots remain centered for stable first-person audio.
 - Updated localization key coverage across English, Russian, Korean, Ukrainian and Vietnamese; Russian wording was refreshed with help from `jpegemerald`.
 
 ### Fixed
@@ -31,7 +80,6 @@ All notable public changes to Scorched Guns are recorded in this file.
 - Fixed melee miss feedback so accepted melee swings still play the local visual animation even when no target is hit.
 - Fixed a dedicated-server crash when Scorched Guns projectiles collided with lava before client particle config values were available.
 - Fixed a dedicated-server crash where Cog Minion explosive self-destructs could break modded storage blocks and crash external storage controllers.
-- Fixed Scorched Guns enchantment availability so custom enchanted books appear in the mod creative tab and can be selected by vanilla loot/trade/equipment enchantment pools without crashing the creative inventory.
 - Fixed missing Mechanical Press and Powered Mechanical Press recipes for Copper, Iron, Wrecker, Gold, Diamond Steel, Treated Brass, Ocean and Sculk raid flares.
 - Fixed Praetor natural spawning parity with upstream 0.5.5 by restoring its low-weight general-biome spawn rule and spawn placement registration.
 

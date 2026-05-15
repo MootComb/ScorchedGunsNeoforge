@@ -22,6 +22,7 @@ import top.ribs.scguns.item.attachment.IAttachment;
 public class AttachmentContainer extends AbstractContainerMenu
 {
     private final ItemStack weapon;
+    private final Player player;
     private final Container playerInventory;
     private final Container weaponInventory = new SimpleContainer(IAttachment.Type.values().length)
     {
@@ -53,20 +54,15 @@ public class AttachmentContainer extends AbstractContainerMenu
     {
         super(ModContainers.ATTACHMENTS.get(), windowId);
         this.weapon = playerInventory.getSelected();
+        this.player = playerInventory.player;
         this.playerInventory = playerInventory;
 
         int numSlots = IAttachment.Type.values().length;
 
-        // Add 4 slots on the left side
-        for(int i = 0; i < 4; i++)
+        int attachmentX = 88 - (numSlots * 18) / 2 + 18 - 5 - 6;
+        for(int i = 0; i < numSlots; i++)
         {
-            this.addSlot(new AttachmentSlot(this, this.weaponInventory, this.weapon, IAttachment.Type.values()[i], playerInventory.player, i, 8, 17 + i * 18));
-        }
-
-        // Add 4 slots on the right side
-        for(int i = 4; i < numSlots; i++)
-        {
-            this.addSlot(new AttachmentSlot(this, this.weaponInventory, this.weapon, IAttachment.Type.values()[i], playerInventory.player, i, 152, 17 + (i - 4) * 18)); // 176 is the x coordinate for the right side slots
+            this.addSlot(new AttachmentSlot(this, this.weaponInventory, this.weapon, IAttachment.Type.values()[i], playerInventory.player, i, attachmentX + i * 18, 108));
         }
 
         // Inventory slots
@@ -74,7 +70,7 @@ public class AttachmentContainer extends AbstractContainerMenu
         {
             for(int j = 0; j < 9; j++)
             {
-                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 102 + i * 18));
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 14 + j * 18, 125 + i * 18));
             }
         }
 
@@ -83,7 +79,7 @@ public class AttachmentContainer extends AbstractContainerMenu
         {
             if(i == playerInventory.selected)
             {
-                this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 160)
+                this.addSlot(new Slot(playerInventory, i, 14 + i * 18, 183)
                 {
                     @Override
                     public boolean mayPickup(Player playerIn)
@@ -94,7 +90,7 @@ public class AttachmentContainer extends AbstractContainerMenu
             }
             else
             {
-                this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 160));
+                this.addSlot(new Slot(playerInventory, i, 14 + i * 18, 183));
             }
         }
     }
@@ -120,11 +116,11 @@ public class AttachmentContainer extends AbstractContainerMenu
             ItemStack attachment = this.getSlot(i).getItem();
             if(attachment.getItem() instanceof SwordItem)
             {
-                attachments.put(("Barrel"), attachment.save(Gun.builtInRegistryProvider(), new CompoundTag()));
+                attachments.put(("Barrel"), attachment.save(this.player.registryAccess(), new CompoundTag()));
             }
             if(attachment.getItem() instanceof IAttachment)
             {
-                attachments.put(((IAttachment) attachment.getItem()).getType().getTagKey(), attachment.save(Gun.builtInRegistryProvider(), new CompoundTag()));
+                attachments.put(((IAttachment) attachment.getItem()).getType().getTagKey(), attachment.save(this.player.registryAccess(), new CompoundTag()));
             }
         }
 

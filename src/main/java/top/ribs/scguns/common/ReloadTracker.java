@@ -1,15 +1,11 @@
 package top.ribs.scguns.common;
 
 import com.mrcrayfish.framework.api.network.LevelLocation;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -40,11 +36,9 @@ import top.ribs.scguns.util.GunEnchantmentHelper;
 import top.ribs.scguns.util.GunModifierHelper;
 import top.theillusivec4.curios.api.CuriosApi;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
-import java.util.stream.Collectors;
 
 import static top.ribs.scguns.common.network.ServerPlayHandler.hasCreativeAmmoBoxInCurios;
 
@@ -125,7 +119,7 @@ public class ReloadTracker {
         if (tag != null && tag.getInt("AmmoCount") > 0) {
             return Gun.findAmmo(player, Gun.getLoadedProjectileItem(this.stack, this.gun));
         }
-        return Gun.findAmmo(player, this.gun);
+        return Gun.findReloadAmmo(player, this.stack, this.gun);
     }
 
     private ItemStack[] findProjectileAmmoStacks(Player player) {
@@ -158,135 +152,65 @@ public class ReloadTracker {
     }
 
     private void shrinkFromAmmoPool(ItemStack[] ammoStack, Player player, int shrinkAmount, Item ammoItem) {
-        final int[] shrinkAmt = {shrinkAmount};
+        int remaining = consumeStoredAmmo(player, ammoItem, shrinkAmount);
 
-        int exoSuitShrinkAmount = Math.min(shrinkAmt[0], ExoSuitAmmoHelper.getAmmoCountInExoSuit(player, ammoItem));
-        if (exoSuitShrinkAmount > 0) {
-            ExoSuitAmmoHelper.shrinkAmmoInExoSuit(player, ammoItem, exoSuitShrinkAmount);
-            shrinkAmt[0] -= exoSuitShrinkAmount;
-
-            if (shrinkAmt[0] == 0) {
-                return;
-            }
-        }
-
-        CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
-            IItemHandlerModifiable curios = handler.getEquippedCurios();
-            for (int i = 0; i < curios.getSlots(); i++) {
-                ItemStack stack = curios.getStackInSlot(i);
-                if (stack.getItem() instanceof AmmoBoxItem) {
-                    List<ItemStack> contents = AmmoBoxItem.getContents(stack).collect(Collectors.toList());
-                    for (ItemStack pouchAmmoStack : contents) {
-                        if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == ammoItem) {
-                            int max = Math.min(shrinkAmt[0], pouchAmmoStack.getCount());
-                            pouchAmmoStack.shrink(max);
-                            shrinkAmt[0] -= max;
-                            if (shrinkAmt[0] == 0) {
-                                updateAmmoPouchContents(stack, contents, player.registryAccess());
-                                return;
-                            }
-                        }
-                    }
-                    updateAmmoPouchContents(stack, contents, player.registryAccess());
-                }
-            }
-        });
-
-        for (ItemStack itemStack : player.getInventory().items) {
-            if (itemStack.getItem() instanceof AmmoBoxItem) {
-                List<ItemStack> contents = AmmoBoxItem.getContents(itemStack).collect(Collectors.toList());
-                for (ItemStack pouchAmmoStack : contents) {
-                    if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == ammoItem) {
-                        int max = Math.min(shrinkAmt[0], pouchAmmoStack.getCount());
-                        pouchAmmoStack.shrink(max);
-                        shrinkAmt[0] -= max;
-                        if (shrinkAmt[0] == 0) {
-                            updateAmmoPouchContents(itemStack, contents, player.registryAccess());
-                            return;
-                        }
-                    }
-                }
-                updateAmmoPouchContents(itemStack, contents, player.registryAccess());
-            }
+        if (remaining == 0) {
+            return;
         }
 
         for (ItemStack itemStack : ammoStack) {
-            if (shrinkAmt[0] > 0 && !itemStack.isEmpty() && itemStack.getItem() == ammoItem) {
-                int max = Math.min(shrinkAmt[0], itemStack.getCount());
+            if (remaining > 0 && !itemStack.isEmpty() && itemStack.getItem() == ammoItem) {
+                int max = Math.min(remaining, itemStack.getCount());
                 itemStack.shrink(max);
-                shrinkAmt[0] -= max;
+                remaining -= max;
             }
         }
     }
 
     private void shrinkFromAmmoPool(ItemStack ammoStack, Player player, int shrinkAmount, Item ammoItem) {
-        final int[] shrinkAmt = {shrinkAmount};
+        int remaining = consumeStoredAmmo(player, ammoItem, shrinkAmount);
 
-        int exoSuitShrinkAmount = Math.min(shrinkAmt[0], ExoSuitAmmoHelper.getAmmoCountInExoSuit(player, ammoItem));
-        if (exoSuitShrinkAmount > 0) {
-            ExoSuitAmmoHelper.shrinkAmmoInExoSuit(player, ammoItem, exoSuitShrinkAmount);
-            shrinkAmt[0] -= exoSuitShrinkAmount;
-
-            if (shrinkAmt[0] == 0) {
-                return;
-            }
+        if (remaining == 0) {
+            return;
         }
-
-        CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
-            IItemHandlerModifiable curios = handler.getEquippedCurios();
-            for (int i = 0; i < curios.getSlots(); i++) {
-                ItemStack stack = curios.getStackInSlot(i);
-                if (stack.getItem() instanceof AmmoBoxItem) {
-                    List<ItemStack> contents = AmmoBoxItem.getContents(stack).collect(Collectors.toList());
-                    for (ItemStack pouchAmmoStack : contents) {
-                        if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == ammoItem) {
-                            int max = Math.min(shrinkAmt[0], pouchAmmoStack.getCount());
-                            pouchAmmoStack.shrink(max);
-                            shrinkAmt[0] -= max;
-                            if (shrinkAmt[0] == 0) {
-                                updateAmmoPouchContents(stack, contents, player.registryAccess());
-                                return;
-                            }
-                        }
-                    }
-                    updateAmmoPouchContents(stack, contents, player.registryAccess());
-                }
-            }
-        });
-        for (ItemStack itemStack : player.getInventory().items) {
-            if (itemStack.getItem() instanceof AmmoBoxItem) {
-                List<ItemStack> contents = AmmoBoxItem.getContents(itemStack).collect(Collectors.toList());
-                for (ItemStack pouchAmmoStack : contents) {
-                    if (!pouchAmmoStack.isEmpty() && pouchAmmoStack.getItem() == ammoItem) {
-                        int max = Math.min(shrinkAmt[0], pouchAmmoStack.getCount());
-                        pouchAmmoStack.shrink(max);
-                        shrinkAmt[0] -= max;
-                        if (shrinkAmt[0] == 0) {
-                            updateAmmoPouchContents(itemStack, contents, player.registryAccess());
-                            return;
-                        }
-                    }
-                }
-                updateAmmoPouchContents(itemStack, contents, player.registryAccess());
-            }
-        }
-        if (shrinkAmt[0] > 0 && !ammoStack.isEmpty() && ammoStack.getItem() == ammoItem) {
-            int max = Math.min(shrinkAmt[0], ammoStack.getCount());
+        if (!ammoStack.isEmpty() && ammoStack.getItem() == ammoItem) {
+            int max = Math.min(remaining, ammoStack.getCount());
             ammoStack.shrink(max);
-            shrinkAmt[0] -= max;
         }
     }
 
-    private void updateAmmoPouchContents(ItemStack ammoPouch, List<ItemStack> contents, HolderLookup.Provider provider) {
-        ListTag listTag = new ListTag();
-        for (ItemStack stack : contents) {
-            CompoundTag itemTag = new CompoundTag();
-            stack.save(provider, itemTag);
-            listTag.add(itemTag);
+    private int consumeStoredAmmo(Player player, Item ammoItem, int amount) {
+        int remaining = amount;
+
+        remaining -= ExoSuitAmmoHelper.shrinkAmmoInExoSuit(player, ammoItem, remaining);
+        if (remaining == 0) {
+            return 0;
         }
-        CompoundTag tag = getOrCreateCustomData(ammoPouch);
-        tag.put(AmmoBoxItem.TAG_ITEMS, listTag);
-        setCustomData(ammoPouch, tag);
+
+        remaining -= shrinkAmmoBoxesInCurios(player, ammoItem, remaining);
+        if (remaining == 0) {
+            return 0;
+        }
+
+        for (ItemStack itemStack : player.getInventory().items) {
+            if (remaining == 0) {
+                break;
+            }
+            remaining -= AmmoBoxItem.shrinkAmmo(itemStack, ammoItem, remaining, player.registryAccess());
+        }
+
+        return remaining;
+    }
+
+    private int shrinkAmmoBoxesInCurios(Player player, Item ammoItem, int amount) {
+        final int[] remaining = {amount};
+        CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
+            IItemHandlerModifiable curios = handler.getEquippedCurios();
+            for (int i = 0; i < curios.getSlots() && remaining[0] > 0; i++) {
+                remaining[0] -= AmmoBoxItem.shrinkAmmo(curios.getStackInSlot(i), ammoItem, remaining[0], player.registryAccess());
+            }
+        });
+        return amount - remaining[0];
     }
 
     public void increaseMagAmmo(Player player) {
@@ -444,13 +368,23 @@ public class ReloadTracker {
                 } else {
                     ItemStack currentWeapon = player.getInventory().getSelected();
                     int currentSlot = player.getInventory().selected;
-                    boolean isActivelyReloading = ModSyncedDataKeys.RELOADING.getValue(player);
 
-                    if (!isActivelyReloading && (tracker.slot != currentSlot ||
+                    if (tracker.slot != currentSlot ||
                             currentWeapon.isEmpty() ||
-                            !currentWeapon.getItem().getClass().equals(tracker.stack.getItem().getClass()))) {
-                        needsNewTracker = true;
+                            currentWeapon.getItem() != tracker.stack.getItem()) {
                         RELOAD_TRACKER_MAP.remove(player);
+                        ModSyncedDataKeys.RELOADING.setValue(player, false);
+                        tag.remove("IsReloading");
+                        tag.remove("scguns:IsReloading");
+                        tag.remove("InCriticalReloadPhase");
+                        tag.remove("scguns:ReloadState");
+                        if (heldItem.getItem() instanceof AnimatedGunItem) {
+                            tag.putString("scguns:ReloadState", "STOPPING");
+                            tag.putBoolean("scguns:IsPlayingReloadStop", true);
+                            PacketHandler.getPlayChannel().sendToPlayer(() -> (ServerPlayer) player, new S2CMessageStopReload());
+                        }
+                        setCustomData(heldItem, tag);
+                        return;
                     }
                 }
 

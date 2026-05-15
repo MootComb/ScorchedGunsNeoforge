@@ -238,7 +238,7 @@ public class SoundHandler
         @Override
         public boolean isRelative()
         {
-            return false;
+            return this.parent.isRelative();
         }
 
         @Override

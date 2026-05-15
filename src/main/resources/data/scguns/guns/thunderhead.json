@@ -28,23 +28,40 @@
     "playerKnockBack": true,
     "playerKnockBackStrength": 0.35,
     "meleeReach": 3.5,
-    "speedModifier": 0.8
+    "speedModifier": 0.8,
+    "allowAmmoChange": true
   },
   "modules": {
     "attachments": {
     }
   },
   "projectile": {
-    "advantage": "scguns:heavy",
-    "damage": 21.5,
+    "advantage": "scguns:none",
+    "damage": 13.0,
     "gravity": false,
-    "item": "scguns:krahg_round",
+    "item": "scguns:shatter_round",
     "ejectsCasing": true,
-    "casingType": "scguns:large_brass_casing",
+    "casingType": "scguns:medium_brass_casing",
     "casingParticle": "scguns:brass_casing",
     "life": 60,
     "size": 0.1,
     "speed": 5.0,
+    "trailLengthMultiplier": 2.0,
+    "impactEffect": "scguns:lacerated",
+    "impactEffectDuration": 300,
+    "impactEffectChance": 0.3
+  },
+  "projectile_1": {
+    "advantage": "scguns:heavy",
+    "damage": 25.0,
+    "ejectsCasing": true,
+    "gravity": false,
+    "item": "scguns:krahg_round",
+    "casingType": "scguns:large_brass_casing",
+    "casingParticle": "scguns:brass_casing",
+    "life": 65,
+    "size": 0.1,
+    "speed": 13.0,
     "trailLengthMultiplier": 2.0
   },
   "reloads": {
