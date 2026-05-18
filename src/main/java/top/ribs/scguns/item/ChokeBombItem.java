@@ -65,6 +65,7 @@ public class ChokeBombItem extends AmmoItem
                 stack.shrink(1);
             float radius = 4.0f;
             ThrowableGrenadeEntity grenade = this.create(worldIn, entityLiving, 0, radius);
+            worldIn.addFreshEntity(grenade);
             grenade.onDeath();
             if(entityLiving instanceof Player)
             {

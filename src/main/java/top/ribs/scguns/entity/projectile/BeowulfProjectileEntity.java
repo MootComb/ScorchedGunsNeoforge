@@ -34,7 +34,7 @@ public class BeowulfProjectileEntity extends ProjectileEntity {
     private static final float SHIELD_DAMAGE_PENETRATION = 0.3f;
 
     private static final float BEOWULF_XP_MULTIPLIER = 0.75f;
-    private static final int BEOWULF_LOOTING_LEVEL = 3;
+    public static final int BEOWULF_LOOTING_LEVEL = 3;
 
     public BeowulfProjectileEntity(EntityType<? extends Entity> entityType, Level worldIn) {
         super(entityType, worldIn);

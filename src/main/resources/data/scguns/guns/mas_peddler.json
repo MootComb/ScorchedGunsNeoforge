@@ -1,7 +1,7 @@
 {
   "display": {
     "flash": {
-      "size": 1.0,
+      "size": 1,
       "yOffset": 4.6,
       "zOffset": -13.7,
       "textureLocation": "muzzle_flash_1"
@@ -15,7 +15,11 @@
     "rate": 8,
     "meleeDamage": 2.5,
     "meleeCooldownTicks": 20,
-    "hotBarrelRate": 27
+    "hotBarrelRate": 27,
+    "recoilAngle": 2,
+    "recoilKick": 1,
+    "spread": 0.5,
+    "criticalChance": 0.05
   },
   "modules": {
     "attachments": {
@@ -25,18 +29,18 @@
       },
       "scope": {
         "size": 0.7,
-        "yOffset": 6.0,
-        "zOffset": 4.0
+        "yOffset": 6,
+        "zOffset": 4
       },
       "stock": {
-        "scale": 0.0
+        "scale": 0
       },
       "underBarrel": {
         "yOffset": 5.5,
         "zOffset": -2.5
       },
       "magazine": {
-        "scale": 0.0
+        "scale": 0
       }
     },
     "zoom": {
@@ -46,25 +50,25 @@
     }
   },
   "projectile": {
-    "recoilAngle": 2.0,
-    "recoilKick": 1.0,
+    "recoilAngle": 2,
+    "recoilKick": 1,
     "spread": 0.5,
     "criticalChance": 0.05,
     "advantage": "scguns:heavy",
     "damage": 16.5,
-    "damageFalloffStart": 25.0,
-    "damageFalloffEnd": 60.0,
+    "damageFalloffStart": 25,
+    "damageFalloffEnd": 60,
     "damageFalloffMinMultiplier": 0.85,
-    "armorPen": 1.0,
+    "armorPen": 1,
     "ejectsCasing": true,
-    "gravity": false  ,
+    "gravity": false,
     "item": "scguns:ramrod_round",
     "casingType": "scguns:small_iron_casing",
     "casingParticle": "scguns:iron_casing",
     "life": 90,
     "size": 0.1,
-    "speed": 8.0,
-    "trailLengthMultiplier": 2.0
+    "speed": 8,
+    "trailLengthMultiplier": 2
   },
   "reloads": {
     "emptyMagTimer": 10,

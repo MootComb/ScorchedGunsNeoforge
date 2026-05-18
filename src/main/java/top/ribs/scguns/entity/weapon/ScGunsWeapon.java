@@ -67,6 +67,18 @@ public class ScGunsWeapon implements IWeapon {
         return (int) (getAttackCooldown() * modifier);
     }
 
+    public int getReloadTime() {
+        double reloadTime = gun.getReloads().getReloadTimer();
+        if (Gun.getAmmoCount(gunStack) <= 0) {
+            reloadTime += gun.getReloads().getEmptyMagTimer();
+        }
+        return Math.max(1, (int) Math.ceil(GunModifierHelper.getModifiedReloadSpeed(gunStack, reloadTime)));
+    }
+
+    public int getMaxAmmo() {
+        return Math.max(1, GunModifierHelper.getModifiedAmmoCapacity(gunStack, gun));
+    }
+
     @Override
     public int getWeaponLoadTime() {
         return 0;
@@ -86,12 +98,18 @@ public class ScGunsWeapon implements IWeapon {
 
     @Override
     public SoundEvent getShootSound() {
-        if (fireSound == null)
-            fireSound = BuiltInRegistries.SOUND_EVENT.getOptional(
-                    GunModifierHelper.isSilencedFire(gunStack) ? gun.getSounds().getSilencedFire() :
-                            gunStack.isEnchanted() ? gun.getSounds().getEnchantedFire() :
-                                    gun.getSounds().getFire()
-            ).orElse(null);
+        if (fireSound == null) {
+            ResourceLocation soundId = null;
+            if (GunModifierHelper.isSilencedFire(gunStack)) {
+                soundId = gun.getSounds().getSilencedFire();
+            } else if (gunStack.isEnchanted()) {
+                soundId = gun.getSounds().getEnchantedFire();
+            }
+            if (soundId == null) {
+                soundId = gun.getSounds().getFire();
+            }
+            fireSound = soundId != null ? BuiltInRegistries.SOUND_EVENT.getOptional(soundId).orElse(null) : null;
+        }
         return fireSound;
     }
 

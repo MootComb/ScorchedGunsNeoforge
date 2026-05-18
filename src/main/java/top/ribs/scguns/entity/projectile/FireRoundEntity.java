@@ -119,12 +119,14 @@ public class FireRoundEntity extends ProjectileEntity {
 
     @Override
     protected void onHitBlock(BlockState state, BlockPos pos, Direction face, double x, double y, double z) {
+        Level hitLevel = this.blockHitLevel();
+        BlockPos hitPos = this.blockHitPos(pos);
         spawnExplosionParticles(new Vec3(x, y, z));
         if (Config.COMMON.gameplay.enableFirePlacement.get()) {
-            setBlockOnFire(pos, face);
+            setBlockOnFire(hitLevel, hitPos, face);
         }
 
-        clearSculkInArea(pos);
+        clearSculkInArea(hitLevel, hitPos);
     }
 
     @Override
@@ -135,7 +137,11 @@ public class FireRoundEntity extends ProjectileEntity {
     }
 
     private void clearSculkInArea(BlockPos center) {
-        if (this.level().isClientSide) {
+        clearSculkInArea(this.level(), center);
+    }
+
+    private void clearSculkInArea(Level level, BlockPos center) {
+        if (level.isClientSide) {
             return;
         }
 
@@ -151,13 +157,13 @@ public class FireRoundEntity extends ProjectileEntity {
                         }
 
                         BlockPos checkPos = center.offset(x, y, z);
-                        BlockState blockState = this.level().getBlockState(checkPos);
+                        BlockState blockState = level.getBlockState(checkPos);
 
                         if (blockState.is(ModTags.Blocks.SCULK_BLOCKS)) {
-                            this.level().destroyBlock(checkPos, true);
+                            level.destroyBlock(checkPos, true);
 
-                            spawnCleansingParticles(checkPos);
-                            this.level().playSound(null, checkPos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.8F, 1.2F + this.random.nextFloat() * 0.4F);
+                            spawnCleansingParticles(level, checkPos);
+                            level.playSound(null, checkPos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.8F, 1.2F + this.random.nextFloat() * 0.4F);
 
                             clearedBlocks++;
                         }
@@ -165,13 +171,17 @@ public class FireRoundEntity extends ProjectileEntity {
                 }
             }
             if (clearedBlocks > 0) {
-                this.level().playSound(null, center, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 0.5F, 1.5F);
+                level.playSound(null, center, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 0.5F, 1.5F);
             }
         }
     }
 
     private void spawnCleansingParticles(BlockPos pos) {
-        if (this.level() instanceof ServerLevel serverLevel) {
+        spawnCleansingParticles(this.level(), pos);
+    }
+
+    private void spawnCleansingParticles(Level level, BlockPos pos) {
+        if (level instanceof ServerLevel serverLevel) {
             for (int i = 0; i < 5; i++) {
                 double offsetX = pos.getX() + 0.5 + (this.random.nextDouble() - 0.5) * 0.8;
                 double offsetY = pos.getY() + 0.5 + (this.random.nextDouble() - 0.5) * 0.8;
@@ -201,27 +211,27 @@ public class FireRoundEntity extends ProjectileEntity {
         }
     }
 
-    private void setBlockOnFire(BlockPos pos, Direction face) {
-        tryPlaceWallFire(pos, face);
+    private void setBlockOnFire(Level level, BlockPos pos, Direction face) {
+        tryPlaceWallFire(level, pos, face);
         if (this.random.nextFloat() < 0.6f) {
             Direction[] adjacentFaces = getAdjacentFaces(face);
             for (Direction adjacentFace : adjacentFaces) {
                 if (this.random.nextFloat() < 0.4f) {
-                    tryPlaceWallFire(pos, adjacentFace);
+                    tryPlaceWallFire(level, pos, adjacentFace);
                 }
             }
         }
 
         if (face != Direction.UP && this.random.nextFloat() < 0.7f) {
-            tryPlaceWallFire(pos, Direction.UP);
+            tryPlaceWallFire(level, pos, Direction.UP);
         }
     }
 
-    private boolean canSustainFireOnFace(BlockState blockState, BlockPos pos, Direction face) {
-        if (blockState.isFlammable(this.level(), pos, face)) {
+    private boolean canSustainFireOnFace(Level level, BlockState blockState, BlockPos pos, Direction face) {
+        if (blockState.isFlammable(level, pos, face)) {
             return true;
         }
-        return blockState.isSolidRender(this.level(), pos);
+        return blockState.isSolidRender(level, pos);
     }
 
     private BlockState getWallFireState(Direction attachedFace) {
@@ -236,15 +246,15 @@ public class FireRoundEntity extends ProjectileEntity {
         };
     }
 
-    private void tryPlaceWallFire(BlockPos pos, Direction face) {
+    private void tryPlaceWallFire(Level level, BlockPos pos, Direction face) {
         BlockPos offsetPos = pos.relative(face);
 
-        if (this.level().isEmptyBlock(offsetPos)) {
-            BlockState hitBlockState = this.level().getBlockState(pos);
+        if (level.isEmptyBlock(offsetPos)) {
+            BlockState hitBlockState = level.getBlockState(pos);
 
-            if (canSustainFireOnFace(hitBlockState, pos, face)) {
+            if (canSustainFireOnFace(level, hitBlockState, pos, face)) {
                 BlockState fireState = getWallFireState(face.getOpposite());
-                this.level().setBlock(offsetPos, fireState, 11);
+                level.setBlock(offsetPos, fireState, 11);
             }
         }
     }

@@ -315,9 +315,8 @@ public class ServerPlayHandler {
         if (finalHitResult.getType() == HitResult.Type.BLOCK) {
             assert finalHitResult instanceof BlockHitResult;
             BlockHitResult blockHit = (BlockHitResult) finalHitResult;
-            BlockPos pos = blockHit.getBlockPos();
             if (!glassPenetrations.contains(blockHit)) {
-                BeamHandlerCommon.BeamMiningManager.updateBlockMining(world, pos, player, modifiedGun);
+                BeamHandlerCommon.BeamMiningManager.updateBlockMining(world, blockHit, player, modifiedGun);
             }
         }
 

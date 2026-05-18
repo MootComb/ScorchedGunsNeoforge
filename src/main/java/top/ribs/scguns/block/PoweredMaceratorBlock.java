@@ -112,7 +112,7 @@ public class PoweredMaceratorBlock extends BaseEntityBlock implements SimpleWate
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
+        if (state.getBlock() != newState.getBlock() && !isMoving) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof PoweredMaceratorBlockEntity) {
                 ((PoweredMaceratorBlockEntity) blockEntity).drops();

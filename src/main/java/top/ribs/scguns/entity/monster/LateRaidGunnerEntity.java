@@ -140,7 +140,6 @@ public abstract class LateRaidGunnerEntity extends Monster implements RangedAtta
         if (stack.getItem() instanceof GunItem gunItem) {
             Gun gun = gunItem.getModifiedGun(stack);
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            tag.putBoolean("IgnoreAmmo", true);
             tag.putInt("AmmoCount", Math.max(1, gun.getReloads().getMaxAmmo()));
             tag.putBoolean("scguns:MobGun", true);
             stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));

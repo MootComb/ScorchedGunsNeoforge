@@ -84,6 +84,7 @@ public class ScorchedGuns {
     public static boolean mekanismLoaded;
     public static boolean ieLoaded;
     public static boolean valkyrienSkiesLoaded;
+    public static boolean sableLoaded;
     public static boolean marjLoaded;
     private static boolean useEnergyGuns = false;
 
@@ -188,6 +189,7 @@ public class ScorchedGuns {
     private void initializeModDependencies() {
         // Check for optional mod dependencies
         valkyrienSkiesLoaded = ModList.get().isLoaded("valkyrienskies");
+        sableLoaded = ModList.get().isLoaded("sable");
         controllableLoaded = ModList.get().isLoaded("controllable");
         backpackedLoaded = ModList.get().isLoaded("backpacked");
         curiosLoaded = ModList.get().isLoaded("curios");

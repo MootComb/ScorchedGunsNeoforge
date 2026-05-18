@@ -101,6 +101,16 @@ public class ModCapabilities {
                 ModBlockEntities.SNIPER_TURRET.get(),
                 (blockEntity, side) -> side != Direction.UP ? blockEntity.getItemStackHandler() : null
         );
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ModBlockEntities.AMMO_MODULE.get(),
+                (blockEntity, side) -> blockEntity.getItemStackHandler()
+        );
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ModBlockEntities.SHELL_CATCHER_MODULE.get(),
+                (blockEntity, side) -> blockEntity.getItemStackHandler()
+        );
         event.registerItem(
                 Capabilities.EnergyStorage.ITEM,
                 (stack, context) -> new ExoSuitCoreItem.SimpleExoSuitEnergyStorage(stack),

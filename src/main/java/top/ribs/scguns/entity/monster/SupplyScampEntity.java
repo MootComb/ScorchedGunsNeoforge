@@ -3,15 +3,20 @@ package top.ribs.scguns.entity.monster;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -26,9 +31,15 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -41,6 +52,12 @@ import top.ribs.scguns.client.screen.SupplyScampMenuProvider;
 import top.ribs.scguns.init.ModEffects;
 import top.ribs.scguns.init.ModEntities;
 import top.ribs.scguns.init.ModItems;
+import top.ribs.scguns.init.ModSounds;
+import top.ribs.scguns.init.ModTags;
+import top.ribs.scguns.item.AmmoBoxItem;
+import top.ribs.scguns.item.AttachmentItem;
+import top.ribs.scguns.item.GunItem;
+import top.ribs.scguns.item.IAmmo;
 
 import java.util.*;
 
@@ -70,6 +87,14 @@ public class SupplyScampEntity extends TamableAnimal {
             SynchedEntityData.defineId(SupplyScampEntity.class, EntityDataSerializers.BOOLEAN);
     private static final double ITEM_DETECTION_RANGE = 9.0;
     private static final double ITEM_PICKUP_RANGE = 2.5;
+    private static final TagKey<Item> COMMON_DUSTS = commonItemTag("dusts");
+    private static final TagKey<Item> COMMON_GUNPOWDER = commonItemTag("gunpowder");
+    private static final TagKey<Item> COMMON_INGOTS = commonItemTag("ingots");
+    private static final TagKey<Item> COMMON_NUGGETS = commonItemTag("nuggets");
+    private static final TagKey<Item> COMMON_ORES = commonItemTag("ores");
+    private static final TagKey<Item> COMMON_RAW_MATERIALS = commonItemTag("raw_materials");
+    private static final TagKey<Item> COMMON_STORAGE_BLOCKS = commonItemTag("storage_blocks");
+    private static final TagKey<Item> COMMON_TOOLS = commonItemTag("tools");
     private int patrolTimer = 0;
     private BlockPos currentPatrolTarget = null;
     private static final int INVENTORY_SIZE = 27;
@@ -81,6 +106,10 @@ public class SupplyScampEntity extends TamableAnimal {
     public SupplyScampEntity(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
         this.setCanPickUpLoot(true);
+    }
+
+    private static TagKey<Item> commonItemTag(String name) {
+        return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
     }
     @Override
     public boolean canBeAffected(@NotNull MobEffectInstance pPotionEffect) {
@@ -164,18 +193,20 @@ public class SupplyScampEntity extends TamableAnimal {
             }
         }
 
-        if (totalItems >= 3) {
-            BlockPos nearestBarrel = findNearestBarrel();
-            if (nearestBarrel != null) {
-                double distanceToBarrel = this.distanceToSqr(Vec3.atCenterOf(nearestBarrel));
+        ItemEntity nearestItem = totalItems < 25 ? findNearestItem() : null;
+
+        if (totalItems > 0 && (totalItems >= 3 || nearestItem == null)) {
+            DepositTarget depositTarget = findDepositTargetForInventory();
+            if (depositTarget != null) {
+                double distanceToBarrel = this.distanceToSqr(Vec3.atCenterOf(depositTarget.pos()));
 
                 if (distanceToBarrel <= 9.0D) {
-                    BlockEntity blockEntity = this.level().getBlockEntity(nearestBarrel);
+                    BlockEntity blockEntity = this.level().getBlockEntity(depositTarget.pos());
                     if (blockEntity instanceof Container container) {
-                        depositAllItems(container);
+                        depositItemsByCategory(container, depositTarget.category());
                     }
                 } else {
-                    this.getNavigation().moveTo(nearestBarrel.getX() + 0.5, nearestBarrel.getY(), nearestBarrel.getZ() + 0.5, 1.0);
+                    this.getNavigation().moveTo(depositTarget.pos().getX() + 0.5, depositTarget.pos().getY(), depositTarget.pos().getZ() + 0.5, 1.0);
                     return;
                 }
             }
@@ -183,7 +214,6 @@ public class SupplyScampEntity extends TamableAnimal {
 
         // Priority 2: Look for items if inventory not too full
         if (totalItems < 25) {
-            ItemEntity nearestItem = findNearestItem();
             if (nearestItem != null && this.distanceToSqr(nearestItem) <= ITEM_DETECTION_RANGE * ITEM_DETECTION_RANGE) {
                 if (this.distanceToSqr(nearestItem) > ITEM_PICKUP_RANGE * ITEM_PICKUP_RANGE) {
                     this.getNavigation().moveTo(nearestItem, 1.0);
@@ -232,10 +262,42 @@ public class SupplyScampEntity extends TamableAnimal {
             this.patrolTimer = 40; // Reset timer after returning
         }
     }
+
+    private enum SortCategory {
+        AMMO,
+        WEAPON,
+        ARMOR,
+        POTION,
+        FOOD,
+        TOOL,
+        WOOD,
+        MATERIAL,
+        BLOCK,
+        MISC,
+        MIXED
+    }
+
+    private record DepositTarget(BlockPos pos, SortCategory category) {
+    }
+
     private BlockPos findNearestBarrel() {
-        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        List<BlockPos> barrels = findNearbyBarrels();
         BlockPos nearestBarrel = null;
         double nearestDistance = Double.MAX_VALUE;
+
+        for (BlockPos barrel : barrels) {
+            double distance = this.distanceToSqr(Vec3.atCenterOf(barrel));
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestBarrel = barrel;
+            }
+        }
+        return nearestBarrel;
+    }
+
+    private List<BlockPos> findNearbyBarrels() {
+        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        List<BlockPos> barrels = new ArrayList<>();
         int searchRange = 16;
 
         for (int x = -searchRange; x <= searchRange; x++) {
@@ -245,19 +307,174 @@ public class SupplyScampEntity extends TamableAnimal {
                     if (this.level().getBlockState(mutablePos).getBlock().toString().contains("barrel")) {
                         BlockEntity blockEntity = this.level().getBlockEntity(mutablePos);
                         if (blockEntity instanceof Container) {
-                            double distance = this.distanceToSqr(Vec3.atCenterOf(mutablePos));
-                            if (distance < nearestDistance) {
-                                nearestDistance = distance;
-                                nearestBarrel = mutablePos.immutable();
-                            }
+                            barrels.add(mutablePos.immutable());
                         }
                     }
                 }
             }
         }
-        return nearestBarrel;
+        return barrels;
     }
-    private void depositAllItems(Container container) {
+
+    private DepositTarget findDepositTargetForInventory() {
+        List<BlockPos> barrels = findNearbyBarrels();
+        if (barrels.isEmpty()) {
+            return null;
+        }
+
+        EnumSet<SortCategory> carriedCategories = EnumSet.noneOf(SortCategory.class);
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+            ItemStack stack = this.inventory.getItem(i);
+            if (!stack.isEmpty()) {
+                carriedCategories.add(getSortCategory(stack));
+            }
+        }
+
+        for (SortCategory category : carriedCategories) {
+            DepositTarget target = findNearestDepositTarget(barrels, category, false);
+            if (target != null) {
+                return target;
+            }
+        }
+
+        for (SortCategory category : carriedCategories) {
+            DepositTarget target = findNearestDepositTarget(barrels, category, true);
+            if (target != null) {
+                return target;
+            }
+        }
+
+        return null;
+    }
+
+    private DepositTarget findNearestDepositTarget(List<BlockPos> barrels, SortCategory category, boolean allowEmpty) {
+        BlockPos bestPos = null;
+        double bestDistance = Double.MAX_VALUE;
+
+        for (BlockPos pos : barrels) {
+            BlockEntity blockEntity = this.level().getBlockEntity(pos);
+            if (!(blockEntity instanceof Container container)) {
+                continue;
+            }
+
+            Optional<SortCategory> containerCategory = getContainerCategory(container);
+            if (containerCategory.isEmpty()) {
+                if (!allowEmpty || !canContainerAcceptInventoryCategory(container, category)) {
+                    continue;
+                }
+            } else if (containerCategory.get() != category || !canContainerAcceptInventoryCategory(container, category)) {
+                continue;
+            }
+
+            double distance = this.distanceToSqr(Vec3.atCenterOf(pos));
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestPos = pos;
+            }
+        }
+
+        return bestPos != null ? new DepositTarget(bestPos, category) : null;
+    }
+
+    private Optional<SortCategory> getContainerCategory(Container container) {
+        SortCategory category = null;
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            ItemStack stack = container.getItem(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            SortCategory stackCategory = getSortCategory(stack);
+            if (category == null) {
+                category = stackCategory;
+            } else if (category != stackCategory) {
+                return Optional.of(SortCategory.MIXED);
+            }
+        }
+        return Optional.ofNullable(category);
+    }
+
+    private boolean canContainerAcceptInventoryCategory(Container container, SortCategory category) {
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+            ItemStack stack = this.inventory.getItem(i);
+            if (!stack.isEmpty() && getSortCategory(stack) == category && canContainerAcceptStack(container, stack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canContainerAcceptStack(Container container, ItemStack itemStack) {
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            ItemStack containerStack = container.getItem(i);
+            if (containerStack.isEmpty()) {
+                return container.canPlaceItem(i, itemStack);
+            }
+            if (ItemStack.isSameItemSameComponents(containerStack, itemStack) && containerStack.getCount() < containerStack.getMaxStackSize()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private SortCategory getSortCategory(ItemStack stack) {
+        Item item = stack.getItem();
+
+        if (item instanceof IAmmo || item instanceof AmmoBoxItem || stack.is(ModTags.Items.GRENADES)) {
+            return SortCategory.AMMO;
+        }
+        if (item instanceof GunItem || item instanceof AttachmentItem || item instanceof ProjectileWeaponItem || stack.is(ItemTags.SWORDS)) {
+            return SortCategory.WEAPON;
+        }
+        if (item instanceof ArmorItem
+                || stack.is(ItemTags.HEAD_ARMOR)
+                || stack.is(ItemTags.CHEST_ARMOR)
+                || stack.is(ItemTags.LEG_ARMOR)
+                || stack.is(ItemTags.FOOT_ARMOR)) {
+            return SortCategory.ARMOR;
+        }
+        if (item instanceof PotionItem) {
+            return SortCategory.POTION;
+        }
+        if (stack.get(DataComponents.FOOD) != null || stack.is(ItemTags.MEAT) || stack.is(ItemTags.FISHES)) {
+            return SortCategory.FOOD;
+        }
+        if (item instanceof TieredItem
+                || stack.is(COMMON_TOOLS)
+                || stack.is(ItemTags.PICKAXES)
+                || stack.is(ItemTags.AXES)
+                || stack.is(ItemTags.SHOVELS)
+                || stack.is(ItemTags.HOES)) {
+            return SortCategory.TOOL;
+        }
+        if (stack.is(ItemTags.PLANKS)
+                || stack.is(ItemTags.LOGS)
+                || stack.is(ItemTags.LOGS_THAT_BURN)
+                || stack.is(ItemTags.WOODEN_DOORS)
+                || stack.is(ItemTags.WOODEN_FENCES)
+                || stack.is(ItemTags.WOODEN_SLABS)
+                || stack.is(ItemTags.WOODEN_STAIRS)
+                || stack.is(ItemTags.WOODEN_TRAPDOORS)) {
+            return SortCategory.WOOD;
+        }
+        if (stack.is(COMMON_DUSTS)
+                || stack.is(COMMON_GUNPOWDER)
+                || stack.is(COMMON_INGOTS)
+                || stack.is(COMMON_NUGGETS)
+                || stack.is(COMMON_ORES)
+                || stack.is(COMMON_RAW_MATERIALS)
+                || stack.is(COMMON_STORAGE_BLOCKS)
+                || stack.is(ItemTags.COALS)
+                || stack.is(ItemTags.BEACON_PAYMENT_ITEMS)) {
+            return SortCategory.MATERIAL;
+        }
+        if (item instanceof BlockItem) {
+            return SortCategory.BLOCK;
+        }
+        return SortCategory.MISC;
+    }
+
+    private void depositItemsByCategory(Container container, SortCategory category) {
         BlockPos barrelPos = null;
         for (int x = -2; x <= 2; x++) {
             for (int y = -1; y <= 1; y++) {
@@ -284,7 +501,7 @@ public class SupplyScampEntity extends TamableAnimal {
 
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
             ItemStack itemStack = this.inventory.getItem(i);
-            if (!itemStack.isEmpty()) {
+            if (!itemStack.isEmpty() && getSortCategory(itemStack) == category) {
                 ItemStack remainingStack = tryAddItemToContainer(container, itemStack);
                 this.inventory.setItem(i, remainingStack);
             }
@@ -300,15 +517,20 @@ public class SupplyScampEntity extends TamableAnimal {
         for (int j = 0; j < container.getContainerSize(); j++) {
             ItemStack containerStack = container.getItem(j);
             if (containerStack.isEmpty()) {
+                if (!container.canPlaceItem(j, itemStack)) {
+                    continue;
+                }
                 container.setItem(j, itemStack.copy());
+                container.setChanged();
                 return ItemStack.EMPTY;
             } else if (ItemStack.isSameItemSameComponents(containerStack, itemStack)) {
-                int maxStackSize = containerStack.getMaxStackSize();
+                int maxStackSize = Math.min(containerStack.getMaxStackSize(), container.getMaxStackSize());
                 int spaceInSlot = maxStackSize - containerStack.getCount();
                 if (spaceInSlot > 0) {
                     int transferAmount = Math.min(itemStack.getCount(), spaceInSlot);
                     containerStack.grow(transferAmount);
                     itemStack.shrink(transferAmount);
+                    container.setChanged();
                     if (itemStack.isEmpty()) {
                         return ItemStack.EMPTY;
                     }
@@ -478,6 +700,22 @@ public class SupplyScampEntity extends TamableAnimal {
             return flag ? InteractionResult.CONSUME : InteractionResult.PASS;
         } else {
             if (this.isTame()) {
+                if (itemstack.is(ModItems.REPAIR_KIT.get())) {
+                    if (this.getHealth() < this.getMaxHealth()) {
+                        if (!player.getAbilities().instabuild) {
+                            itemstack.shrink(1);
+                        }
+                        this.heal(10.0F);
+                        this.playSound(SoundEvents.IRON_GOLEM_REPAIR, 0.5F, 1.0F);
+                        if (this.level() instanceof ServerLevel serverLevel) {
+                            serverLevel.sendParticles(ParticleTypes.HEART,
+                                    this.getX(), this.getY() + 0.5, this.getZ(),
+                                    3, 0.3, 0.3, 0.3, 0.1);
+                        }
+                    }
+                    return InteractionResult.SUCCESS;
+                }
+
                 if (itemstack.is(ModItems.ANCIENT_BRASS.get()) && this.getHealth() < this.getMaxHealth()) {
                     if (!player.getAbilities().instabuild) {
                         itemstack.shrink(1);
@@ -616,13 +854,13 @@ public class SupplyScampEntity extends TamableAnimal {
     @Nullable
     @Override
     protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
-        return SoundEvents.IRON_GOLEM_HURT;
+        return ModSounds.SCAMP_HURT.get();
     }
 
     @Nullable
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.IRON_GOLEM_DEATH;
+        return ModSounds.SCAMP_DIE.get();
     }
 
     @Override
@@ -651,10 +889,11 @@ public class SupplyScampEntity extends TamableAnimal {
         for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
             ItemStack itemstack = this.inventory.getItem(i);
             if (!itemstack.isEmpty()) {
-                CompoundTag compoundnbt = new CompoundTag();
-                compoundnbt.putByte("Slot", (byte) i);
-                itemstack.save(this.level().registryAccess(), compoundnbt);
-                listnbt.add(compoundnbt);
+                Tag savedTag = itemstack.save(this.level().registryAccess(), new CompoundTag());
+                if (savedTag instanceof CompoundTag itemTag) {
+                    itemTag.putByte("Slot", (byte) i);
+                    listnbt.add(itemTag);
+                }
             }
         }
 
@@ -680,6 +919,7 @@ public class SupplyScampEntity extends TamableAnimal {
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         ListTag listnbt = compound.getList("Items", 10);
+        this.inventory.clearContent();
 
         for (int i = 0; i < listnbt.size(); ++i) {
             CompoundTag compoundnbt = listnbt.getCompound(i);
@@ -744,7 +984,9 @@ public class SupplyScampEntity extends TamableAnimal {
         super.setTame(tamed, applyTamingSideEffects);
         if (tamed) {
             Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(36.0);
-            this.setHealth(36.0F);
+            if (applyTamingSideEffects) {
+                this.setHealth(36.0F);
+            }
         } else {
             Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(8.0);
         }

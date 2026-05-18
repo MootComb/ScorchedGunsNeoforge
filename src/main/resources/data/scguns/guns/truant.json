@@ -1,7 +1,5 @@
 {
-  "display": {
-
-  },
+  "display": {},
   "general": {
     "weaponType": "heavy",
     "fireMode": "scguns:semi_automatic",
@@ -12,12 +10,18 @@
     "meleeCooldownTicks": 20,
     "hotBarrelRate": 15,
     "allowAmmoChange": true,
-    "isRevolver": true
+    "isRevolver": true,
+    "recoilAngle": 6.5,
+    "recoilKick": 2.22,
+    "spread": 2.5,
+    "criticalChance": 0.05,
+    "playerKnockBack": true,
+    "playerKnockBackStrength": 0.2
   },
   "modules": {
     "attachments": {
       "stock": {
-        "scale": 0.0
+        "scale": 0
       },
       "underBarrel": {
         "yOffset": 5.5,
@@ -26,7 +30,7 @@
       "scope": {
         "size": 0.7,
         "yOffset": 6.75,
-        "zOffset": 1.0
+        "zOffset": 1
       }
     },
     "zoom": {
@@ -44,7 +48,7 @@
     "playerKnockBackStrength": 0.2,
     "visible": true,
     "advantage": "scguns:none",
-    "damage": 23.0,
+    "damage": 23,
     "ejectsCasing": true,
     "gravity": true,
     "item": "scguns:he_grenade_round",
@@ -52,8 +56,8 @@
     "casingParticle": "scguns:brass_casing",
     "life": 55,
     "size": 0.05,
-    "speed": 3.0,
-    "trailLengthMultiplier": 2.0
+    "speed": 3,
+    "trailLengthMultiplier": 2
   },
   "projectile_1": {
     "recoilAngle": 6.7,
@@ -64,7 +68,7 @@
     "playerKnockBackStrength": 0.2,
     "visible": true,
     "advantage": "scguns:none",
-    "damage": 23.0,
+    "damage": 23,
     "ejectsCasing": true,
     "gravity": true,
     "item": "scguns:fire_grenade_round",
@@ -72,8 +76,8 @@
     "casingParticle": "scguns:brass_casing",
     "life": 55,
     "size": 0.05,
-    "speed": 3.0,
-    "trailLengthMultiplier": 2.0
+    "speed": 3,
+    "trailLengthMultiplier": 2
   },
   "projectile_2": {
     "recoilAngle": 6.7,
@@ -84,7 +88,7 @@
     "playerKnockBackStrength": 0.2,
     "visible": true,
     "advantage": "scguns:none",
-    "damage": 23.0,
+    "damage": 23,
     "ejectsCasing": true,
     "gravity": true,
     "item": "scguns:gas_grenade_round",
@@ -92,8 +96,8 @@
     "casingParticle": "scguns:brass_casing",
     "life": 55,
     "size": 0.05,
-    "speed": 3.0,
-    "trailLengthMultiplier": 2.0
+    "speed": 3,
+    "trailLengthMultiplier": 2
   },
   "projectile_3": {
     "recoilAngle": 6.7,
@@ -104,7 +108,7 @@
     "playerKnockBackStrength": 0.2,
     "visible": true,
     "advantage": "scguns:none",
-    "damage": 22.0,
+    "damage": 22,
     "ejectsCasing": true,
     "gravity": true,
     "item": "scguns:bouncy_grenade_round",
@@ -112,8 +116,8 @@
     "casingParticle": "scguns:brass_casing",
     "life": 55,
     "size": 0.05,
-    "speed": 3.0,
-    "trailLengthMultiplier": 2.0
+    "speed": 3,
+    "trailLengthMultiplier": 2
   },
   "reloads": {
     "emptyMagTimer": 30,

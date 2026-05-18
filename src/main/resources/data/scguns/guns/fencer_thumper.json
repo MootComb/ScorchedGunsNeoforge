@@ -18,15 +18,22 @@
     "gripType": "scguns:two_handed",
     "baseGripType": "scguns:two_handed",
     "rate": 24,
-    "meleeDamage": 3.0,
+    "meleeDamage": 3,
     "meleeCooldownTicks": 20,
-    "hotBarrelRate": 30
+    "hotBarrelRate": 30,
+    "alwaysSpread": true,
+    "projectileAmount": 20,
+    "recoilAngle": 17,
+    "recoilKick": 2,
+    "spread": 8,
+    "criticalChance": 0.03,
+    "playerKnockBack": true,
+    "playerKnockBackStrength": 0.3
   },
   "modules": {
     "attachments": {
-
       "stock": {
-        "scale": 0.0
+        "scale": 0
       },
       "underBarrel": {
         "yOffset": 5.5,
@@ -42,15 +49,15 @@
   "projectile": {
     "projectileAmount": 20,
     "alwaysSpread": true,
-    "recoilAngle": 17.0,
-    "recoilKick": 2.0,
-    "spread": 8.0,
+    "recoilAngle": 17,
+    "recoilKick": 2,
+    "spread": 8,
     "criticalChance": 0.03,
     "playerKnockBack": true,
     "playerKnockBackStrength": 0.3,
     "knockbackStrength": 0.7,
-    "damageFalloffStart": 8.0,
-    "damageFalloffEnd": 20.0,
+    "damageFalloffStart": 8,
+    "damageFalloffEnd": 20,
     "damageFalloffMinMultiplier": 0.4,
     "advantage": "scguns:none",
     "damage": 16.5,
@@ -58,9 +65,9 @@
     "gravity": false,
     "item": "scguns:grapeshot",
     "life": 35,
-    "size": 1.0,
-    "speed": 5.0,
-    "trailLengthMultiplier": 2.0,
+    "size": 1,
+    "speed": 5,
+    "trailLengthMultiplier": 2,
     "trailThickness": 0.5
   },
   "reloads": {

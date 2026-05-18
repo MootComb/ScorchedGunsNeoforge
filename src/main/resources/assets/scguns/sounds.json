@@ -681,6 +681,78 @@
       }
     ]
   },
+  "entity.scamp.hurt": {
+    "subtitle": "subtitle.scguns.scamp.hurt",
+    "sounds": [
+      {
+        "name": "scguns:entity/scamp/hurt"
+      }
+    ]
+  },
+  "entity.scamp.die": {
+    "subtitle": "subtitle.scguns.scamp.die",
+    "sounds": [
+      {
+        "name": "scguns:entity/scamp/die"
+      }
+    ]
+  },
+  "entity.dissident.hurt": {
+    "subtitle": "subtitle.scguns.dissident.hurt",
+    "sounds": [
+      {
+        "name": "scguns:entity/dissident/hurt"
+      }
+    ]
+  },
+  "entity.dissident.die": {
+    "subtitle": "subtitle.scguns.dissident.die",
+    "sounds": [
+      {
+        "name": "scguns:entity/dissident/die"
+      }
+    ]
+  },
+  "entity.dissident.idle": {
+    "subtitle": "subtitle.scguns.dissident.idle",
+    "sounds": [
+      {
+        "name": "scguns:entity/dissident/idle"
+      }
+    ]
+  },
+  "entity.praetor.hurt": {
+    "subtitle": "subtitle.scguns.praetor.hurt",
+    "sounds": [
+      {
+        "name": "scguns:entity/praetor/hurt"
+      }
+    ]
+  },
+  "entity.praetor.die": {
+    "subtitle": "subtitle.scguns.praetor.die",
+    "sounds": [
+      {
+        "name": "scguns:entity/praetor/die"
+      }
+    ]
+  },
+  "entity.praetor.idle": {
+    "subtitle": "subtitle.scguns.praetor.idle",
+    "sounds": [
+      {
+        "name": "scguns:entity/praetor/idle"
+      }
+    ]
+  },
+  "entity.praetor.roar": {
+    "subtitle": "subtitle.scguns.praetor.roar",
+    "sounds": [
+      {
+        "name": "scguns:entity/praetor/roar"
+      }
+    ]
+  },
 
   "ui.weapon.attach": {
     "subtitle": "subtitle.scguns.attach",
@@ -695,6 +767,22 @@
     "sounds": [
       {
         "name": "scguns:item/new_rifle/fire_2"
+      }
+    ]
+  },
+  "item.new_rifle.fire": {
+    "subtitle": "subtitle.scguns.fire",
+    "sounds": [
+      {
+        "name": "scguns:item/new_rifle/fire"
+      }
+    ]
+  },
+  "item.rocket_rifle.fire_2": {
+    "subtitle": "subtitle.scguns.fire",
+    "sounds": [
+      {
+        "name": "scguns:item/rocket_rifle/fire_2"
       }
     ]
   },

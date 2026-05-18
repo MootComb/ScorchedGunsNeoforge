@@ -386,8 +386,8 @@ public class BlueprintScreen extends Screen {
 
                 int titleHeight = (int) (this.font.lineHeight * 1.1f);
                 int descriptionY = titleY + titleHeight + 6;
-                String gunRegistryName = resultItem.getItem().toString().replace("item.scguns.", "");
-                String descriptionKey = "scguns.desc." + gunRegistryName;
+                ResourceLocation gunRegistryId = BuiltInRegistries.ITEM.getKey(resultItem.getItem());
+                String descriptionKey = "scguns.desc." + gunRegistryId.getPath();
                 String description = Component.translatable(descriptionKey).getString();
                 if (description.equals(descriptionKey)) {
                     description = Component.translatable("scguns.desc.unknown").getString();

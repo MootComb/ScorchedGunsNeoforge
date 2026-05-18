@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public class NetheriteGasMaskArmorItem extends ArmorItem implements GeoItem {
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     public NetheriteGasMaskArmorItem(Holder<ArmorMaterial> pMaterial, Type pType, Properties pProperties) {
-        super(pMaterial, pType, ModArmorMaterials.withDurability(pProperties, pMaterial, pType));
+        super(pMaterial, pType, ModArmorMaterials.withDurability(pProperties.fireResistant(), pMaterial, pType));
     }
     @Override
     public void createGeoRenderer(Consumer<software.bernie.geckolib.animatable.client.GeoRenderProvider> consumer) {
@@ -31,9 +31,6 @@ public class NetheriteGasMaskArmorItem extends ArmorItem implements GeoItem {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController(this, "controller", 0, this::predicate));
-    }
-    public boolean isFireResistant() {
-        return true;
     }
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

@@ -177,7 +177,7 @@ public class GunShelfBlock extends Block implements EntityBlock {
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
-            if (world.getBlockEntity(pos) instanceof GunShelfBlockEntity tile) {
+            if (!isMoving && world.getBlockEntity(pos) instanceof GunShelfBlockEntity tile) {
                 Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), tile.getDisplayedItem());
                 tile.setDisplayedItem(ItemStack.EMPTY);
             }

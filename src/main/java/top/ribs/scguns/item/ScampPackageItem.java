@@ -1,20 +1,17 @@
 package top.ribs.scguns.item;
 
-import net.minecraft.world.item.Item;
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.BlockPos;
+import top.ribs.scguns.common.MobGuideHelper;
 import top.ribs.scguns.entity.monster.SupplyScampEntity;
 import top.ribs.scguns.init.ModEntities;
 
@@ -38,6 +35,10 @@ public class ScampPackageItem extends Item {
                 SupplyScampEntity supplyScamp = new SupplyScampEntity(ModEntities.SUPPLY_SCAMP.get(), serverLevel);
                 supplyScamp.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
                 serverLevel.addFreshEntity(supplyScamp);
+                ItemStack guideBook = MobGuideHelper.createGuideBook(ModEntities.SUPPLY_SCAMP.get());
+                if (!guideBook.isEmpty() && !player.getInventory().add(guideBook)) {
+                    player.drop(guideBook, false);
+                }
                 itemStack.shrink(1);
             }
         }
@@ -45,4 +46,3 @@ public class ScampPackageItem extends Item {
         return InteractionResultHolder.sidedSuccess(itemStack, world.isClientSide());
     }
 }
-

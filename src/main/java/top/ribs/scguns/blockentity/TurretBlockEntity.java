@@ -50,6 +50,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.ribs.scguns.Config;
+import top.ribs.scguns.ScorchedGuns;
 import top.ribs.scguns.block.DamageModuleBlock;
 import top.ribs.scguns.block.FireRateModuleBlock;
 import top.ribs.scguns.block.HostileTurretTargetingBlock;
@@ -67,6 +68,7 @@ import top.ribs.scguns.network.PacketHandler;
 import top.ribs.scguns.network.message.S2CMessageGunSound;
 import top.ribs.scguns.network.message.S2CMessageMuzzleFlash;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -111,11 +113,36 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
     protected boolean hasShellCatchingModule;
     public boolean disabled = false;
     public int disableCooldown = 0;
+    private long lastServerTickTime = Long.MIN_VALUE;
+    private long lastVisualSyncTime = Long.MIN_VALUE;
+    private float lastSyncedYaw = Float.NaN;
+    private float lastSyncedPitch = Float.NaN;
+    private float lastSyncedRecoil = Float.NaN;
+    @Nullable
+    private Object activeSablePose;
+    private boolean tickingFromSable;
     private int idleTicks = 0;
     private boolean isScanning = false;
     private boolean scanningRight = true;
     private float scanStartYaw = 0.0F;
     private boolean returningToScanPitch = false;
+    @Nullable
+    private static Class<?> sableSubLevelContainerClass;
+    @Nullable
+    private static Method sableGetContainerMethod;
+    @Nullable
+    private static Method sableInBoundsMethod;
+    @Nullable
+    private static Method sableGetPlotMethod;
+    @Nullable
+    private static Method sableGetSubLevelMethod;
+    @Nullable
+    private static Method sableLogicalPoseMethod;
+    @Nullable
+    private static Method sableTransformPositionMethod;
+    @Nullable
+    private static Method sableTransformPositionInverseMethod;
+    private static boolean sablePoseUnavailable;
 
     protected TurretBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ResourceLocation turretId) {
         super(type, pos, state);
@@ -141,11 +168,25 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
     }
 
     protected void tickTurret(Level level, BlockPos pos, BlockState state) {
+        if (!level.isClientSide()) {
+            if (!this.tickingFromSable && this.resolveSablePose(level, pos) != null) {
+                return;
+            }
+            long gameTime = level.getGameTime();
+            if (!this.tickingFromSable && this.lastServerTickTime == gameTime) {
+                return;
+            }
+            this.lastServerTickTime = gameTime;
+        }
         if (this.config == null) {
             this.reloadConfig();
             if (this.config == null) {
                 return;
             }
+        }
+        if (level.isClientSide()) {
+            this.tickClientVisual(level, pos, state);
+            return;
         }
 
         this.hasFireRateModule = this.isAdjacentToFireRateModule(level, pos);
@@ -171,6 +212,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             this.resetToRestPosition();
             this.idleTicks = 0;
             this.isScanning = false;
+            this.syncVisualState(level);
             return;
         }
 
@@ -179,6 +221,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             this.idleTicks = 0;
             this.isScanning = false;
             this.returningToScanPitch = false;
+            this.syncVisualState(level);
             return;
         }
 
@@ -206,6 +249,80 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             } else {
                 this.updateScanningBehavior();
             }
+        }
+
+        this.syncVisualState(level);
+    }
+
+    private void tickClientVisual(Level level, BlockPos pos, BlockState state) {
+        this.hasRangeModule = this.isAdjacentToRangeModule(level, pos);
+        double rangeModifier = this.hasRangeModule ? RANGE_MODULE_BONUS : 0.0D;
+        this.tickRecoil();
+
+        if (this.disabled || this.isPowered(state)) {
+            this.resetToRestPosition();
+            this.idleTicks = 0;
+            this.isScanning = false;
+            this.returningToScanPitch = false;
+            return;
+        }
+
+        this.updateTargetRange(rangeModifier);
+        if (!this.isTargetValid()) {
+            this.target = null;
+        }
+        this.findTarget(level, pos);
+
+        if (this.target != null) {
+            this.idleTicks = 0;
+            this.isScanning = false;
+            this.returningToScanPitch = false;
+            this.updateYaw();
+            this.updatePitch();
+        } else {
+            this.idleTicks++;
+            if (this.idleTicks < IDLE_BEFORE_SCAN) {
+                this.previousYaw = this.yaw;
+                this.previousPitch = this.pitch;
+            } else {
+                this.updateScanningBehavior();
+            }
+        }
+    }
+
+    private void syncVisualState(Level level) {
+        if (level.isClientSide()) {
+            return;
+        }
+        long gameTime = level.getGameTime();
+        boolean due = gameTime - this.lastVisualSyncTime >= 2L;
+        boolean changed = Float.isNaN(this.lastSyncedYaw)
+                || Math.abs(Mth.wrapDegrees(this.yaw - this.lastSyncedYaw)) > 0.35F
+                || Math.abs(this.pitch - this.lastSyncedPitch) > 0.25F
+                || Math.abs(this.recoilPitchOffset - this.lastSyncedRecoil) > 0.25F;
+        if (!due || !changed) {
+            return;
+        }
+        this.lastVisualSyncTime = gameTime;
+        this.lastSyncedYaw = this.yaw;
+        this.lastSyncedPitch = this.pitch;
+        this.lastSyncedRecoil = this.recoilPitchOffset;
+        level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+    }
+
+    public static void sablePhysicsTickBridge(TurretBlockEntity turret, Object subLevel) {
+        if (turret.level == null || turret.level.isClientSide()) {
+            return;
+        }
+        Object previousPose = turret.activeSablePose;
+        boolean previousSableTick = turret.tickingFromSable;
+        turret.activeSablePose = getSablePoseFromSubLevel(subLevel);
+        turret.tickingFromSable = true;
+        try {
+            turret.tickTurret(turret.level, turret.worldPosition, turret.getBlockState());
+        } finally {
+            turret.activeSablePose = previousPose;
+            turret.tickingFromSable = previousSableTick;
         }
     }
 
@@ -442,7 +559,8 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         double muzzleX = -Math.sin(yawRad) * Math.cos(pitchRad) * muzzleLength;
         double muzzleY = Math.sin(pitchRad) * muzzleLength + muzzleOffsetY;
         double muzzleZ = -Math.cos(yawRad) * Math.cos(pitchRad) * muzzleLength;
-        return new Vec3(this.worldPosition.getX() + 0.5 + muzzleX, this.worldPosition.getY() + muzzleY, this.worldPosition.getZ() + 0.5 + muzzleZ);
+        Vec3 localMuzzle = new Vec3(this.worldPosition.getX() + 0.5 + muzzleX, this.worldPosition.getY() + muzzleY, this.worldPosition.getZ() + 0.5 + muzzleZ);
+        return this.toSableGlobalPosition(localMuzzle);
     }
 
     protected void updateTargetRange(double rangeModifier) {
@@ -547,6 +665,33 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         return null;
     }
 
+    public ItemStack insertAmmoFromModule(ItemStack stack, boolean simulate) {
+        if (stack.isEmpty() || !this.isAcceptedAmmo(stack)) {
+            return stack;
+        }
+        ItemStack remaining = stack.copy();
+        for (int slot = 0; slot < 9; slot++) {
+            remaining = this.itemHandler.insertItem(slot, remaining, simulate);
+            if (remaining.isEmpty()) {
+                break;
+            }
+        }
+        return remaining;
+    }
+
+    private boolean isAcceptedAmmo(ItemStack stack) {
+        if (this.config == null || stack.isEmpty()) {
+            return false;
+        }
+        for (Turret.Ammunition.AmmoType ammoType : this.config.getAmmunition().getAcceptedAmmo()) {
+            Item item = ammoType.getItem();
+            if (item != null && stack.getItem() == item) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected void consumeAmmo(int slot) {
         ItemStack stack = this.itemHandler.getStackInSlot(slot);
         stack.shrink(1);
@@ -622,8 +767,10 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             }
         }
 
-        Vec3 turretPos = new Vec3(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
-        AABB searchBox = new AABB(pos).inflate(this.targetingRadius, this.config.getTargeting().getVerticalRange(), this.targetingRadius);
+        Object sablePose = this.resolveSablePose(level, pos);
+        Vec3 localTurretPos = new Vec3(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
+        Vec3 turretPos = transformSablePosition(sablePose, localTurretPos, false);
+        AABB searchBox = new AABB(turretPos, turretPos).inflate(this.targetingRadius, this.config.getTargeting().getVerticalRange(), this.targetingRadius);
         boolean playerTargeting = isPlayerTargetingModule;
         boolean hostileTargeting = isHostileTargetingModule;
 
@@ -660,10 +807,11 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             double predictedX = this.target.getX() + this.target.getDeltaMovement().x * predictionMultiplier;
             double predictedY = this.target.getY() + (this.target.getBbHeight() / 2.0F);
             double predictedZ = this.target.getZ() + this.target.getDeltaMovement().z * predictionMultiplier;
+            Vec3 localPredictedTarget = transformSablePosition(sablePose, new Vec3(predictedX, predictedY, predictedZ), true);
             float smoothing = this.config.getTargeting().getPositionSmoothing();
-            this.smoothedTargetX = lerp(this.smoothedTargetX, predictedX, smoothing);
-            this.smoothedTargetY = lerp(this.smoothedTargetY, predictedY, smoothing);
-            this.smoothedTargetZ = lerp(this.smoothedTargetZ, predictedZ, smoothing);
+            this.smoothedTargetX = lerp(this.smoothedTargetX, localPredictedTarget.x, smoothing);
+            this.smoothedTargetY = lerp(this.smoothedTargetY, localPredictedTarget.y, smoothing);
+            this.smoothedTargetZ = lerp(this.smoothedTargetZ, localPredictedTarget.z, smoothing);
         }
     }
 
@@ -684,8 +832,104 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         if (!this.level.hasChunk(targetChunkPos.x, targetChunkPos.z)) {
             return false;
         }
-        double distanceSquared = this.target.distanceToSqr(this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 0.5D, this.worldPosition.getZ() + 0.5D);
+        Vec3 turretPos = this.toSableGlobalPosition(new Vec3(this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 0.5D, this.worldPosition.getZ() + 0.5D));
+        double distanceSquared = this.target.distanceToSqr(turretPos.x, turretPos.y, turretPos.z);
         return distanceSquared <= this.targetingRadius * this.targetingRadius;
+    }
+
+    private Vec3 toSableGlobalPosition(Vec3 localPosition) {
+        return transformSablePosition(this.resolveSablePose(this.level, this.worldPosition), localPosition, false);
+    }
+
+    @Nullable
+    private Object resolveSablePose(@Nullable Level level, BlockPos pos) {
+        return this.activeSablePose != null ? this.activeSablePose : getSablePoseForBlock(level, pos);
+    }
+
+    @Nullable
+    private static Object getSablePoseFromSubLevel(@Nullable Object subLevel) {
+        if (!ScorchedGuns.sableLoaded || subLevel == null) {
+            return null;
+        }
+        try {
+            Method logicalPose = sableLogicalPoseMethod;
+            if (logicalPose == null || !logicalPose.getDeclaringClass().isAssignableFrom(subLevel.getClass())) {
+                Class<?> subLevelClass = Class.forName("dev.ryanhcode.sable.sublevel.SubLevel");
+                logicalPose = subLevelClass.getMethod("logicalPose");
+                sableLogicalPoseMethod = logicalPose;
+            }
+            return logicalPose.invoke(subLevel);
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static Object getSablePoseForBlock(@Nullable Level level, BlockPos pos) {
+        if (!ScorchedGuns.sableLoaded || sablePoseUnavailable || level == null) {
+            return null;
+        }
+        try {
+            Method getContainer = sableGetContainerMethod;
+            Method inBounds = sableInBoundsMethod;
+            Method getPlot = sableGetPlotMethod;
+            Method getSubLevel = sableGetSubLevelMethod;
+            Method logicalPose = sableLogicalPoseMethod;
+            if (getContainer == null || inBounds == null || getPlot == null || getSubLevel == null || logicalPose == null) {
+                Class<?> containerClass = sableSubLevelContainerClass;
+                if (containerClass == null) {
+                    containerClass = Class.forName("dev.ryanhcode.sable.api.sublevel.SubLevelContainer");
+                    sableSubLevelContainerClass = containerClass;
+                }
+                getContainer = containerClass.getMethod("getContainer", Level.class);
+                inBounds = containerClass.getMethod("inBounds", BlockPos.class);
+                getPlot = containerClass.getMethod("getPlot", BlockPos.class);
+                Class<?> levelPlotClass = Class.forName("dev.ryanhcode.sable.sublevel.plot.LevelPlot");
+                getSubLevel = levelPlotClass.getMethod("getSubLevel");
+                Class<?> subLevelClass = Class.forName("dev.ryanhcode.sable.sublevel.SubLevel");
+                logicalPose = subLevelClass.getMethod("logicalPose");
+                sableGetContainerMethod = getContainer;
+                sableInBoundsMethod = inBounds;
+                sableGetPlotMethod = getPlot;
+                sableGetSubLevelMethod = getSubLevel;
+                sableLogicalPoseMethod = logicalPose;
+            }
+            Object container = getContainer.invoke(null, level);
+            if (!(inBounds.invoke(container, pos) instanceof Boolean inSableBounds) || !inSableBounds) {
+                return null;
+            }
+            Object plot = getPlot.invoke(container, pos);
+            if (plot == null) {
+                return null;
+            }
+            Object subLevel = getSubLevel.invoke(plot);
+            return subLevel == null ? null : logicalPose.invoke(subLevel);
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            sablePoseUnavailable = true;
+            return null;
+        }
+    }
+
+    private static Vec3 transformSablePosition(@Nullable Object pose, Vec3 position, boolean inverse) {
+        if (pose == null) {
+            return position;
+        }
+        try {
+            Method method = inverse ? sableTransformPositionInverseMethod : sableTransformPositionMethod;
+            if (method == null) {
+                method = pose.getClass().getMethod(inverse ? "transformPositionInverse" : "transformPosition", Vec3.class);
+                if (inverse) {
+                    sableTransformPositionInverseMethod = method;
+                } else {
+                    sableTransformPositionMethod = method;
+                }
+            }
+            Object result = method.invoke(pose, position);
+            return result instanceof Vec3 transformed ? transformed : position;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            sablePoseUnavailable = true;
+            return position;
+        }
     }
 
     private static double lerp(double a, double b, double t) {
@@ -811,10 +1055,22 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
     @Override
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        this.yaw = tag.getFloat("Yaw");
-        this.previousYaw = this.yaw;
-        this.pitch = tag.getFloat("Pitch");
-        this.previousPitch = this.pitch;
+        float oldYaw = this.yaw;
+        float oldPitch = this.pitch;
+        boolean keepClientVisualAngles = this.level != null
+                && this.level.isClientSide()
+                && this.resolveSablePose(this.level, this.worldPosition) != null;
+        if (!keepClientVisualAngles) {
+            this.yaw = tag.getFloat("Yaw");
+            this.pitch = tag.getFloat("Pitch");
+        }
+        if (this.level != null && this.level.isClientSide()) {
+            this.previousYaw = oldYaw;
+            this.previousPitch = oldPitch;
+        } else {
+            this.previousYaw = this.yaw;
+            this.previousPitch = this.pitch;
+        }
         this.disabled = tag.getBoolean("Disabled");
         this.disableCooldown = tag.getInt("DisableCooldown");
         if (tag.contains("Inventory", Tag.TAG_COMPOUND)) {

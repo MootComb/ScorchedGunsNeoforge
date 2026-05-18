@@ -1,16 +1,28 @@
 package top.ribs.scguns.mixin;
 
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.util.List;
 import java.util.Set;
 
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.RETURN;
+
 public class MixinPlugin implements IMixinConfigPlugin {
     private boolean isFrameworkInstalled;
     private boolean isEntityModelFeaturesInstalled;
     private boolean isPunchyInstalled;
+    private boolean isSableInstalled;
+    private boolean isGuardVillagersInstalled;
 
     @Override
     public void onLoad(String mixinPackage) {
@@ -24,6 +36,10 @@ public class MixinPlugin implements IMixinConfigPlugin {
                 || isClassPresent("punchy.client.render.PunchyArmRenderer")
                 || isClassPresent("punchy.client.state.MovementStateMachine")
                 || isClassPresent("punchy.client.render.HandRenderBobContext");
+        isSableInstalled = isModLoaded("sable")
+                || isClassPresent("dev.ryanhcode.sable.api.block.BlockEntitySubLevelActor");
+        isGuardVillagersInstalled = isModLoaded("guardvillagers")
+                || isClassPresent("tallestegg.guardvillagers.common.entities.Guard");
     }
 
     @Override
@@ -41,6 +57,15 @@ public class MixinPlugin implements IMixinConfigPlugin {
         }
         if (mixinClassName.startsWith("top.ribs.scguns.mixin.client.compat.punchy.")) {
             return isPunchyInstalled;
+        }
+        if (mixinClassName.startsWith("top.ribs.scguns.mixin.common.compat.sable.")) {
+            return isSableInstalled;
+        }
+        if (mixinClassName.startsWith("top.ribs.scguns.mixin.common.compat.guardvillagers.")) {
+            return isGuardVillagersInstalled;
+        }
+        if (mixinClassName.startsWith("top.ribs.scguns.mixin.client.compat.guardvillagers.")) {
+            return isGuardVillagersInstalled;
         }
         return true;
     }
@@ -81,6 +106,43 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+        if ("top.ribs.scguns.mixin.common.compat.sable.TurretBlockEntitySableActorMixin".equals(mixinClassName)) {
+            applySableTurretActorBridge(targetClass);
+        }
+    }
 
+    private void applySableTurretActorBridge(ClassNode targetClass) {
+        String actorInterface = "dev/ryanhcode/sable/api/block/BlockEntitySubLevelActor";
+        if (!targetClass.interfaces.contains(actorInterface)) {
+            targetClass.interfaces.add(actorInterface);
+        }
+        for (MethodNode method : targetClass.methods) {
+            if ("sable$physicsTick".equals(method.name)
+                    && "(Ldev/ryanhcode/sable/sublevel/ServerSubLevel;Ldev/ryanhcode/sable/api/physics/handle/RigidBodyHandle;D)V".equals(method.desc)) {
+                return;
+            }
+        }
+
+        MethodNode method = new MethodNode(
+                ACC_PUBLIC,
+                "sable$physicsTick",
+                "(Ldev/ryanhcode/sable/sublevel/ServerSubLevel;Ldev/ryanhcode/sable/api/physics/handle/RigidBodyHandle;D)V",
+                null,
+                null
+        );
+        InsnList instructions = method.instructions;
+        instructions.add(new VarInsnNode(ALOAD, 0));
+        instructions.add(new VarInsnNode(ALOAD, 1));
+        instructions.add(new MethodInsnNode(
+                INVOKESTATIC,
+                "top/ribs/scguns/blockentity/TurretBlockEntity",
+                "sablePhysicsTickBridge",
+                "(Ltop/ribs/scguns/blockentity/TurretBlockEntity;Ljava/lang/Object;)V",
+                false
+        ));
+        instructions.add(new InsnNode(RETURN));
+        method.maxStack = 2;
+        method.maxLocals = 5;
+        targetClass.methods.add(method);
     }
 }

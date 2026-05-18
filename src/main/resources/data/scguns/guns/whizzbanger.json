@@ -1,9 +1,9 @@
 {
   "display": {
     "flash": {
-      "size": 2.0,
+      "size": 2,
       "yOffset": 3.8,
-      "zOffset": -0.0,
+      "zOffset": 0,
       "textureLocation": "muzzle_flash_5",
       "spawnParticles": true,
       "particleType": "minecraft:campfire_cosy_smoke",
@@ -18,44 +18,50 @@
     "gripType": "scguns:dual_wield",
     "baseGripType": "scguns:dual_wield",
     "rate": 20,
-    "meleeDamage": 6.0,
+    "meleeDamage": 6,
     "meleeReach": 4.5,
     "meleeCooldownTicks": 20,
     "hotBarrelRate": 99,
-    "usesCustomMeleeAnimation": true
+    "usesCustomMeleeAnimation": true,
+    "alwaysSpread": true,
+    "recoilAngle": 20,
+    "recoilKick": 1,
+    "spread": 20,
+    "criticalChance": 0.05,
+    "playerKnockBack": true,
+    "playerKnockBackStrength": 1.5
   },
   "modules": {
-    "attachments": {
-    }
+    "attachments": {}
   },
   "projectile": {
     "alwaysSpread": true,
-    "recoilAngle": 20.0,
-    "recoilKick": 1.0,
-    "spread": 20.0,
+    "recoilAngle": 20,
+    "recoilKick": 1,
+    "spread": 20,
     "criticalChance": 0.05,
     "playerKnockBack": true,
     "playerKnockBackStrength": 1.5,
-    "knockbackStrength": 3.0,
+    "knockbackStrength": 3,
     "advantage": "scguns:bot",
-    "damage": 88.0,
-    "damageFalloffStart": 11.0,
-    "damageFalloffEnd": 28.0,
+    "damage": 88,
+    "damageFalloffStart": 11,
+    "damageFalloffEnd": 28,
     "damageFalloffMinMultiplier": 0.45,
     "ejectsCasing": true,
-    "gravity": false  ,
+    "gravity": false,
     "item": "scguns:osborne_slug",
     "casingType": "scguns:large_iron_casing",
     "casingParticle": "scguns:iron_casing",
     "ejectDuringReload": true,
     "life": 100,
-    "size": 1.0,
-    "speed": 14.0,
-    "trailLengthMultiplier": 2.0
+    "size": 1,
+    "speed": 14,
+    "trailLengthMultiplier": 2
   },
   "reloads": {
     "emptyMagTimer": 10,
-    "maxAmmo": 1  ,
+    "maxAmmo": 1,
     "reloadItem": "scguns:osborne_slug",
     "reloadTimer": 70,
     "reloadType": "scguns:mag_fed"

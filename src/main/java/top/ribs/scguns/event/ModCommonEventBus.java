@@ -1,9 +1,20 @@
 package top.ribs.scguns.event;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import top.ribs.scguns.Config;
 import top.ribs.scguns.entity.monster.*;
 import top.ribs.scguns.init.ModEntities;
 
@@ -40,7 +51,7 @@ public class ModCommonEventBus {
                 ModEntities.COG_MINION.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                CogMinionEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
         event.register(
@@ -54,7 +65,7 @@ public class ModCommonEventBus {
                 ModEntities.BLUNDERER.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                BlundererEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
 
@@ -62,14 +73,14 @@ public class ModCommonEventBus {
                 ModEntities.COG_KNIGHT.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                CogKnightEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
         event.register(
                 ModEntities.TRAUMA_UNIT.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                CogKnightEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
 
@@ -77,21 +88,21 @@ public class ModCommonEventBus {
                 ModEntities.DISSIDENT.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                DissidentEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
         event.register(
                 ModEntities.REDCOAT.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                RedcoatEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
         event.register(
                 ModEntities.PRAETOR.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                PraetorEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
 
@@ -99,30 +110,64 @@ public class ModCommonEventBus {
                 ModEntities.HIVE.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                HiveEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
         event.register(
                 ModEntities.HORNLIN.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                HornlinEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
         event.register(
                 ModEntities.ZOMBIFIED_HORNLIN.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                HornlinEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
         event.register(
                 ModEntities.SULFURHEAD.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                SulfurheadEntity::checkMonsterSpawnRules,
+                ModCommonEventBus::checkScorchedGunsMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.OR
         );
+    }
+
+    private static <T extends Monster> boolean checkScorchedGunsMonsterSpawnRules(
+            EntityType<T> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        if (Monster.checkMonsterSpawnRules(type, level, spawnType, pos, random)) {
+            return true;
+        }
+
+        if (spawnType != MobSpawnType.NATURAL || !level.getLevel().isDay()) {
+            return false;
+        }
+
+        if (!Config.COMMON.naturalMobSpawning.enableDaytimeAggressiveMobSpawns.get()) {
+            return false;
+        }
+
+        if (level.getDifficulty() == Difficulty.PEACEFUL || !Mob.checkMobSpawnRules(type, level, spawnType, pos, random)) {
+            return false;
+        }
+
+        int baseProtectionRadius = Config.COMMON.naturalMobSpawning.daytimeAggressiveMobBaseProtectionRadius.get();
+        if (baseProtectionRadius > 0 && hasNearbyDaytimeSpawnProtection(level, pos, baseProtectionRadius)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean hasNearbyDaytimeSpawnProtection(ServerLevelAccessor level, BlockPos pos, int radius) {
+        return level.getLevel()
+                .getPoiManager()
+                .getInRange(poiType -> poiType.is(PoiTypes.HOME), pos, radius, PoiManager.Occupancy.ANY)
+                .findAny()
+                .isPresent();
     }
 
 }

@@ -1,7 +1,9 @@
 package top.ribs.scguns.entity.ai;
 
 import com.mrcrayfish.framework.api.network.LevelLocation;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -11,6 +13,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import top.ribs.scguns.Config;
 import top.ribs.scguns.entity.weapon.ScGunsWeapon;
 import top.ribs.scguns.item.GunItem;
@@ -26,6 +29,8 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
     private static final double MAX_MAX_ATTACK_RANGE = 48.0D;
     private static final double CLOSE_STOP_RANGE_SQR = 36.0D;
     private static final double PREFERRED_STOP_RANGE_SQR = 196.0D;
+    private static final String MOB_GUN_KEY = "scguns:MobGun";
+    private static final String VIVENTRUM_MOB_GUN_KEY = "scguns:ViventrumMobGun";
 
     private final T shooter;
     private final int aiDifficulty;
@@ -33,6 +38,8 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
     private int attackTime;
     private int burstTimer;
     private int remainingBursts;
+    private int reloadTime;
+    private boolean reloading;
     private ScGunsWeapon weapon;
     private ItemStack cachedStack = ItemStack.EMPTY;
 
@@ -60,6 +67,8 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         seeTime = 0;
         remainingBursts = 0;
         burstTimer = 0;
+        reloadTime = 0;
+        reloading = false;
     }
 
     @Override
@@ -68,6 +77,8 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         seeTime = 0;
         remainingBursts = 0;
         burstTimer = 0;
+        reloadTime = 0;
+        reloading = false;
     }
 
     @Override
@@ -97,6 +108,14 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         }
 
         shooter.getLookControl().setLookAt(target, 30.0F, 30.0F);
+
+        if (!weapon.isLoaded()) {
+            tickReload();
+            return;
+        }
+
+        reloading = false;
+        reloadTime = 0;
 
         if (distance > maxAttackRangeSqr) {
             seeTime = 0;
@@ -149,7 +168,7 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
             return;
         }
 
-        double spread = Math.max(0.02D, 0.35D - aiDifficulty * 0.08D);
+        double spread = Math.max(0.02D, 0.35D - aiDifficulty * 0.08D) * getInaccuracyMultiplier();
         double x = target.getX() + (shooter.getRandom().nextDouble() - 0.5D) * spread;
         double y = (target.getEyeY() + target.getY()) * 0.5D + (shooter.getRandom().nextDouble() - 0.5D) * spread;
         double z = target.getZ() + (shooter.getRandom().nextDouble() - 0.5D) * spread;
@@ -162,8 +181,56 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         shooter.swing(shooter.getUsedItemHand());
     }
 
+    private double getInaccuracyMultiplier() {
+        ItemStack stack = shooter.getMainHandItem();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (tag.getBoolean(VIVENTRUM_MOB_GUN_KEY)) {
+            return 1.0D;
+        }
+        return Config.COMMON.gunnerMobs.gunnerMobInaccuracyMultiplier.get();
+    }
+
     private int getWeaponCooldown() {
         return weapon != null ? Math.max(1, weapon.getAttackCooldown()) : 20;
+    }
+
+    private void tickReload() {
+        shooter.getNavigation().stop();
+        if (!reloading) {
+            reloading = true;
+            reloadTime = weapon.getReloadTime();
+            SoundEvent reloadSound = weapon.getLoadSound();
+            if (reloadSound != null) {
+                shooter.level().playSound(null, shooter, reloadSound, SoundSource.HOSTILE, 0.8F, 1.0F);
+            }
+        }
+
+        if (reloadTime > 0) {
+            reloadTime--;
+            return;
+        }
+
+        refillCurrentWeapon();
+        reloading = false;
+        reloadTime = 0;
+        attackTime = Math.max(5, getWeaponCooldown());
+    }
+
+    private void refillCurrentWeapon() {
+        ItemStack stack = shooter.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem)) {
+            return;
+        }
+
+        ScGunsWeapon currentWeapon = new ScGunsWeapon(stack);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (tag.getBoolean(MOB_GUN_KEY) && !tag.getBoolean(VIVENTRUM_MOB_GUN_KEY)) {
+            tag.remove("IgnoreAmmo");
+        }
+        tag.putInt("AmmoCount", currentWeapon.getMaxAmmo());
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        weapon = new ScGunsWeapon(stack);
+        cachedStack = stack.copy();
     }
 
     private boolean isTargetWithinAttackRange(LivingEntity target) {

@@ -3,7 +3,7 @@
     "flash": {
       "size": 1.2,
       "yOffset": 4.3,
-      "zOffset": -14.0,
+      "zOffset": -14,
       "textureLocation": "muzzle_flash_1"
     }
   },
@@ -15,9 +15,14 @@
     "rate": 4,
     "meleeDamage": 2.5,
     "meleeCooldownTicks": 20,
-    "meleeReach": 4.0,
+    "meleeReach": 4,
     "hotBarrelRate": 15,
-    "isRevolver": true
+    "isRevolver": true,
+    "alwaysSpread": true,
+    "recoilAngle": 3,
+    "recoilKick": 1,
+    "spread": 2,
+    "criticalChance": 0.05
   },
   "modules": {
     "attachments": {
@@ -26,7 +31,7 @@
         "zOffset": 3.5
       },
       "stock": {
-        "scale": 0.0
+        "scale": 0
       }
     },
     "zoom": {
@@ -37,16 +42,16 @@
   },
   "projectile": {
     "alwaysSpread": true,
-    "recoilAngle": 3.0,
-    "recoilKick": 1.0,
-    "spread": 2.0,
+    "recoilAngle": 3,
+    "recoilKick": 1,
+    "spread": 2,
     "criticalChance": 0.05,
     "advantage": "scguns:fire",
     "damage": 11.5,
-    "damageFalloffStart": 28.0,
-    "damageFalloffEnd": 65.0,
+    "damageFalloffStart": 28,
+    "damageFalloffEnd": 65,
     "damageFalloffMinMultiplier": 0.75,
-    "armorPen": 2.0,
+    "armorPen": 2,
     "ejectsCasing": true,
     "gravity": false,
     "item": "scguns:advanced_round",
@@ -54,9 +59,9 @@
     "casingParticle": "scguns:brass_casing",
     "ejectDuringReload": true,
     "life": 55,
-    "size": 1.0,
-    "speed": 10.0,
-    "trailLengthMultiplier": 2.0
+    "size": 1,
+    "speed": 10,
+    "trailLengthMultiplier": 2
   },
   "reloads": {
     "emptyMagTimer": 0,

@@ -23,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.ribs.scguns.init.ModSounds;
 
 import java.util.EnumSet;
 
@@ -152,19 +153,19 @@ public class DissidentEntity extends Monster {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ZOMBIE_HORSE_AMBIENT;
+        return ModSounds.DISSIDENT_IDLE.get();
     }
 
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.ZOMBIE_HORSE_HURT;
+        return ModSounds.DISSIDENT_HURT.get();
     }
 
     @Nullable
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ZOMBIE_HORSE_DEATH;
+        return ModSounds.DISSIDENT_DIE.get();
     }
 
     public float getAttackSoundVolume() {

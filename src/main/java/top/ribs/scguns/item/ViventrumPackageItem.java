@@ -15,6 +15,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import top.ribs.scguns.common.MobGuideHelper;
 import top.ribs.scguns.entity.monster.ViventrumEntity;
 import top.ribs.scguns.init.ModEntities;
 
@@ -40,6 +41,10 @@ public class ViventrumPackageItem extends Item {
                 viventrum.tame(player);
                 viventrum.setOrderedToSit(true);
                 serverLevel.addFreshEntity(viventrum);
+                ItemStack guideBook = MobGuideHelper.createGuideBook(ModEntities.VIVENTRUM.get());
+                if (!guideBook.isEmpty() && !player.getInventory().add(guideBook)) {
+                    player.drop(guideBook, false);
+                }
                 if (!player.getAbilities().instabuild) {
                     itemStack.shrink(1);
                 }

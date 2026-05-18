@@ -111,18 +111,52 @@ public class ClientPlayHandler {
     }
     public static void handleReloadState(boolean reloading) {
         if (Minecraft.getInstance().player != null) {
-            ItemStack heldItem = Minecraft.getInstance().player.getMainHandItem();
+            Player player = Minecraft.getInstance().player;
+            ItemStack heldItem = player.getMainHandItem();
             if (heldItem.getItem() instanceof GunItem) {
                 CompoundTag tag = getStackTag(heldItem);
+                Gun modifiedGun = ((GunItem) heldItem.getItem()).getModifiedGun(heldItem);
 
                 if (!reloading) {
+                    boolean wasManualReloading = modifiedGun.getReloads().getReloadType() == ReloadType.MANUAL &&
+                            heldItem.getItem() instanceof AnimatedGunItem &&
+                            (tag.getBoolean("scguns:IsReloading") ||
+                                    tag.getBoolean("IsReloading") ||
+                                    (tag.contains("scguns:ReloadState") &&
+                                            !tag.getString("scguns:ReloadState").equals("NONE")) ||
+                                    ModSyncedDataKeys.RELOADING.getValue(player));
+
                     tag.remove("IsReloading");
                     tag.remove("scguns:IsReloading");
                     tag.putBoolean("scguns:ReloadComplete", true);
+
+                    if (wasManualReloading) {
+                        AnimatedGunItem animatedGun = (AnimatedGunItem) heldItem.getItem();
+                        tag.putString("scguns:ReloadState", "STOPPING");
+                        tag.putBoolean("scguns:IsPlayingReloadStop", true);
+                        tag.remove("InReloadLoop");
+                        tag.remove("loaded");
+
+                        long id = GeoItem.getId(heldItem);
+                        AnimationController<GeoAnimatable> animationController = animatedGun
+                                .getAnimatableInstanceCache()
+                                .getManagerForId(id)
+                                .getAnimationControllers()
+                                .get("controller");
+
+                        if (animationController != null) {
+                            animationController.stop();
+                            animationController.setAnimationSpeed(1.0);
+                            animationController.tryTriggerAnimation(
+                                    animatedGun.isInCarbineMode(heldItem) ? "carbine_reload_stop" : "reload_stop"
+                            );
+                        }
+                    }
+
                     setStackTag(heldItem, tag);
-                    ModSyncedDataKeys.RELOADING.setValue(Minecraft.getInstance().player, false);
+                    ModSyncedDataKeys.RELOADING.setValue(player, false);
                 } else {
-                    ModSyncedDataKeys.RELOADING.setValue(Minecraft.getInstance().player, true);
+                    ModSyncedDataKeys.RELOADING.setValue(player, true);
                 }
             }
         }
@@ -157,6 +191,7 @@ public class ClientPlayHandler {
         if (animationController != null && (currentAmmo >= maxAmmo || hasNoAmmo)) {
             tag.putString("scguns:ReloadState", "STOPPING");
             tag.putBoolean("scguns:IsPlayingReloadStop", true);
+            tag.remove("InReloadLoop");
             animationController.setAnimationSpeed(1.0);
             animationController.forceAnimationReset();
             animationController.tryTriggerAnimation(
@@ -166,6 +201,7 @@ public class ClientPlayHandler {
         tag.remove("scguns:IsReloading");
         tag.remove("loaded");
         tag.remove("scguns:ReloadComplete");
+        setStackTag(heldItem, tag);
     }
     public static void handleMessageGunSound(S2CMessageGunSound message) {
         Minecraft mc = Minecraft.getInstance();

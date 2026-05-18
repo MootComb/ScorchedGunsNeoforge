@@ -945,11 +945,11 @@ public class GunRenderingHandler {
         Gun.Display.Flash flash = modifiedGun.getDisplay().getFlash();
         if (flash == null) return;
 
-        if (!(entity instanceof Player)) return;
         if (display != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND &&
                 display != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND &&
                 display != ItemDisplayContext.FIRST_PERSON_LEFT_HAND &&
                 display != ItemDisplayContext.THIRD_PERSON_LEFT_HAND) return;
+        if (entity == null) return;
 
         boolean isBeamActive = BeamHandler.activeBeams.containsKey(entity.getUUID());
         if (!isBeamActive && !entityIdForMuzzleFlash.contains(entity.getId())) return;

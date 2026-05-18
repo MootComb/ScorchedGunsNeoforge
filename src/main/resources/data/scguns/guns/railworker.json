@@ -1,18 +1,21 @@
 {
-  "display": {
-
-  },
+  "display": {},
   "general": {
     "weaponType": "pistol",
     "fireMode": "scguns:semi_automatic",
     "gripType": "scguns:one_handed",
     "rate": 4,
-    "meleeDamage": 3.0,
+    "meleeDamage": 3,
     "meleeCooldownTicks": 10,
     "meleeReach": 2.5,
     "hotBarrelRate": 10,
     "isSilenced": true,
-    "enableGunLight": false
+    "enableGunLight": false,
+    "recoilAngle": 1,
+    "recoilKick": 1.2,
+    "spread": 2,
+    "criticalChance": 0.05,
+    "energyUse": 20
   },
   "modules": {
     "attachments": {
@@ -22,10 +25,10 @@
         "zOffset": 3.5
       },
       "magazine": {
-        "scale": 0.0
+        "scale": 0
       },
       "stock": {
-        "scale": 0.0
+        "scale": 0
       }
     },
     "zoom": {
@@ -36,23 +39,23 @@
   },
   "projectile": {
     "advantage": "scguns:bot",
-    "energyUse": 20.0,
-    "recoilAngle": 1.0,
+    "energyUse": 20,
+    "recoilAngle": 1,
     "recoilKick": 1.2,
-    "spread": 2.0,
+    "spread": 2,
     "criticalChance": 0.05,
     "damage": 6.5,
-    "damageFalloffStart": 12.0,
-    "damageFalloffEnd": 30.0,
+    "damageFalloffStart": 12,
+    "damageFalloffEnd": 30,
     "damageFalloffMinMultiplier": 0.45,
-    "armorPen": 0.0,
+    "armorPen": 0,
     "gravity": true,
     "item": "scguns:needle",
     "ejectsCasing": false,
     "life": 45,
     "size": 0.05,
-    "speed": 6.0,
-    "trailLengthMultiplier": 2.0,
+    "speed": 6,
+    "trailLengthMultiplier": 2,
     "impactEffect": "scguns:lacerated",
     "impactEffectDuration": 300,
     "impactEffectChance": 0.6,

@@ -87,10 +87,12 @@ public class AmmoModuleBlock extends BaseTurretModuleBlock {
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof Container) {
-                Containers.dropContents(level, pos, (Container) blockEntity);
-                level.updateNeighbourForOutputSignal(pos, this);
+            if (!isMoving) {
+                BlockEntity blockEntity = level.getBlockEntity(pos);
+                if (blockEntity instanceof Container) {
+                    Containers.dropContents(level, pos, (Container) blockEntity);
+                    level.updateNeighbourForOutputSignal(pos, this);
+                }
             }
             super.onRemove(state, level, pos, newState, isMoving);
         }

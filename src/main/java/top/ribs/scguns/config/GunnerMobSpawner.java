@@ -32,13 +32,18 @@ import java.util.List;
 public class GunnerMobSpawner {
     private static final String CHECKED_KEY = "scguns:GunnerChecked";
     private static final String GUNNER_KEY = "scguns:GunnerMob";
+    private static final ResourceLocation GUARD_VILLAGERS_GUARD = ResourceLocation.fromNamespaceAndPath("guardvillagers", "guard");
 
     @SubscribeEvent
     public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
-        if (event.loadedFromDisk() || event.getLevel().isClientSide()) {
+        if (event.getLevel().isClientSide()) {
             return;
         }
         if (!(event.getEntity() instanceof PathfinderMob mob)) {
+            return;
+        }
+        boolean guardVillager = GUARD_VILLAGERS_GUARD.equals(BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()));
+        if (guardVillager || event.loadedFromDisk()) {
             return;
         }
         if (mob.getPersistentData().getBoolean(CHECKED_KEY)) {
@@ -86,6 +91,17 @@ public class GunnerMobSpawner {
         ScorchedGuns.TIERED_WEAPON_CONFIG = TieredWeaponConfig.load();
         ScorchedGuns.ELITE_TIER_CONFIG = EliteTierConfig.load();
         GunMobValues.init();
+    }
+
+    public static void checkGuardVillager(PathfinderMob mob) {
+        if (!GUARD_VILLAGERS_GUARD.equals(BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()))) {
+            return;
+        }
+        if (mob.getPersistentData().getBoolean(CHECKED_KEY)) {
+            return;
+        }
+        mob.getPersistentData().putBoolean(CHECKED_KEY, true);
+        tryEquipGunner(mob);
     }
 
     private static void tryEquipGunner(PathfinderMob mob) {
@@ -281,7 +297,6 @@ public class GunnerMobSpawner {
         }
         Gun gun = gunItem.getModifiedGun(stack);
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        tag.putBoolean("IgnoreAmmo", true);
         tag.putInt("AmmoCount", Math.max(1, gun.getReloads().getMaxAmmo()));
         tag.putBoolean("scguns:MobGun", true);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));

@@ -110,7 +110,7 @@ public class PoweredMechanicalPressBlock extends BaseEntityBlock implements Simp
     }
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pState.getBlock() != pNewState.getBlock()) {
+        if (pState.getBlock() != pNewState.getBlock() && !pIsMoving) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             if (blockEntity instanceof PoweredMechanicalPressBlockEntity) {
                 ((PoweredMechanicalPressBlockEntity) blockEntity).drops();

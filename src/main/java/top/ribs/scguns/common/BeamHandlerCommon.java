@@ -26,6 +26,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import top.ribs.scguns.Config;
+import top.ribs.scguns.compat.SableBlockInteraction;
 import top.ribs.scguns.init.ModTags;
 
 import java.util.*;
@@ -58,17 +59,26 @@ public class BeamHandlerCommon {
             }
         }
 
-        public static class ExtendedBlockHitResult extends BlockHitResult {
+        public static class ExtendedBlockHitResult extends BlockHitResult implements SableBlockInteraction.EmbeddedBlockHit {
             private double damageMultiplier = 1.0;
             private List<BlockHitResult> glassPenetrations = new ArrayList<>();
+            private Level interactionLevel;
+            private BlockPos interactionBlockPos;
 
             public ExtendedBlockHitResult(Vec3 location, Direction direction, BlockPos blockPos, boolean insideBlock) {
                 super(location, direction, blockPos, insideBlock);
             }
 
             public static ExtendedBlockHitResult fromBlockHitResult(BlockHitResult original) {
-                return new ExtendedBlockHitResult(original.getLocation(), original.getDirection(),
+                ExtendedBlockHitResult result = new ExtendedBlockHitResult(original.getLocation(), original.getDirection(),
                         original.getBlockPos(), original.isInside());
+                if (original instanceof SableBlockInteraction.EmbeddedBlockHit embedded) {
+                    result.interactionLevel = embedded.scguns$getInteractionLevel();
+                    result.interactionBlockPos = embedded.scguns$getInteractionBlockPos();
+                } else {
+                    result.interactionBlockPos = original.getBlockPos();
+                }
+                return result;
             }
 
             public void setDamageMultiplier(double multiplier) {
@@ -85,6 +95,16 @@ public class BeamHandlerCommon {
 
             public List<BlockHitResult> getGlassPenetrations() {
                 return glassPenetrations;
+            }
+
+            @Override
+            public Level scguns$getInteractionLevel() {
+                return this.interactionLevel;
+            }
+
+            @Override
+            public BlockPos scguns$getInteractionBlockPos() {
+                return this.interactionBlockPos;
             }
         }
 
@@ -117,8 +137,11 @@ public class BeamHandlerCommon {
 
             while (distanceTraveled < maxDistance) {
                 Vec3 nextEndVec = currentPos.add(direction.scale(maxDistance - distanceTraveled));
-                BlockHitResult blockHit = world.clip(new ClipContext(currentPos, nextEndVec,
-                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
+                ClipContext blockContext = new ClipContext(currentPos, nextEndVec,
+                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter);
+                BlockHitResult blockHit = nearestBlockHit(currentPos,
+                        world.clip(blockContext),
+                        SableBlockInteraction.clipSubLevels(world, blockContext));
 
                 if (blockHit.getType() == HitResult.Type.MISS) {
                     EntityHitResult entityHit = rayTraceEntities(world, shooter, currentPos, nextEndVec);
@@ -130,7 +153,7 @@ public class BeamHandlerCommon {
                     return blockHit;
                 }
 
-                BlockState hitState = world.getBlockState(blockHit.getBlockPos());
+                BlockState hitState = SableBlockInteraction.getBlockState(world, blockHit);
                 if (isGlassBlock(hitState)) {
                     glassPenetrations.add(blockHit);
                     remainingDamageMultiplier *= (1.0 - GLASS_PENETRATION_DAMAGE_REDUCTION);
@@ -159,6 +182,16 @@ public class BeamHandlerCommon {
             ));
         }
 
+        private static BlockHitResult nearestBlockHit(Vec3 start, BlockHitResult fallback, BlockHitResult candidate) {
+            if (candidate == null || candidate.getType() == HitResult.Type.MISS) {
+                return fallback;
+            }
+            if (fallback == null || fallback.getType() == HitResult.Type.MISS) {
+                return candidate;
+            }
+            return start.distanceToSqr(candidate.getLocation()) < start.distanceToSqr(fallback.getLocation()) ? candidate : fallback;
+        }
+
         private static boolean isGlassBlock(BlockState state) {
             return state.is(BlockTags.create(ResourceLocation.fromNamespaceAndPath("forge", "glass"))) ||
                     state.is(Blocks.GLASS) ||
@@ -168,6 +201,17 @@ public class BeamHandlerCommon {
 
         public static void updateBlockMining(Level world, BlockPos pos, ServerPlayer player, Gun modifiedGun) {
             BlockState state = world.getBlockState(pos);
+            updateBlockMining(world, pos, state, player, modifiedGun);
+        }
+
+        public static void updateBlockMining(Level world, BlockHitResult hitResult, ServerPlayer player, Gun modifiedGun) {
+            Level interactionLevel = SableBlockInteraction.levelFor(world, hitResult);
+            BlockPos pos = SableBlockInteraction.blockPosFor(hitResult);
+            BlockState state = interactionLevel.getBlockState(pos);
+            updateBlockMining(interactionLevel, pos, state, player, modifiedGun);
+        }
+
+        private static void updateBlockMining(Level world, BlockPos pos, BlockState state, ServerPlayer player, Gun modifiedGun) {
             if (state.isAir() || isGlassBlock(state)) {
                 return;
             }

@@ -18,6 +18,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,6 +30,7 @@ import top.ribs.scguns.init.ModBlockEntities;
 
 public class AmmoModuleBlockEntity extends RandomizableContainerBlockEntity {
     private NonNullList<ItemStack> items;
+    private final IItemHandlerModifiable itemStackHandler = new ContainerItemHandler(this);
     private final ContainerOpenersCounter openersCounter;
     private int transferCooldown = 0;
     private static final int TRANSFER_COOLDOWN = 3;
@@ -67,11 +69,35 @@ public class AmmoModuleBlockEntity extends RandomizableContainerBlockEntity {
         Direction facing = state.getValue(AmmoModuleBlock.FACING);
         Direction targetDirection = facing.getOpposite();
         BlockPos adjacentPos = pos.relative(targetDirection);
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, adjacentPos, null);
-        if (handler != null) {
-            transferItemToInventory(ammoModule, handler);
+        BlockEntity adjacentBlockEntity = level.getBlockEntity(adjacentPos);
+        if (adjacentBlockEntity instanceof TurretBlockEntity turret) {
+            transferItemToTurret(ammoModule, turret);
+        } else {
+            IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, adjacentPos, targetDirection.getOpposite());
+            if (handler == null) {
+                handler = level.getCapability(Capabilities.ItemHandler.BLOCK, adjacentPos, null);
+            }
+            if (handler != null) {
+                transferItemToInventory(ammoModule, handler);
+            }
         }
         ammoModule.transferCooldown = TRANSFER_COOLDOWN;
+    }
+
+    private static void transferItemToTurret(AmmoModuleBlockEntity ammoModule, TurretBlockEntity turret) {
+        for (int i = 0; i < ammoModule.getContainerSize(); i++) {
+            ItemStack stack = ammoModule.getItem(i);
+            if (!stack.isEmpty()) {
+                ItemStack singleItemStack = stack.split(1);
+                ItemStack remainingStack = turret.insertAmmoFromModule(singleItemStack, false);
+                if (!remainingStack.isEmpty()) {
+                    stack.grow(remainingStack.getCount());
+                }
+                ammoModule.setItem(i, stack);
+                ammoModule.setChanged();
+                break;
+            }
+        }
     }
     private static void transferItemToInventory(AmmoModuleBlockEntity ammoModule, IItemHandler handler) {
         for (int i = 0; i < ammoModule.getContainerSize(); i++) {
@@ -148,42 +174,7 @@ public class AmmoModuleBlockEntity extends RandomizableContainerBlockEntity {
     }
 
     public IItemHandlerModifiable getItemStackHandler() {
-        return new IItemHandlerModifiable() {
-            @Override
-            public void setStackInSlot(int slot, ItemStack stack) {
-                AmmoModuleBlockEntity.this.items.set(slot, stack);
-            }
-
-            @Override
-            public int getSlots() {
-                return AmmoModuleBlockEntity.this.items.size();
-            }
-
-            @Override
-            public ItemStack getStackInSlot(int slot) {
-                return AmmoModuleBlockEntity.this.items.get(slot);
-            }
-
-            @Override
-            public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-                return stack;
-            }
-
-            @Override
-            public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                return AmmoModuleBlockEntity.this.items.get(slot);
-            }
-
-            @Override
-            public int getSlotLimit(int slot) {
-                return 64;
-            }
-
-            @Override
-            public boolean isItemValid(int slot, ItemStack stack) {
-                return true;
-            }
-        };
+        return this.itemStackHandler;
     }
     public static class TransferHelper {
         public static ItemStack transferItemToInventory(IItemHandler inventory, ItemStack stack) {

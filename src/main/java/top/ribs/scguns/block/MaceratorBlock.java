@@ -110,7 +110,7 @@ public class MaceratorBlock extends BaseEntityBlock implements SimpleWaterlogged
     }
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pState.getBlock() != pNewState.getBlock()) {
+        if (pState.getBlock() != pNewState.getBlock() && !pIsMoving) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             if (blockEntity instanceof MaceratorBlockEntity) {
                 ((MaceratorBlockEntity) blockEntity).drops();

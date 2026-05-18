@@ -159,15 +159,17 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
         }
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
-        boolean right = Minecraft.getInstance().options.mainHand().get() == HumanoidArm.RIGHT ? player.getUsedItemHand() == InteractionHand.MAIN_HAND : player.getUsedItemHand() == InteractionHand.OFF_HAND;
+        boolean right = player == null || (Minecraft.getInstance().options.mainHand().get() == HumanoidArm.RIGHT
+                ? player.getUsedItemHand() == InteractionHand.MAIN_HAND
+                : player.getUsedItemHand() == InteractionHand.OFF_HAND);
         ItemStack overrideModel = ItemStack.EMPTY;
         CompoundTag stackTag = getOrCreateStackTag(stack);
         if (stackTag.contains("Model", 10)) {
             overrideModel = parseClientStack(stackTag.getCompound("Model"));
         }
 
-        LocalPlayer localPlayer = Objects.requireNonNull(Minecraft.getInstance().player);
-        BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(overrideModel.isEmpty() ? stack : overrideModel, player.level(), player, 0);
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(overrideModel.isEmpty() ? stack : overrideModel, client.level, player, 0);
         float scaleX = model.getTransforms().firstPersonRightHand.scale.x();
         float scaleY = model.getTransforms().firstPersonRightHand.scale.y();
         float scaleZ = model.getTransforms().firstPersonRightHand.scale.z();
@@ -178,7 +180,7 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
 //            poseStack.translate(0.0, -0.5, 0.0);
 //        }
 
-        if (stack.getItem() instanceof AnimatedGunItem && transformType == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+        if (player != null && stack.getItem() instanceof AnimatedGunItem && transformType == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
             Gun modifiedGun = ((GunItem) stack.getItem()).getModifiedGun(stack);
             if (AimingHandler.get().getNormalisedAdsProgress() > 0.0 && modifiedGun.canAimDownSight()) {
                 double xOffset = translateX;
@@ -241,15 +243,15 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
             }
         }
 
-        int blockLight = player.isOnFire() ? 15 : player.level().getBrightness(LightLayer.BLOCK, BlockPos.containing(player.getEyePosition(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false))));
-        if (ShootingHandler.get().isShooting() && !GunModifierHelper.isSilencedFire(stack)) {
-            blockLight += GunRenderingHandler.entityIdForMuzzleFlash.contains(player.getId()) ? 3 : 0;
-        }
-
-        blockLight = Math.min(blockLight, 15);
-        if (transformType == ItemDisplayContext.GUI) {
+        if (player == null || transformType == ItemDisplayContext.GUI) {
             packedLight = LightTexture.pack(12, 12);
         } else {
+            int blockLight = player.isOnFire() ? 15 : player.level().getBrightness(LightLayer.BLOCK, BlockPos.containing(player.getEyePosition(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false))));
+            if (ShootingHandler.get().isShooting() && !GunModifierHelper.isSilencedFire(stack)) {
+                blockLight += GunRenderingHandler.entityIdForMuzzleFlash.contains(player.getId()) ? 3 : 0;
+            }
+
+            blockLight = Math.min(blockLight, 15);
             packedLight = LightTexture.pack(blockLight, player.level().getBrightness(LightLayer.SKY, BlockPos.containing(player.getEyePosition(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false)))));
         }
 
@@ -795,7 +797,7 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
                 display != ItemDisplayContext.THIRD_PERSON_LEFT_HAND) {
             return;
         }
-        if (!(entity instanceof Player)) return;
+        if (entity == null) return;
 
         boolean isBeamActive = BeamHandler.activeBeams.containsKey(entity.getUUID());
         if (!isBeamActive && !GunRenderingHandler.entityIdForMuzzleFlash.contains(entity.getId())) {

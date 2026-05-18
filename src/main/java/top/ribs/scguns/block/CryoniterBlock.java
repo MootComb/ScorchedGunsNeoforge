@@ -72,9 +72,11 @@ public class CryoniterBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof CryoniterBlockEntity cryoniterBlockEntity) {
-                cryoniterBlockEntity.drops();
+            if (!isMoving) {
+                BlockEntity blockEntity = level.getBlockEntity(pos);
+                if (blockEntity instanceof CryoniterBlockEntity cryoniterBlockEntity) {
+                    cryoniterBlockEntity.drops();
+                }
             }
             super.onRemove(state, level, pos, newState, isMoving);
         }

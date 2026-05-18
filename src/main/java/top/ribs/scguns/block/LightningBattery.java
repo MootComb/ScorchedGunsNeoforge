@@ -65,9 +65,11 @@ public class LightningBattery extends Block implements EntityBlock {
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof LightningBatteryBlockEntity) {
-                ((LightningBatteryBlockEntity) blockEntity).drops();
+            if (!isMoving) {
+                BlockEntity blockEntity = world.getBlockEntity(pos);
+                if (blockEntity instanceof LightningBatteryBlockEntity) {
+                    ((LightningBatteryBlockEntity) blockEntity).drops();
+                }
             }
             super.onRemove(state, world, pos, newState, isMoving);
         }

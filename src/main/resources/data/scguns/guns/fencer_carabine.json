@@ -1,7 +1,7 @@
 {
   "display": {
     "flash": {
-      "size": 1.0,
+      "size": 1,
       "yOffset": 3.8,
       "zOffset": -8.5,
       "textureLocation": "muzzle_flash_1",
@@ -20,17 +20,22 @@
     "rate": 19,
     "meleeDamage": 2.5,
     "meleeCooldownTicks": 20,
-    "hotBarrelRate": 30
+    "hotBarrelRate": 30,
+    "alwaysSpread": true,
+    "recoilAngle": 4,
+    "recoilKick": 1,
+    "spread": 1,
+    "criticalChance": 0.03
   },
   "modules": {
     "attachments": {
       "scope": {
         "yOffset": 4.9,
-        "zOffset": 4.0
+        "zOffset": 4
       },
       "underBarrel": {
-        "yOffset": 1.0,
-        "zOffset": 1.0
+        "yOffset": 1,
+        "zOffset": 1
       }
     },
     "zoom": {
@@ -41,22 +46,22 @@
   },
   "projectile": {
     "alwaysSpread": true,
-    "recoilAngle": 4.0,
-    "recoilKick": 1.0,
-    "spread": 1.0,
+    "recoilAngle": 4,
+    "recoilKick": 1,
+    "spread": 1,
     "criticalChance": 0.03,
     "advantage": "scguns:none",
-    "damage": 9.0,
-    "damageFalloffStart": 22.0,
-    "damageFalloffEnd": 55.0,
+    "damage": 9,
+    "damageFalloffStart": 22,
+    "damageFalloffEnd": 55,
     "damageFalloffMinMultiplier": 0.7,
     "ejectsCasing": false,
     "gravity": false,
     "item": "scguns:powder_and_ball",
     "life": 35,
-    "size": 1.0,
-    "speed": 5.0,
-    "trailLengthMultiplier": 2.0
+    "size": 1,
+    "speed": 5,
+    "trailLengthMultiplier": 2
   },
   "reloads": {
     "emptyMagTimer": 50,

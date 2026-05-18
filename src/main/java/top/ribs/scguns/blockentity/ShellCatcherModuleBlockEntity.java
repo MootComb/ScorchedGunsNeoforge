@@ -26,6 +26,7 @@ import top.ribs.scguns.init.ModBlockEntities;
 
 public class ShellCatcherModuleBlockEntity extends RandomizableContainerBlockEntity {
     private NonNullList<ItemStack> items;
+    private final IItemHandlerModifiable itemStackHandler = new ContainerItemHandler(this);
     private final ContainerOpenersCounter openersCounter;
 
     public ShellCatcherModuleBlockEntity(BlockPos pPos, BlockState pBlockState) {
@@ -112,41 +113,6 @@ public class ShellCatcherModuleBlockEntity extends RandomizableContainerBlockEnt
     }
 
     public IItemHandlerModifiable getItemStackHandler() {
-        return new IItemHandlerModifiable() {
-            @Override
-            public void setStackInSlot(int slot, ItemStack stack) {
-                ShellCatcherModuleBlockEntity.this.items.set(slot, stack);
-            }
-
-            @Override
-            public int getSlots() {
-                return ShellCatcherModuleBlockEntity.this.items.size();
-            }
-
-            @Override
-            public ItemStack getStackInSlot(int slot) {
-                return ShellCatcherModuleBlockEntity.this.items.get(slot);
-            }
-
-            @Override
-            public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-                return stack;
-            }
-
-            @Override
-            public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                return ShellCatcherModuleBlockEntity.this.items.get(slot);
-            }
-
-            @Override
-            public int getSlotLimit(int slot) {
-                return 64;
-            }
-
-            @Override
-            public boolean isItemValid(int slot, ItemStack stack) {
-                return true;
-            }
-        };
+        return this.itemStackHandler;
     }
 }

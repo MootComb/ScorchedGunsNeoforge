@@ -1,7 +1,7 @@
 {
   "display": {
     "flash": {
-      "size": 1.0,
+      "size": 1,
       "yOffset": 5.3,
       "zOffset": -6.2,
       "textureLocation": "muzzle_flash_1"
@@ -15,7 +15,15 @@
     "rate": 4,
     "meleeDamage": 2.5,
     "meleeCooldownTicks": 20,
-    "hotBarrelRate": 16
+    "hotBarrelRate": 16,
+    "alwaysSpread": true,
+    "projectileAmount": 22,
+    "recoilAngle": 15,
+    "recoilKick": 2,
+    "spread": 10.5,
+    "criticalChance": 0.05,
+    "playerKnockBack": true,
+    "playerKnockBackStrength": 0.2
   },
   "modules": {
     "attachments": {
@@ -24,7 +32,7 @@
         "zOffset": -8.2
       },
       "magazine": {
-        "scale": 0.0
+        "scale": 0
       }
     },
     "zoom": {
@@ -35,16 +43,16 @@
   },
   "projectile": {
     "alwaysSpread": true,
-    "recoilAngle": 15.0,
-    "recoilKick": 2.0,
+    "recoilAngle": 15,
+    "recoilKick": 2,
     "spread": 10.5,
     "projectileAmount": 22,
     "criticalChance": 0.05,
     "playerKnockBack": true,
     "playerKnockBackStrength": 0.2,
     "knockbackStrength": 0.85,
-    "damageFalloffStart": 8.0,
-    "damageFalloffEnd": 18.0,
+    "damageFalloffStart": 8,
+    "damageFalloffEnd": 18,
     "damageFalloffMinMultiplier": 0.4,
     "advantage": "scguns:none",
     "damage": 19.5,
@@ -55,8 +63,8 @@
     "casingParticle": "scguns:shell",
     "life": 33,
     "size": 0.1,
-    "speed": 4.0,
-    "trailLengthMultiplier": 2.0,
+    "speed": 4,
+    "trailLengthMultiplier": 2,
     "trailThickness": 0.5
   },
   "reloads": {

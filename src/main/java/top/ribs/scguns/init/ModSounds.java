@@ -41,6 +41,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> BEAM_FIRE = register("item.beam.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> BRUISER_SILENCED_FIRE = register("item.bruiser.silenced_fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> MAKESHIFT_RIFLE_FIRE = register("item.makeshift_rifle.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NEW_RIFLE_FIRE = register("item.new_rifle.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> NEW_RIFLE_FIRE_2 = register("item.new_rifle.fire_2");
     public static final DeferredHolder<SoundEvent, SoundEvent> REVOLVER_FIRE = register("item.revolver.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> COWBOY_FIRE = register("item.cowboy.fire");
@@ -74,6 +75,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GAUSS_FIRE = register("item.gauss.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_FIRE = register("item.rocket.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_RIFLE_FIRE = register("item.rocket_rifle.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_RIFLE_FIRE_2 = register("item.rocket_rifle.fire_2");
     public static final DeferredHolder<SoundEvent, SoundEvent> BRASS_REVOLVER = register("item.brass_revolver.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> GAUSS_PRE_FIRE = register("item.gauss.pre_fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> GAUSS_RELOAD = register("item.gauss.reload");
@@ -91,6 +93,15 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ITEM_GRENADE_PIN = register("item.grenade.pin");
     public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_STUN_GRENADE_EXPLOSION = register("entity.stun_grenade.explosion");
     public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_STUN_GRENADE_RING = register("entity.stun_grenade.ring");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCAMP_HURT = register("entity.scamp.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCAMP_DIE = register("entity.scamp.die");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DISSIDENT_HURT = register("entity.dissident.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DISSIDENT_DIE = register("entity.dissident.die");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DISSIDENT_IDLE = register("entity.dissident.idle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRAETOR_HURT = register("entity.praetor.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRAETOR_DIE = register("entity.praetor.die");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRAETOR_IDLE = register("entity.praetor.idle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRAETOR_ROAR = register("entity.praetor.roar");
     public static final DeferredHolder<SoundEvent, SoundEvent> SULFURHEAD_HURT = register("entity.sulfurhead.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> SULFURHEAD_DIE = register("entity.sulfurhead.die");
     public static final DeferredHolder<SoundEvent, SoundEvent> SULFURHEAD_IDLE = register("entity.sulfurhead.idle");

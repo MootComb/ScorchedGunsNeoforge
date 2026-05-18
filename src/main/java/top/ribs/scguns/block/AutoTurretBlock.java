@@ -99,9 +99,11 @@ public class AutoTurretBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof AutoTurretBlockEntity turretBlockEntity) {
-                turretBlockEntity.drops();
+            if (!isMoving) {
+                BlockEntity blockEntity = level.getBlockEntity(pos);
+                if (blockEntity instanceof AutoTurretBlockEntity turretBlockEntity) {
+                    turretBlockEntity.drops();
+                }
             }
             super.onRemove(state, level, pos, newState, isMoving);
         }

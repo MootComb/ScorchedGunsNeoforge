@@ -1796,5 +1796,14 @@
   "upgrade.scguns.exosuit.power_core": "Ядро экзоскелета",
   "upgrade.scguns.exosuit.rebreather": "Ребризер",
   "upgrade.scguns.exosuit.target_tracker": "Трекер целей",
-  "upgrade.scguns.exosuit.utility_module": "Вспомогательный модуль"
+  "upgrade.scguns.exosuit.utility_module": "Вспомогательный модуль",
+  "subtitle.scguns.scamp.hurt": "Scamp Hurt",
+  "subtitle.scguns.scamp.die": "Scamp Death",
+  "subtitle.scguns.dissident.hurt": "Dissident Hurt",
+  "subtitle.scguns.dissident.die": "Dissident Death",
+  "subtitle.scguns.dissident.idle": "Dissident Idle",
+  "subtitle.scguns.praetor.hurt": "Praetor Hurt",
+  "subtitle.scguns.praetor.die": "Praetor Death",
+  "subtitle.scguns.praetor.idle": "Praetor Idle",
+  "subtitle.scguns.praetor.roar": "Praetor Roar"
 }

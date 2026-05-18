@@ -27,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.registries.BuiltInRegistries;
 import top.ribs.scguns.Config;
 import top.ribs.scguns.common.Gun;
+import top.ribs.scguns.compat.SableBlockInteraction;
 import top.ribs.scguns.init.ModTags;
 import top.ribs.scguns.init.ModDamageTypes;
 import top.ribs.scguns.item.GunItem;
@@ -98,17 +99,29 @@ public class KrahgRoundProjectileEntity extends ProjectileEntity {
                     }
                 }
                 if (blockDist < closestEntityDist && blockResult.getType() != HitResult.Type.MISS) {
-                    BlockState state = this.level().getBlockState(blockResult.getBlockPos());
-                    if (!canBreakBlock(state, blockResult.getBlockPos()) || hasPassedThroughBlock) {
+                    BlockState state = SableBlockInteraction.getBlockState(this.level(), blockResult);
+                    Level hitLevel = SableBlockInteraction.levelFor(this.level(), blockResult);
+                    BlockPos hitPos = SableBlockInteraction.blockPosFor(blockResult);
+                    if (!canBreakBlock(hitLevel, state, hitPos) || hasPassedThroughBlock) {
                         Vec3 hitLoc = blockResult.getLocation();
-                        this.onHitBlock(state, blockResult.getBlockPos(), blockResult.getDirection(),
-                                hitLoc.x, hitLoc.y, hitLoc.z);
+                        this.beginBlockHit(blockResult);
+                        try {
+                            this.onHitBlock(state, hitPos, blockResult.getDirection(),
+                                    hitLoc.x, hitLoc.y, hitLoc.z);
+                        } finally {
+                            this.endBlockHit();
+                        }
                         this.remove(RemovalReason.KILLED);
                         return;
                     }
                     Vec3 hitLoc = blockResult.getLocation();
-                    this.onHitBlock(state, blockResult.getBlockPos(), blockResult.getDirection(),
-                            hitLoc.x, hitLoc.y, hitLoc.z);
+                    this.beginBlockHit(blockResult);
+                    try {
+                        this.onHitBlock(state, hitPos, blockResult.getDirection(),
+                                hitLoc.x, hitLoc.y, hitLoc.z);
+                    } finally {
+                        this.endBlockHit();
+                    }
                     hasPassedThroughBlock = true;
                     startVec = hitLoc.add(this.getDeltaMovement().scale(0.01));
                     endVec = startVec.add(this.getDeltaMovement());
@@ -144,29 +157,35 @@ public class KrahgRoundProjectileEntity extends ProjectileEntity {
     }
     @Override
     protected void onHitBlock(BlockState state, BlockPos pos, Direction face, double x, double y, double z) {
-        boolean canBreak = canBreakBlock(state, pos);
-        if (!this.level().isClientSide) {
+        Level hitLevel = this.blockHitLevel();
+        BlockPos hitPos = this.blockHitPos(pos);
+        boolean canBreak = canBreakBlock(hitLevel, state, hitPos);
+        if (!hitLevel.isClientSide) {
             if (canBreak) {
-                this.level().destroyBlock(pos, true);
-                ((ServerLevel) this.level()).sendParticles(
-                        new BlockParticleOption(ParticleTypes.BLOCK, state),
-                        x, y, z, 20, 0.0D, 0.0D, 0.0D, 0.15D
-                );
-                this.level().playSound(null, pos,
+                hitLevel.destroyBlock(hitPos, true);
+                if (hitLevel instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(
+                            new BlockParticleOption(ParticleTypes.BLOCK, state),
+                            x, y, z, 20, 0.0D, 0.0D, 0.0D, 0.15D
+                    );
+                }
+                hitLevel.playSound(null, hitPos,
                         state.getSoundType().getBreakSound(),
                         SoundSource.BLOCKS, 1.0F, 1.0F
                 );
             } else {
-                ((ServerLevel) this.level()).sendParticles(
-                        ParticleTypes.CRIT,
-                        x, y, z,
-                        10,
-                        0.0D, 0.0D, 0.0D,
-                        0.1D
-                );
+                if (hitLevel instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(
+                            ParticleTypes.CRIT,
+                            x, y, z,
+                            10,
+                            0.0D, 0.0D, 0.0D,
+                            0.1D
+                    );
+                }
                 PacketHandler.getPlayChannel().sendToTrackingChunk(
-                        () -> this.level().getChunkAt(pos),
-                        new S2CMessageProjectileHitBlock(x, y, z, pos, face)
+                        () -> hitLevel.getChunkAt(hitPos),
+                        new S2CMessageProjectileHitBlock(x, y, z, hitPos, face)
                 );
             }
         }
@@ -175,6 +194,10 @@ public class KrahgRoundProjectileEntity extends ProjectileEntity {
         }
     }
     private boolean canBreakBlock(BlockState state, BlockPos pos) {
+        return canBreakBlock(this.level(), state, pos);
+    }
+
+    private boolean canBreakBlock(Level level, BlockState state, BlockPos pos) {
         if (!Config.COMMON.gameplay.griefing.enableBlockBreaking.get()) {
             return false;
         }
@@ -183,7 +206,7 @@ public class KrahgRoundProjectileEntity extends ProjectileEntity {
             return false;
         }
 
-        float hardness = state.getDestroySpeed(this.level(), pos);
+        float hardness = state.getDestroySpeed(level, pos);
         if (hardness < 0 || hardness > MAX_BREAKABLE_HARDNESS) {
             return false;
         }

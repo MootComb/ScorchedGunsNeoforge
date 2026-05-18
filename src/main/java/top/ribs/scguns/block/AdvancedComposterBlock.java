@@ -198,9 +198,11 @@ public class AdvancedComposterBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof AdvancedComposterBlockEntity) {
-                ((AdvancedComposterBlockEntity) blockEntity).drops();
+            if (!isMoving) {
+                BlockEntity blockEntity = world.getBlockEntity(pos);
+                if (blockEntity instanceof AdvancedComposterBlockEntity) {
+                    ((AdvancedComposterBlockEntity) blockEntity).drops();
+                }
             }
             super.onRemove(state, world, pos, newState, isMoving);
         }

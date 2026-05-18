@@ -98,6 +98,38 @@
         }
       ]
     },
+    "guardvillagers:guard": {
+      "spawn_chance": 1.0,
+      "ai_difficulty": 1,
+      "weapon_drop_chance": 0.03,
+      "weapons": [
+        {
+          "item": "scguns:flintlock_pistol",
+          "weight": 3.0
+        },
+        {
+          "item": "scguns:musket",
+          "weight": 3.0
+        },
+        {
+          "item": "scguns:blunderbuss",
+          "weight": 2.0
+        },
+        {
+          "item": "scguns:pax",
+          "weight": 2.0
+        },
+        {
+          "item": "scguns:winnie",
+          "weight": 1.0
+        },
+        {
+          "item": "scguns:callwell",
+          "weight": 1.0
+        }
+      ],
+      "armor": []
+    },
     "minecraft:piglin_brute": {
       "spawn_chance": 0.25,
       "ai_difficulty": 2,

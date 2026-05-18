@@ -203,6 +203,7 @@ public class Config
         public final Network network;
         public final AggroMobs aggroMobs;
         public final FleeingMobs fleeingMobs;
+        public final NaturalMobSpawning naturalMobSpawning;
         public final GunnerMobs gunnerMobs;
         public final Raids raids;
         public final Rockets rockets;
@@ -221,6 +222,7 @@ public class Config
                 this.network = new Network(builder);
                 this.aggroMobs = new AggroMobs(builder);
                 this.fleeingMobs = new FleeingMobs(builder);
+                this.naturalMobSpawning = new NaturalMobSpawning(builder);
                 this.gunnerMobs = new GunnerMobs(builder);
                 this.raids = new Raids(builder);
                 this.rockets = new Rockets(builder);
@@ -431,6 +433,26 @@ public class Config
         }
     }
 
+    public static class NaturalMobSpawning {
+        public final ModConfigSpec.BooleanValue enableDaytimeAggressiveMobSpawns;
+        public final ModConfigSpec.IntValue daytimeAggressiveMobBaseProtectionRadius;
+
+        public NaturalMobSpawning(ModConfigSpec.Builder builder) {
+            builder.comment("Properties relating to natural Scorched Guns mob spawning").push("natural_mob_spawning");
+            {
+                this.enableDaytimeAggressiveMobSpawns = builder.comment(
+                        "If true, naturally-spawning hostile Scorched Guns mobs can also spawn during daytime.",
+                        "Night spawning is unchanged."
+                ).define("enableDaytimeAggressiveMobSpawns", false);
+                this.daytimeAggressiveMobBaseProtectionRadius = builder.comment(
+                        "Hostile Scorched Guns mobs allowed to spawn during daytime will not naturally spawn within this many blocks of a bed.",
+                        "This protects player bases without blocking daytime spawns in naturally bright open areas. Set to 0 to disable."
+                ).defineInRange("daytimeAggressiveMobBaseProtectionRadius", 48, 0, 256);
+            }
+            builder.pop();
+        }
+    }
+
     /**
      * Gunner mob related config options
      */
@@ -440,6 +462,7 @@ public class Config
         public final ModConfigSpec.BooleanValue scaleToDifficulty;
         public final ModConfigSpec.BooleanValue eliteSpawning;
         public final ModConfigSpec.DoubleValue eliteChance;
+        public final ModConfigSpec.DoubleValue gunnerMobInaccuracyMultiplier;
 
         public GunnerMobs(ModConfigSpec.Builder builder) {
             builder.comment("Gun Mob Spawning Configuration").push("gunner_config");
@@ -458,6 +481,11 @@ public class Config
                         "Base chance for Elite Gunners to spawn (0.0 = never, 1.0 = always).",
                         "This is the spawn chance on NORMAL difficulty."
                 ).defineInRange("eliteChance", 0.2, 0.0, 1.0);
+                this.gunnerMobInaccuracyMultiplier = builder.comment(
+                        "Multiplier for extra aim inaccuracy used by hostile gunner and raid mobs.",
+                        "1.0 keeps the previous behavior, values above 1.0 make mobs less accurate, values below 1.0 make mobs more accurate.",
+                        "This does not change player weapon spread or gun JSON values."
+                ).defineInRange("gunnerMobInaccuracyMultiplier", 1.5, 0.0, 10.0);
             }
             builder.pop();
         }

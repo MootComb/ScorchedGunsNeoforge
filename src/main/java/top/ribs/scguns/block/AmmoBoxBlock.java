@@ -72,14 +72,16 @@ public class AmmoBoxBlock extends BaseEntityBlock implements SimpleWaterloggedBl
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof AmmoBoxBlockEntity ammoBox) {
-                ammoBox.prepareForRemovalDrops();
-                Containers.dropContents(level, pos, ammoBox);
-                level.updateNeighbourForOutputSignal(pos, this);
-            } else if (blockEntity instanceof Container container) {
-                Containers.dropContents(level, pos, container);
-                level.updateNeighbourForOutputSignal(pos, this);
+            if (!isMoving) {
+                BlockEntity blockEntity = level.getBlockEntity(pos);
+                if (blockEntity instanceof AmmoBoxBlockEntity ammoBox) {
+                    ammoBox.prepareForRemovalDrops();
+                    Containers.dropContents(level, pos, ammoBox);
+                    level.updateNeighbourForOutputSignal(pos, this);
+                } else if (blockEntity instanceof Container container) {
+                    Containers.dropContents(level, pos, container);
+                    level.updateNeighbourForOutputSignal(pos, this);
+                }
             }
             super.onRemove(state, level, pos, newState, isMoving);
         }

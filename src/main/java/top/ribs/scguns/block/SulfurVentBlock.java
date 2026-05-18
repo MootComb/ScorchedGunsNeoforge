@@ -214,6 +214,18 @@ public class SulfurVentBlock extends Block {
             }
         }
     }
+
+    @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        boolean active = isActive(level, pos);
+        if (state.getValue(ACTIVE) != active) {
+            level.setBlock(pos, state.setValue(ACTIVE, active), 3);
+        }
+        if (active) {
+            level.scheduleTick(pos, this, 1);
+        }
+    }
+
     private void spawnSulfurCloud(Level level, BlockPos pos, RandomSource random) {
         if (random.nextInt(100) >= CLOUD_SPAWN_CHANCE) return;
 

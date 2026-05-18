@@ -1,7 +1,7 @@
 {
   "display": {
     "flash": {
-      "size": 1.0,
+      "size": 1,
       "yOffset": 5.8,
       "zOffset": -9.2,
       "textureLocation": "muzzle_flash_3"
@@ -15,7 +15,11 @@
     "rate": 4,
     "meleeDamage": 5.5,
     "meleeCooldownTicks": 20,
-    "hotBarrelRate": 10
+    "hotBarrelRate": 10,
+    "recoilAngle": 2,
+    "recoilKick": 0.25,
+    "spread": 1,
+    "criticalChance": 0.05
   },
   "modules": {
     "attachments": {
@@ -25,10 +29,10 @@
         "zOffset": 4.8
       },
       "stock": {
-        "scale": 0.0
+        "scale": 0
       },
       "magazine": {
-        "scale": 0.0
+        "scale": 0
       }
     },
     "zoom": {
@@ -38,14 +42,14 @@
     }
   },
   "projectile": {
-    "recoilAngle": 2.0,
+    "recoilAngle": 2,
     "recoilKick": 0.25,
-    "spread": 1.0,
+    "spread": 1,
     "criticalChance": 0.05,
     "advantage": "scguns:none",
     "damage": 21.5,
-    "damageFalloffStart": 28.0,
-    "damageFalloffEnd": 65.0,
+    "damageFalloffStart": 28,
+    "damageFalloffEnd": 65,
     "damageFalloffMinMultiplier": 0.75,
     "ejectsCasing": true,
     "gravity": false,
@@ -55,7 +59,7 @@
     "life": 50,
     "size": 0.05,
     "speed": 7.5,
-    "trailLengthMultiplier": 2.0
+    "trailLengthMultiplier": 2
   },
   "reloads": {
     "emptyMagTimer": 10,

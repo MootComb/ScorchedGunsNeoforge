@@ -158,7 +158,7 @@ public class MineUnitBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof MineUnitBlockEntity mineUnit) {
+            if (!isMoving && level.getBlockEntity(pos) instanceof MineUnitBlockEntity mineUnit) {
                 mineUnit.dropGrenade();
             }
             super.onRemove(state, level, pos, newState, isMoving);

@@ -24,6 +24,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
+import top.ribs.scguns.compat.SableBlockInteraction;
 import top.ribs.scguns.entity.projectile.RocketEntity;
 import top.ribs.scguns.init.ModParticleTypes;
 import top.ribs.scguns.world.ProjectileExplosion;
@@ -81,6 +82,7 @@ public class RocketExplosion extends ProjectileExplosion {
                             if(optional.isPresent()) {
                                 f -= (optional.get() + 0.3F) * 0.3F;
                             }
+                            f = SableBlockInteraction.collectExplosionBlocks(this.world, this, this.context, set, pos, blockState, f);
 
                             if(f > 0.0F && this.context.shouldBlockExplode(this, this.world, pos, blockState, f)) {
                                 set.add(pos);

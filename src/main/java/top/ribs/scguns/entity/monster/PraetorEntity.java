@@ -27,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.ribs.scguns.init.ModSounds;
 
 public class PraetorEntity extends Monster {
     private static final EntityDataAccessor<Boolean> ATTACKING = SynchedEntityData.defineId(PraetorEntity.class, EntityDataSerializers.BOOLEAN);
@@ -109,7 +110,7 @@ public class PraetorEntity extends Monster {
             this.setInSecondPhase(true);
             this.setRoaring(true);
             this.setRoarTick(0);
-            this.playSound(SoundEvents.RAVAGER_ROAR, 1.5F, 0.8F);
+            this.playSound(ModSounds.PRAETOR_ROAR.get(), 1.5F, 0.8F);
         }
     }
 
@@ -183,19 +184,19 @@ public class PraetorEntity extends Monster {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.RAVAGER_AMBIENT;
+        return ModSounds.PRAETOR_IDLE.get();
     }
 
     @Nullable
     @Override
     protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
-        return SoundEvents.RAVAGER_HURT;
+        return ModSounds.PRAETOR_HURT.get();
     }
 
     @Nullable
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.RAVAGER_DEATH;
+        return ModSounds.PRAETOR_DIE.get();
     }
 
     @Override

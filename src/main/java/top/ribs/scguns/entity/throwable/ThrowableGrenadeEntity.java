@@ -6,7 +6,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import top.ribs.scguns.Config;
+import top.ribs.scguns.entity.projectile.ProjectileEntity;
 import top.ribs.scguns.init.ModEntities;
 import top.ribs.scguns.init.ModItems;
 
@@ -15,6 +15,8 @@ import top.ribs.scguns.init.ModItems;
  */
 public class ThrowableGrenadeEntity extends ThrowableItemEntity
 {
+    private float explosionRadius = 2.5F;
+    private float explosionDamage = 19.0F;
     public float rotation;
     public float prevRotation;
 
@@ -70,7 +72,14 @@ public class ThrowableGrenadeEntity extends ThrowableItemEntity
     @Override
     public void onDeath()
     {
-        GrenadeEntity.createExplosion(this, Config.COMMON.grenades.explosionRadius.get().floatValue(), true);
+        ProjectileEntity.createRocketExplosion(this, this.explosionRadius, this.explosionDamage, false);
     }
 
+    public void setExplosionRadius(float explosionRadius) {
+        this.explosionRadius = explosionRadius;
+    }
+
+    public void setExplosionDamage(float explosionDamage) {
+        this.explosionDamage = explosionDamage;
+    }
 }

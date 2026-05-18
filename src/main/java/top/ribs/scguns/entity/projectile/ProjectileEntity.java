@@ -58,6 +58,7 @@ import top.ribs.scguns.cache.HotBarrelCache;
 import top.ribs.scguns.common.*;
 import top.ribs.scguns.common.Gun.Projectile;
 import top.ribs.scguns.Config;
+import top.ribs.scguns.compat.SableBlockInteraction;
 import top.ribs.scguns.effect.RocketExplosion;
 import top.ribs.scguns.config.ProjectileAdvantageConfig;
 import top.ribs.scguns.init.*;
@@ -110,6 +111,15 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
     @Nullable
     private static Method valkyrienSkiesClipIncludeShipsMethod;
     private static boolean valkyrienSkiesClipIncludeShipsUnavailable;
+    @Nullable
+    private static Class<?> sableClipContextExtensionClass;
+    @Nullable
+    private static Method sableSetIgnoreMainLevelMethod;
+    private static boolean sableClipUnavailable;
+    @Nullable
+    private Level activeBlockHitLevel;
+    @Nullable
+    private BlockPos activeBlockHitPos;
 
     public ProjectileEntity(EntityType<? extends Entity> entityType, Level worldIn) {
         super(entityType, worldIn);
@@ -503,9 +513,8 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
     public EntityResult getHitResult(Entity entity, Vec3 startVec, Vec3 endVec) {
         double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0.0;
         AABB boundingBox = entity.getBoundingBox();
-        if (Config.COMMON.gameplay.improvedHitboxes.get() && entity instanceof ServerPlayer && this.shooter != null) {
-            int ping = 0;
-            boundingBox = BoundingBoxManager.getBoundingBox((Player) entity, ping);
+        if (Config.COMMON.gameplay.improvedHitboxes.get() && entity instanceof ServerPlayer targetPlayer && this.shooter instanceof ServerPlayer shooterPlayer) {
+            boundingBox = BoundingBoxManager.getBoundingBox(targetPlayer, getLatencyHistoryIndex(shooterPlayer));
         }
         boundingBox = boundingBox.expandTowards(0, expandHeight, 0);
 
@@ -547,6 +556,13 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
         return new EntityResult(entity, hitPos, headshot);
     }
 
+    private static int getLatencyHistoryIndex(ServerPlayer player) {
+        if (player.connection == null) {
+            return 0;
+        }
+        return Mth.clamp(Mth.floor(player.connection.latency() / 50.0F + 0.5F), 0, 19);
+    }
+
     public void onHit(HitResult result, Vec3 startVec, Vec3 endVec) {
         if (NeoForge.EVENT_BUS.post(new GunProjectileHitEvent(result, this)).isCanceled()) {
             return;
@@ -558,40 +574,46 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
             }
 
             Vec3 hitVec = result.getLocation();
-            BlockPos pos = blockHitResult.getBlockPos();
-            BlockState state = this.level().getBlockState(pos);
+            this.beginBlockHit(blockHitResult);
+            BlockPos pos = this.blockHitPos(blockHitResult.getBlockPos());
+            Level hitLevel = this.blockHitLevel();
+            BlockState state = hitLevel.getBlockState(pos);
             Block block = state.getBlock();
 
-            if (Config.COMMON.gameplay.griefing.enableGlassBreaking.get() && state.is(ModTags.Blocks.FRAGILE)) {
-                float destroySpeed = state.getDestroySpeed(this.level(), pos);
-                if (destroySpeed >= 0) {
-                    float chance = Config.COMMON.gameplay.griefing.fragileBaseBreakChance.get().floatValue() / (destroySpeed + 1);
-                    if (this.random.nextFloat() < chance) {
-                        this.level().destroyBlock(pos, Config.COMMON.gameplay.griefing.fragileBlockDrops.get());
+            try {
+                if (Config.COMMON.gameplay.griefing.enableGlassBreaking.get() && state.is(ModTags.Blocks.FRAGILE)) {
+                    float destroySpeed = state.getDestroySpeed(hitLevel, pos);
+                    if (destroySpeed >= 0) {
+                        float chance = Config.COMMON.gameplay.griefing.fragileBaseBreakChance.get().floatValue() / (destroySpeed + 1);
+                        if (this.random.nextFloat() < chance) {
+                            hitLevel.destroyBlock(pos, Config.COMMON.gameplay.griefing.fragileBlockDrops.get());
+                        }
                     }
                 }
-            }
 
-            if (!state.canBeReplaced()) {
-                this.remove(RemovalReason.KILLED);
-            }
-
-            if (block instanceof IDamageable) {
-                ((IDamageable) block).onBlockDamaged(this.level(), state, pos, this, this.getDamage(), (int) Math.ceil(this.getDamage() / 2.0) + 1);
-            }
-
-            this.onHitBlock(state, pos, blockHitResult.getDirection(), hitVec.x, hitVec.y, hitVec.z);
-
-            if (block instanceof TargetBlock targetBlock) {
-                int power = ReflectionUtil.updateTargetBlock(targetBlock, this.level(), state, blockHitResult, this);
-                if (this.shooter instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.awardStat(Stats.TARGET_HIT);
-                    CriteriaTriggers.TARGET_BLOCK_HIT.trigger(serverPlayer, this, blockHitResult.getLocation(), power);
+                if (!state.canBeReplaced()) {
+                    this.remove(RemovalReason.KILLED);
                 }
-            }
 
-            if (block instanceof BellBlock bell) {
-                bell.attemptToRing(this.level(), pos, blockHitResult.getDirection());
+                if (block instanceof IDamageable) {
+                    ((IDamageable) block).onBlockDamaged(hitLevel, state, pos, this, this.getDamage(), (int) Math.ceil(this.getDamage() / 2.0) + 1);
+                }
+
+                this.onHitBlock(state, pos, blockHitResult.getDirection(), hitVec.x, hitVec.y, hitVec.z);
+
+                if (block instanceof TargetBlock targetBlock) {
+                    int power = ReflectionUtil.updateTargetBlock(targetBlock, hitLevel, state, blockHitResult, this);
+                    if (this.shooter instanceof ServerPlayer serverPlayer) {
+                        serverPlayer.awardStat(Stats.TARGET_HIT);
+                        CriteriaTriggers.TARGET_BLOCK_HIT.trigger(serverPlayer, this, blockHitResult.getLocation(), power);
+                    }
+                }
+
+                if (block instanceof BellBlock bell) {
+                    bell.attemptToRing(hitLevel, pos, blockHitResult.getDirection());
+                }
+            } finally {
+                this.endBlockHit();
             }
 
             return;
@@ -866,47 +888,53 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
     }
 
     protected void onHitBlock(BlockState state, BlockPos pos, Direction face, double x, double y, double z) {
-        PacketHandler.getPlayChannel().sendToTrackingChunk(() -> this.level().getChunkAt(pos), new S2CMessageProjectileHitBlock(x, y, z, pos, face));
+        Level hitLevel = this.blockHitLevel();
+        BlockPos hitPos = this.blockHitPos(pos);
+        PacketHandler.getPlayChannel().sendToTrackingChunk(() -> hitLevel.getChunkAt(hitPos), new S2CMessageProjectileHitBlock(x, y, z, hitPos, face));
         Block block = state.getBlock();
 
-        if (primeTNT(state, pos)) {
+        if (primeTNT(hitLevel, state, hitPos)) {
             return;
         }
         if (block instanceof DoorBlock) {
             boolean isOpen = state.getValue(DoorBlock.OPEN);
             if (!isOpen) {
-                this.level().setBlock(pos, state.setValue(DoorBlock.OPEN, true), 10);
-                this.level().playSound(null, pos, SoundEvents.WOODEN_DOOR_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+                hitLevel.setBlock(hitPos, state.setValue(DoorBlock.OPEN, true), 10);
+                hitLevel.playSound(null, hitPos, SoundEvents.WOODEN_DOOR_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
         }
         if (!state.canBeReplaced()) {
             this.remove(RemovalReason.KILLED);
         }
         if (block instanceof IDamageable) {
-            ((IDamageable) block).onBlockDamaged(this.level(), state, pos, this, this.getDamage(), (int) Math.ceil(this.getDamage() / 2.0) + 1);
+            ((IDamageable) block).onBlockDamaged(hitLevel, state, hitPos, this, this.getDamage(), (int) Math.ceil(this.getDamage() / 2.0) + 1);
         }
     }
 
     boolean primeTNT(BlockState state, BlockPos pos) {
+        return primeTNT(this.level(), state, pos);
+    }
+
+    boolean primeTNT(Level level, BlockState state, BlockPos pos) {
         Block block = state.getBlock();
         if (block == Blocks.TNT) {
-            if (!this.level().isClientSide()) {
-                TntBlock.explode(this.level(), pos);
-                this.level().removeBlock(pos, false);
+            if (!level.isClientSide()) {
+                TntBlock.explode(level, pos);
+                level.removeBlock(pos, false);
             }
             return true;
         }
         if (block == ModBlocks.POWDER_KEG.get()) {
-            if (!this.level().isClientSide()) {
-                PowderKegBlock.explode(this.level(), pos);
-                this.level().removeBlock(pos, false);
+            if (!level.isClientSide()) {
+                PowderKegBlock.explode(level, pos);
+                level.removeBlock(pos, false);
             }
             return true;
         }
         if (block == ModBlocks.NITRO_KEG.get()) {
-            if (!this.level().isClientSide()) {
-                NitroKegBlock.explode(this.level(), pos);
-                this.level().removeBlock(pos, false);
+            if (!level.isClientSide()) {
+                NitroKegBlock.explode(level, pos);
+                level.removeBlock(pos, false);
             }
             return true;
         }
@@ -1024,11 +1052,7 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
      * @return a result of the raytrace
      */
     static BlockHitResult rayTraceBlocks(Level world, ClipContext context, Predicate<BlockState> ignorePredicate) {
-        return performRayTrace(context, (rayTraceContext, blockPos) -> {
-            BlockHitResult shipResult = clipIncludeShipsIfAvailable(world, context);
-            if (shipResult != null) {
-                return shipResult;
-            }
+        BlockHitResult normalResult = performRayTrace(context, (rayTraceContext, blockPos) -> {
             BlockState blockState = world.getBlockState(blockPos);
             if (ignorePredicate.test(blockState)) return null;
             FluidState fluidState = world.getFluidState(blockPos);
@@ -1045,6 +1069,7 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
             Vec3 Vector3d = rayTraceContext.getFrom().subtract(rayTraceContext.getTo());
             return BlockHitResult.miss(rayTraceContext.getTo(), Direction.getNearest(Vector3d.x, Vector3d.y, Vector3d.z), BlockPos.containing(rayTraceContext.getTo()));
         });
+        return nearestBlockHit(context.getFrom(), normalResult, clipIncludeShipsIfAvailable(world, context), clipSableSubLevelsIfAvailable(world, context, ignorePredicate));
     }
 
     @Nullable
@@ -1065,6 +1090,45 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
             valkyrienSkiesClipIncludeShipsUnavailable = true;
             return null;
         }
+    }
+
+    @Nullable
+    private static BlockHitResult clipSableSubLevelsIfAvailable(Level world, ClipContext context, Predicate<BlockState> ignorePredicate) {
+        return SableBlockInteraction.clipSubLevels(world, context, ignorePredicate);
+    }
+
+    private static BlockHitResult nearestBlockHit(Vec3 start, BlockHitResult fallback, @Nullable BlockHitResult... candidates) {
+        BlockHitResult nearest = fallback;
+        double nearestDistance = fallback == null || fallback.getType() == HitResult.Type.MISS ? Double.MAX_VALUE : start.distanceToSqr(fallback.getLocation());
+        for (BlockHitResult candidate : candidates) {
+            if (candidate == null || candidate.getType() == HitResult.Type.MISS) {
+                continue;
+            }
+            double distance = start.distanceToSqr(candidate.getLocation());
+            if (nearest == null || nearest.getType() == HitResult.Type.MISS || distance < nearestDistance) {
+                nearest = candidate;
+                nearestDistance = distance;
+            }
+        }
+        return nearest;
+    }
+
+    protected void beginBlockHit(BlockHitResult hitResult) {
+        this.activeBlockHitLevel = SableBlockInteraction.levelFor(this.level(), hitResult);
+        this.activeBlockHitPos = SableBlockInteraction.blockPosFor(hitResult);
+    }
+
+    protected void endBlockHit() {
+        this.activeBlockHitLevel = null;
+        this.activeBlockHitPos = null;
+    }
+
+    protected Level blockHitLevel() {
+        return this.activeBlockHitLevel != null ? this.activeBlockHitLevel : this.level();
+    }
+
+    protected BlockPos blockHitPos(BlockPos fallback) {
+        return this.activeBlockHitPos != null ? this.activeBlockHitPos : fallback;
     }
 
     private static <T> T performRayTrace(ClipContext context, BiFunction<ClipContext, BlockPos, T> hitFunction, Function<ClipContext, T> p_217300_2_) {

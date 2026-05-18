@@ -3,6 +3,7 @@ package top.ribs.scguns.entity.monster;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
@@ -19,16 +20,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.ribs.scguns.init.ModEntities;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class HiveEntity extends Monster {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
     private int swarmSummonCooldown = 0;
 
-    static final List<SwarmEntity> summonedSwarm = new ArrayList<>();
+    static final List<SwarmEntity> summonedSwarm = new CopyOnWriteArrayList<>();
 
     public HiveEntity(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -82,12 +83,21 @@ public class HiveEntity extends Monster {
     @Override
     public void die(@NotNull DamageSource cause) {
         super.die(cause);
-        for (SwarmEntity swarm : summonedSwarm) {
-            if (swarm != null) {
+        List<SwarmEntity> swarms = List.copyOf(summonedSwarm);
+        summonedSwarm.clear();
+        if (this.level() instanceof ServerLevel serverLevel) {
+            serverLevel.getServer().execute(() -> discardSwarms(swarms));
+        } else {
+            discardSwarms(swarms);
+        }
+    }
+
+    private static void discardSwarms(List<SwarmEntity> swarms) {
+        for (SwarmEntity swarm : swarms) {
+            if (swarm != null && swarm.isAlive()) {
                 swarm.discard();
             }
         }
-        summonedSwarm.clear();
     }
 
     public static AttributeSupplier.Builder createAttributes() {

@@ -65,6 +65,6 @@
     "enchantedFire": "scguns:item.shock.fire",
     "fire": "scguns:item.shock.fire",
     "reload": "scguns:item.gauss.reload",
-    "silencedFire": "scguns:item.shock.silenced_fire"
+    "silencedFire": "scguns:item.shock.fire"
   }
 }

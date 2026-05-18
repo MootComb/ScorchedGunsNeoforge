@@ -33,7 +33,7 @@ public class GibbsRoundProjectileEntity extends ProjectileEntity {
     private static final float HEADSHOT_EFFECT_DURATION_MULTIPLIER = 1.35f;
 
     private static final float GIBBS_ROUND_XP_MULTIPLIER = 0.25f;
-    private static final int GIBBS_ROUND_LOOTING_LEVEL = 4;
+    public static final int GIBBS_ROUND_LOOTING_LEVEL = 4;
 
     public GibbsRoundProjectileEntity(EntityType<? extends Entity> entityType, Level worldIn) {
         super(entityType, worldIn);

@@ -4,9 +4,63 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ## Unreleased
 
+## 1.4.0 - 2026-05-18
+
 ### Added
 
+- Restored companion guide book generation for Viventrum and Supply Scamp packages.
+- Updated upstream weapon asset parity for Astella, Auvtomag, Bomb Lance, Bruiser, Cogloader, Combat Shotgun, Freyr, Gauss Rifle, Howler, Jackhammer, M22 Waltz, M3 Carabine, MAK MkII, Makeshift Rifle, MK43 Rifle, Niami, Big Bore, Boomstick, Brawler, Callwell, Callwell Terminal, Defender Pistol, Dozier RL, Echoes 2, Fencer Carabine, Flintlock Pistol, Basker, Callwell Conversion, Floundergat, Gale, Grandle, Grandle OG, Greaser SMG, Gyrojet Pistol, Homemaker, Howler Conversion, Iron Javelin, Iron Spear, Kalaskah, Krauser, LLR Director, Lockewood, Mangalitsa, Marlin, MAS-55, Micina, Nervepinch, Osgood 50, Pax, Plasgun, Plasmabuss, Prima Materia, Pyroclastic Flow, Rat King and Queen, Repeating Musket, Rocket Rifle, Rusty Gnat, Saketini, Saketini Ironport, Scrapper, Scratches, Sculk Resonator, Sequoia, Soul Drummer, Stigg, Stiletto, Trenchur, Trotters, Turnpike, UMAX Pistol, Uppercut, Locust, Shellurker, Venturi, Vulcanic Repeater, Waltz Conversion, Winnie, and the Basic Turret flame top, including changed animated gun resources, attachment special-model JSONs and relevant item textures.
+- Updated upstream ammo item asset parity for Advanced Round, Compact Advanced Round, Standard Bullet, Buckshot, Nitro Buckshot, Shotgun Shell, Gibbs Round, Beowulf Round, Hog Round, Krahg Round, Shatter Round and Osborne Slug, including related unfinished and 3D item resources.
+- Updated upstream ammo/resource item asset parity for Compact Copper Round, Standard Copper Round, Bearpack Shell, Ramrod Round, Microjet, Rocket, Shotball, Sculk Cell, Shock Cell, Energy Cell, Plasma Core, Shulkshot, Blaze Fuel, Flechette, Grapeshot, Powder and Ball, Hardened Bullet and Needle, including related unfinished and 3D item resources.
+- Updated upstream crafting-component item asset parity for molds, casings, gun parts, gun frames, firing units and raw/resource materials, including mold custom-model override resources.
+- Updated upstream equipment and ExoSuit item asset parity for armor icons, respirator and mask icons, ExoSuit cores, upgrade modules, armor plates, pouches, pauldrons, repair kits and related suit components.
+- Updated upstream blueprint, material, consumable and utility item asset parity for blueprint tiers, Anthralite materials, sulfur resources, energy cores, healing items, Cog Locator, The Pact and related resource icons.
+- Updated remaining upstream weapon and attachment visual/audio asset parity for Defender Pistol, Jackhammer, Weevil, War Axe, Laser Sight, Long Scope and several existing gun animation and handling sound resources.
+- Updated upstream block, mob and status-effect asset parity for Anthralite blocks and lamps, Auto Turret display, Cog Minion, Dissident and the Lacerated effect icon.
+- Updated upstream GUI asset parity for the attachment screen, blueprint viewer, HUD fill bar, Hot Barrel bar and melee indicator textures.
+- Updated upstream Netherite Respirator armor texture parity.
+- Added upstream Spanish locale files for Argentina, Chile, Ecuador, Spain, Mexico, Uruguay and Venezuela.
+- Restored upstream projectile trail textures, grenade/fireball particle resources and dedicated Praetor, Dissident and Supply Scamp sound assets.
+- Added common config options for daytime natural spawning of hostile Scorched Guns mobs, preserving night spawn rates while adding configurable bed-radius protection for player bases.
+- Added category-aware Supply Scamp patrol sorting so tamed scamps deposit ammo, weapons, armor, potions, food, tools, wood, materials, blocks and miscellaneous items into matching barrels instead of dumping everything into the nearest container.
+- Added a common `gunnerMobInaccuracyMultiplier` config option, defaulting to `1.5`, to make hostile gunner and raid mobs less precise without changing player weapon spread or gun JSON values.
+- Added optional Guard Villagers compatibility: when Guard Villagers is installed, village guards can spawn with low-tier Scorched Guns militia weapons through the existing gunner-mob equipment system.
+
 ### Fixed
+
+- Fixed Netherite Respirator fire resistance metadata for Minecraft 1.21.1 so dropped respirators use the current fire-resistant item component instead of an obsolete item override.
+- Fixed newly synced ammo item models rendering as missing black-purple squares by migrating their separate-transform loaders and texture paths to NeoForge 1.21.1 resource ids.
+- Restored Beowulf and Gibbs Round projectile bonus-looting behavior for entity loot table count increases and enchanted rare-drop chances.
+- Fixed Supply Scamp persistence so server restarts and world reloads preserve carried inventory and no longer reset tamed scamps back to full health.
+- Fixed Supply Scamp repair interaction so using a Repair Kit repairs the tamed scamp instead of opening its inventory.
+- Improved Sable/Create Aeronautics compatibility by preventing Scorched Guns block inventories from dropping during sublevel assembly, allowing gun projectiles to collide with Sable sublevel contraptions and making turret targeting use sublevel world-space positions.
+- Retimed inspect-animation sound keyframes for Freyr, Gauss Rifle, Howler, Jackhammer and M22 Waltz so handling sounds line up with their updated weapon animations.
+- Restored reload windows for raid and gunner mob weapons so armed mobs no longer fire indefinitely without magazine downtime, hardened reload completion so mob guns cannot get stuck reloading, restored firing feedback for mob-held silenced/fallback-sound weapons such as sculk guns, fixed stale silenced-fire sound ids on Arc Worker and Lone Wonder, and kept dropped mob guns from retaining infinite-ammo behavior.
+- Fixed gunner and raid mob reload timing so empty single-shot weapons, including musket-style guns, include their configured empty-mag reload delay instead of firing far faster than intended.
+- Fixed third-person muzzle flashes for gunner and raid mobs using Scorched Guns weapons.
+- Improved Create Aeronautics/Sable compatibility for turrets by giving turret block entities a Sable sublevel physics tick bridge and making Ammo Modules feed adjacent turret ammo slots directly instead of relying only on generic item capability insertion.
+- Fixed Sable/Create Aeronautics turret aiming so turrets on moving ships use the active sublevel pose during physics ticks and fire toward their selected target instead of a stale local-world direction.
+- Added Sable/Create Aeronautics-aware block interaction for direct block-breaking projectile hits, beam mining and custom projectile explosions, allowing compatible Scorched Guns shots and explosive impacts to damage physical contraption blocks instead of only colliding with them.
+- Restored newer gun recoil, spread, pellet-count and player knockback data that had been present in resource JSON but ignored by the current gun parser, covering Kiln Gun and the recent late-weapon batches.
+- Restored Choke Bomb's lasting cloud/effect behavior and regular Grenade's upstream-style explosion profile.
+- Fixed sculk gun fire sound spatialization by restoring the mono upstream sound asset.
+- Fixed sulfur vent worldgen/tick recovery so generated vents can activate and produce sulfur clouds in fresh chunks.
+- Hardened Hive/Swarm cleanup against async entity-unload crashes reported in heavily modded Sable/C2ME/Connector client packs.
+- Fixed Create funnel item transfer for Ammo Modules and Shell Catcher Modules by exposing their inventories through NeoForge item capabilities and making their handlers support real insertion/extraction.
+- Fixed Supply Scamp patrol sorting stalls where a scamp could keep one or two leftover items indefinitely after depositing one sorted category.
+- Fixed Guard Villagers holding Scorched Guns weapons so their humanoid model uses Scorched Guns weapon holding/aiming poses instead of the default guard pose.
+- Fixed Guard Villagers spawned from generated/loaded villages not rolling Scorched Guns militia weapons while spawn-egg guards did.
+- Fixed Guard Villagers generated during village structure placement being equipped before their vanilla guard gear pass finished, and made their Scorched Guns weapon roll visible at default gunner spawn settings.
+- Fixed Buckshot crafting so regular vanilla Gunpowder is accepted by the shared gunpowder ingredient tag again, alongside Sheol and Peal.
+- Restored the upstream Geo armor renderer/assets for Treated Brass armor so the equipped set uses its intended custom model instead of the vanilla armor layer.
+- Restored projectile lag-compensation hitbox rewind to use the shooter's current server latency instead of the temporary zero-ping fallback.
+- Fixed Blueprint pages showing the undiscovered-knowledge placeholder instead of the available weapon lore by resolving lore keys from the actual item registry id.
+- Fixed manual per-round reload animations getting stuck in the reload loop when topping off partially loaded weapons such as revolvers.
+- Fixed animated gun item rendering crashes in external GUI/item preview screens when no local player is available.
+
+### Changed
+
+- Raised the public version to `1.4.0`.
 
 ## 1.3.2 - 2026-05-15
 
@@ -65,7 +119,7 @@ All notable public changes to Scorched Guns are recorded in this file.
 - Restored turret data parity: shared data-driven player turret backend, GunBench entries for existing Basic, Auto and Shotgun Turrets, Sniper Turret, turret config JSON, JEI info and the `scguns:entity_blacklisted_gun` item tag.
 - Restored utility/progression content: Cog Mace, Anthralite Hammer, Anthralite Paxel, Shulker Core, Shulker Core End Blueprint duplication support and Shulker Core rare Shulker drops.
 - Restored visual/resource parity for throwable grenades and bombs, Scorched Block, temporary fake soul fire for Hellfire effects and optional Create recipe parity.
-- Updated the first targeted weapon asset parity batch for RG Jigsaw, Birdfeeder and M3 Marksman, including upstream special models and animated gun resources.
+- Updated weapon asset parity for RG Jigsaw, Birdfeeder and M3 Marksman, including upstream special models and animated gun resources.
 - Improved JEI recipe integration for Scorched Guns machine and GunBench recipes by preserving recipe IDs through `RecipeHolder`, enabling advanced tooltip IDs and recipe bookmarking. Thanks to `gisellevonbingen` for the pull request.
 - Added optional compatibility with Sound Physics Remastered so remote Scorched Guns shots are handled as world-positioned sounds while local shots remain centered for stable first-person audio.
 - Updated localization key coverage across English, Russian, Korean, Ukrainian and Vietnamese; Russian wording was refreshed with help from `jpegemerald`.
@@ -206,7 +260,5 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ### Known Non-Blocking Follow-Ups
 
-- Beowulf and Gibbs exact bonus-looting restoration remains deferred.
-- Projectile ping and lag-compensation behavior uses a conservative fallback and needs more multiplayer QA.
 - Some minor asset or model warnings may still need visual QA.
 - Netherite gas mask fire-resistant behavior should receive additional runtime QA.
