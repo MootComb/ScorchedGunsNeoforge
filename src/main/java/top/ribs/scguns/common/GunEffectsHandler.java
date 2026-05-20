@@ -28,7 +28,9 @@ import java.util.stream.Collectors;
 public class GunEffectsHandler {
 
     private static final Map<UUID, Long> lastEffectTime = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long> lastFleeTime = new ConcurrentHashMap<>();
     private static final long EFFECT_COOLDOWN_MS = 250;
+    private static final long FLEE_COOLDOWN_MS = 2000;
 
     private static final int MAX_ENTITIES_PER_SHOT = 25;
 
@@ -180,6 +182,14 @@ public class GunEffectsHandler {
     }
 
     private static void handleFleeingBehavior(LivingEntity entity, ServerPlayer player) {
+        UUID entityId = entity.getUUID();
+        long currentTime = System.currentTimeMillis();
+        Long lastFlee = lastFleeTime.get(entityId);
+        if (lastFlee != null && (currentTime - lastFlee) < FLEE_COOLDOWN_MS) {
+            return;
+        }
+        lastFleeTime.put(entityId, currentTime);
+
         double deltaX = entity.getX() - player.getX();
         double deltaZ = entity.getZ() - player.getZ();
         double distance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
@@ -196,19 +206,19 @@ public class GunEffectsHandler {
                 double fleeX = entity.getX() + normalizedX * fleeDistance;
                 double fleeZ = entity.getZ() + normalizedZ * fleeDistance;
 
-                mob.getNavigation().moveTo(fleeX, entity.getY(), fleeZ, 1.2);
+                mob.getNavigation().moveTo(fleeX, entity.getY(), fleeZ, 1.1);
             }
         }
     }
 
     private static double getFleeKnockbackStrength(LivingEntity entity) {
         if (entity.getType().is(ModTags.Entities.HEAVY)) {
-            return 0.4;
+            return 0.12;
         }
         if (entity.getType().is(ModTags.Entities.VERY_HEAVY)) {
-            return 0.2;
+            return 0.06;
         }
-        return 0.8;
+        return entity instanceof Animal ? 0.18 : 0.25;
     }
 
     private static void handleAggroBehavior(LivingEntity entity, ServerPlayer player) {
@@ -244,6 +254,7 @@ public class GunEffectsHandler {
         long expireTime = currentTime - (EFFECT_COOLDOWN_MS * 20);
 
         lastEffectTime.entrySet().removeIf(entry -> entry.getValue() < expireTime);
+        lastFleeTime.entrySet().removeIf(entry -> entry.getValue() < currentTime - (FLEE_COOLDOWN_MS * 10));
 
         shotCounter.clear();
     }

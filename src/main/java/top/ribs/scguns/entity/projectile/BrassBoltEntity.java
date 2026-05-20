@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Portal;
@@ -31,12 +32,18 @@ public class BrassBoltEntity extends AbstractArrow {
 
     public BrassBoltEntity(EntityType<BrassBoltEntity> type, Level world, LivingEntity shooter) {
         super(type, shooter, world, ItemStack.EMPTY, null);
+        this.setPickupItemStack(this.getDefaultPickupItem());
         this.setBaseDamage(BrassBoltConfig.getDamageForEntity(shooter.getType()));
     }
 
     @Override
-    protected ItemStack getDefaultPickupItem() {
+    protected @NotNull ItemStack getPickupItem() {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    protected ItemStack getDefaultPickupItem() {
+        return new ItemStack(Items.ARROW);
     }
 
     @Override

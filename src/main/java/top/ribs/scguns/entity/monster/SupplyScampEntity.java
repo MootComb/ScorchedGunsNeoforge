@@ -1,6 +1,7 @@
 package top.ribs.scguns.entity.monster;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.component.DataComponents;
@@ -45,7 +46,9 @@ import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.ribs.scguns.client.screen.SupplyScampMenuProvider;
@@ -201,10 +204,7 @@ public class SupplyScampEntity extends TamableAnimal {
                 double distanceToBarrel = this.distanceToSqr(Vec3.atCenterOf(depositTarget.pos()));
 
                 if (distanceToBarrel <= 9.0D) {
-                    BlockEntity blockEntity = this.level().getBlockEntity(depositTarget.pos());
-                    if (blockEntity instanceof Container container) {
-                        depositItemsByCategory(container, depositTarget.category());
-                    }
+                    depositItemsByCategory(depositTarget);
                 } else {
                     this.getNavigation().moveTo(depositTarget.pos().getX() + 0.5, depositTarget.pos().getY(), depositTarget.pos().getZ() + 0.5, 1.0);
                     return;
@@ -305,8 +305,7 @@ public class SupplyScampEntity extends TamableAnimal {
                 for (int z = -searchRange; z <= searchRange; z++) {
                     mutablePos.set(this.blockPosition().getX() + x, this.blockPosition().getY() + y, this.blockPosition().getZ() + z);
                     if (this.level().getBlockState(mutablePos).getBlock().toString().contains("barrel")) {
-                        BlockEntity blockEntity = this.level().getBlockEntity(mutablePos);
-                        if (blockEntity instanceof Container) {
+                        if (hasDepositInventory(mutablePos)) {
                             barrels.add(mutablePos.immutable());
                         }
                     }
@@ -352,17 +351,16 @@ public class SupplyScampEntity extends TamableAnimal {
         double bestDistance = Double.MAX_VALUE;
 
         for (BlockPos pos : barrels) {
-            BlockEntity blockEntity = this.level().getBlockEntity(pos);
-            if (!(blockEntity instanceof Container container)) {
+            Optional<SortCategory> containerCategory = getStorageCategory(pos);
+            if (containerCategory.isEmpty() && !canStorageAcceptInventoryCategory(pos, category)) {
                 continue;
             }
 
-            Optional<SortCategory> containerCategory = getContainerCategory(container);
             if (containerCategory.isEmpty()) {
-                if (!allowEmpty || !canContainerAcceptInventoryCategory(container, category)) {
+                if (!allowEmpty || !canStorageAcceptInventoryCategory(pos, category)) {
                     continue;
                 }
-            } else if (containerCategory.get() != category || !canContainerAcceptInventoryCategory(container, category)) {
+            } else if (containerCategory.get() != category || !canStorageAcceptInventoryCategory(pos, category)) {
                 continue;
             }
 
@@ -374,6 +372,37 @@ public class SupplyScampEntity extends TamableAnimal {
         }
 
         return bestPos != null ? new DepositTarget(bestPos, category) : null;
+    }
+
+    private boolean hasDepositInventory(BlockPos pos) {
+        BlockEntity blockEntity = this.level().getBlockEntity(pos);
+        return blockEntity instanceof Container || getItemHandler(pos) != null;
+    }
+
+    @Nullable
+    private IItemHandler getItemHandler(BlockPos pos) {
+        IItemHandler handler = this.level().getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+        if (handler != null) {
+            return handler;
+        }
+
+        for (Direction direction : Direction.values()) {
+            handler = this.level().getCapability(Capabilities.ItemHandler.BLOCK, pos, direction);
+            if (handler != null) {
+                return handler;
+            }
+        }
+        return null;
+    }
+
+    private Optional<SortCategory> getStorageCategory(BlockPos pos) {
+        BlockEntity blockEntity = this.level().getBlockEntity(pos);
+        if (blockEntity instanceof Container container) {
+            return getContainerCategory(container);
+        }
+
+        IItemHandler handler = getItemHandler(pos);
+        return handler != null ? getItemHandlerCategory(handler) : Optional.empty();
     }
 
     private Optional<SortCategory> getContainerCategory(Container container) {
@@ -394,10 +423,48 @@ public class SupplyScampEntity extends TamableAnimal {
         return Optional.ofNullable(category);
     }
 
+    private Optional<SortCategory> getItemHandlerCategory(IItemHandler handler) {
+        SortCategory category = null;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            SortCategory stackCategory = getSortCategory(stack);
+            if (category == null) {
+                category = stackCategory;
+            } else if (category != stackCategory) {
+                return Optional.of(SortCategory.MIXED);
+            }
+        }
+        return Optional.ofNullable(category);
+    }
+
+    private boolean canStorageAcceptInventoryCategory(BlockPos pos, SortCategory category) {
+        BlockEntity blockEntity = this.level().getBlockEntity(pos);
+        if (blockEntity instanceof Container container) {
+            return canContainerAcceptInventoryCategory(container, category);
+        }
+
+        IItemHandler handler = getItemHandler(pos);
+        return handler != null && canItemHandlerAcceptInventoryCategory(handler, category);
+    }
+
     private boolean canContainerAcceptInventoryCategory(Container container, SortCategory category) {
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
             ItemStack stack = this.inventory.getItem(i);
             if (!stack.isEmpty() && getSortCategory(stack) == category && canContainerAcceptStack(container, stack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canItemHandlerAcceptInventoryCategory(IItemHandler handler, SortCategory category) {
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+            ItemStack stack = this.inventory.getItem(i);
+            if (!stack.isEmpty() && getSortCategory(stack) == category && canItemHandlerAcceptStack(handler, stack)) {
                 return true;
             }
         }
@@ -411,6 +478,16 @@ public class SupplyScampEntity extends TamableAnimal {
                 return container.canPlaceItem(i, itemStack);
             }
             if (ItemStack.isSameItemSameComponents(containerStack, itemStack) && containerStack.getCount() < containerStack.getMaxStackSize()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canItemHandlerAcceptStack(IItemHandler handler, ItemStack itemStack) {
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack remainder = handler.insertItem(i, itemStack.copy(), true);
+            if (remainder.getCount() < itemStack.getCount()) {
                 return true;
             }
         }
@@ -474,31 +551,31 @@ public class SupplyScampEntity extends TamableAnimal {
         return SortCategory.MISC;
     }
 
+    private void depositItemsByCategory(DepositTarget target) {
+        BlockEntity blockEntity = this.level().getBlockEntity(target.pos());
+        if (blockEntity == null) {
+            return;
+        }
+
+        BlockState barrelState = this.level().getBlockState(target.pos());
+        if (barrelState.getBlock() instanceof BarrelBlock && !barrelState.getValue(BarrelBlock.OPEN)) {
+            this.level().setBlock(target.pos(), barrelState.setValue(BarrelBlock.OPEN, true), 3);
+            scheduleBarrelClose(target.pos());
+        }
+
+        if (blockEntity instanceof Container container) {
+            depositItemsByCategory(container, target.category());
+        } else {
+            IItemHandler handler = getItemHandler(target.pos());
+            if (handler != null) {
+                depositItemsByCategory(handler, target.category());
+            }
+        }
+
+        this.playSound(SoundEvents.BARREL_OPEN, 0.5F, 1.0F);
+    }
+
     private void depositItemsByCategory(Container container, SortCategory category) {
-        BlockPos barrelPos = null;
-        for (int x = -2; x <= 2; x++) {
-            for (int y = -1; y <= 1; y++) {
-                for (int z = -2; z <= 2; z++) {
-                    BlockPos checkPos = this.blockPosition().offset(x, y, z);
-                    BlockState blockState = this.level().getBlockState(checkPos);
-                    BlockEntity blockEntity = this.level().getBlockEntity(checkPos);
-
-                    if (blockState.getBlock() instanceof BarrelBlock && blockEntity == container) {
-                        barrelPos = checkPos;
-                        break;
-                    }
-                }
-            }
-        }
-        if (barrelPos != null) {
-            BlockState barrelState = this.level().getBlockState(barrelPos);
-            if (barrelState.getBlock() instanceof BarrelBlock && !barrelState.getValue(BarrelBlock.OPEN)) {
-                this.level().setBlock(barrelPos, barrelState.setValue(BarrelBlock.OPEN, true), 3);
-
-                scheduleBarrelClose(barrelPos);
-            }
-        }
-
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
             ItemStack itemStack = this.inventory.getItem(i);
             if (!itemStack.isEmpty() && getSortCategory(itemStack) == category) {
@@ -506,8 +583,16 @@ public class SupplyScampEntity extends TamableAnimal {
                 this.inventory.setItem(i, remainingStack);
             }
         }
+    }
 
-        this.playSound(SoundEvents.BARREL_OPEN, 0.5F, 1.0F);
+    private void depositItemsByCategory(IItemHandler handler, SortCategory category) {
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+            ItemStack itemStack = this.inventory.getItem(i);
+            if (!itemStack.isEmpty() && getSortCategory(itemStack) == category) {
+                ItemStack remainingStack = tryAddItemToItemHandler(handler, itemStack);
+                this.inventory.setItem(i, remainingStack);
+            }
+        }
     }
     private void scheduleBarrelClose(BlockPos barrelPos) {
         this.scheduledBarrelClose = barrelPos;
@@ -538,6 +623,14 @@ public class SupplyScampEntity extends TamableAnimal {
             }
         }
         return itemStack;
+    }
+
+    private ItemStack tryAddItemToItemHandler(IItemHandler handler, ItemStack itemStack) {
+        ItemStack remainingStack = itemStack.copy();
+        for (int j = 0; j < handler.getSlots() && !remainingStack.isEmpty(); j++) {
+            remainingStack = handler.insertItem(j, remainingStack, false);
+        }
+        return remainingStack;
     }
 
     private void checkForItems() {

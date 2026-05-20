@@ -3,6 +3,8 @@
   "values": [
     "scguns:anthralite_respirator",
     "scguns:netherite_respirator",
+    {"id":"spore:gas_mask", "required":false},
+    {"id":"spore:inf_up_helmet", "required":false},
     {"id":"createbigcannons:gas_mask",  "required":false},
     {"id":"alexscaves:hazmat_mask",  "required":false},
     {"id":"steam_powered:gas_mask_helmet",  "required":false},

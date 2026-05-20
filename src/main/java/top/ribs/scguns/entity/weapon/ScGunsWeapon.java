@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +34,10 @@ import top.ribs.scguns.util.GunModifierHelper;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ScGunsWeapon implements IWeapon {
+    private static final String MOB_GUN_KEY = "scguns:MobGun";
+    private static final String VIVENTRUM_MOB_GUN_KEY = "scguns:ViventrumMobGun";
+    private static final String AI_DAMAGE_SCALE_KEY = "AIDamageScale";
+
     private final ItemStack gunStack;
     private SoundEvent fireSound;
     private SoundEvent loadSound;
@@ -63,6 +68,10 @@ public class ScGunsWeapon implements IWeapon {
         return GunModifierHelper.getModifiedRate(gunStack, GunEnchantmentHelper.getRate(gunStack, gun));
     }
 
+    public int getMobAttackCooldown() {
+        return Math.max(1, gun.getGeneral().getRate());
+    }
+
     public int getAdjustedAttackCooldown(double modifier) {
         return (int) (getAttackCooldown() * modifier);
     }
@@ -73,6 +82,14 @@ public class ScGunsWeapon implements IWeapon {
             reloadTime += gun.getReloads().getEmptyMagTimer();
         }
         return Math.max(1, (int) Math.ceil(GunModifierHelper.getModifiedReloadSpeed(gunStack, reloadTime)));
+    }
+
+    public int getMobReloadTime() {
+        double reloadTime = gun.getReloads().getReloadTimer();
+        if (Gun.getAmmoCount(gunStack) <= 0) {
+            reloadTime += gun.getReloads().getEmptyMagTimer();
+        }
+        return Math.max(1, (int) Math.ceil(reloadTime));
     }
 
     public int getMaxAmmo() {
@@ -135,8 +152,12 @@ public class ScGunsWeapon implements IWeapon {
             ResourceLocation projectileItemLocation = BuiltInRegistries.ITEM.getKey(projectileProps.getItem());
             IProjectileFactory factory = ProjectileManager.getInstance().getFactory(projectileItemLocation);
             ProjectileEntity projectileEntity = factory.create(level, shooter, gunStack, (GunItem) gunStack.getItem(), gun);
+            float aiDamageScale = getAiDamageScale(shooter);
             projectileEntity.setWeapon(gunStack);
-            projectileEntity.setAdditionalDamage(Gun.getAdditionalDamage(gunStack));
+            projectileEntity.setAdditionalDamage(Gun.getAdditionalDamage(gunStack) * aiDamageScale);
+            if (aiDamageScale != 1.0F) {
+                projectileEntity.getPersistentData().putFloat(AI_DAMAGE_SCALE_KEY, aiDamageScale);
+            }
             final Vec3 startPos = shooter.getEyePosition();
             final float gunSpread = GunModifierHelper.getModifiedSpread(gunStack, gun.getGeneral().getSpread()) * .5F;
             final Vec3 track = new Vec3(x, y, z).subtract(startPos).normalize().add(
@@ -164,6 +185,24 @@ public class ScGunsWeapon implements IWeapon {
                     messageBulletTrail
             );
         }
+    }
+
+    private float getAiDamageScale(Mob shooter) {
+        CompoundTag tag = getCustomData(gunStack);
+        if (!tag.getBoolean(MOB_GUN_KEY) || tag.getBoolean(VIVENTRUM_MOB_GUN_KEY)) {
+            return 1.0F;
+        }
+        return getDifficultyDamageMultiplier(shooter.level().getDifficulty())
+                * Config.COMMON.gameplay.mobGunDamageMultiplier.get().floatValue();
+    }
+
+    private static float getDifficultyDamageMultiplier(Difficulty difficulty) {
+        return switch (difficulty) {
+            case PEACEFUL -> 0.05F;
+            case EASY -> 0.35F;
+            case NORMAL -> 0.5F;
+            case HARD -> 0.65F;
+        };
     }
 
     @Override

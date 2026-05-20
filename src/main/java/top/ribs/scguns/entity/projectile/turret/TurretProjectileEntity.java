@@ -18,6 +18,7 @@ import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 import top.ribs.scguns.Config;
 import top.ribs.scguns.init.ModEntities;
+import top.ribs.scguns.init.ModItems;
 import top.ribs.scguns.init.ModSounds;
 
 public class TurretProjectileEntity extends AbstractArrow {
@@ -48,6 +49,7 @@ public class TurretProjectileEntity extends AbstractArrow {
             this.setBaseDamage(baseDamage);
         }
 
+        this.setPickupItemStack(getPickupStackFor(bulletType));
         this.setNoGravity(true);
     }
 
@@ -58,7 +60,20 @@ public class TurretProjectileEntity extends AbstractArrow {
 
     @Override
     protected @NotNull ItemStack getDefaultPickupItem() {
-        return ItemStack.EMPTY;
+        return new ItemStack(ModItems.STANDARD_COPPER_ROUND.get());
+    }
+
+    private static ItemStack getPickupStackFor(BulletType bulletType) {
+        return new ItemStack(switch (bulletType) {
+            case STANDARD_COPPER_ROUND -> ModItems.STANDARD_COPPER_ROUND.get();
+            case ADVANCED_ROUND -> ModItems.ADVANCED_ROUND.get();
+            case GIBBS_ROUND -> ModItems.GIBBS_ROUND.get();
+            case COMPACT_COPPER_ROUND -> ModItems.COMPACT_COPPER_ROUND.get();
+            case COMPACT_ADVANCED_ROUND -> ModItems.COMPACT_ADVANCED_ROUND.get();
+            case HOG_ROUND -> ModItems.HOG_ROUND.get();
+            case SHOTGUN_SHELL -> ModItems.SHOTGUN_SHELL.get();
+            case BEARPACK_SHELL -> ModItems.BEARPACK_SHELL.get();
+        });
     }
 
     @Override

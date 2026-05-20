@@ -60,6 +60,7 @@ public class RaidManager {
     private static final ResourceLocation HENCHMAN_HEALTH_MODIFIER_ID = Reference.id("raid_henchman_health");
     private static final long NIGHT_START = 13000L;
     private static final long RAID_SPAWN_TIME = 18000L;
+    private static final long ACTIVE_RAID_SAVE_INTERVAL = 1200L;
     private static final Map<ResourceLocation, RaidManager> INSTANCES = new HashMap<>();
 
     private final Map<UUID, ActiveRaid> activeRaids = new HashMap<>();
@@ -151,9 +152,8 @@ public class RaidManager {
         tickActiveRaids(level);
         if (Config.COMMON.raids.raidsEnabled.get() && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
             checkForNightlyRaidSpawn(level);
-            if (level.getGameTime() % 100L == 0L) {
+            if (Level.OVERWORLD.equals(level.dimension()) && this.hasActiveRaid() && level.getGameTime() % ACTIVE_RAID_SAVE_INTERVAL == 0L) {
                 saveActiveRaids(level);
-                level.getDataStorage().save();
             }
         }
     }
@@ -486,7 +486,7 @@ public class RaidManager {
             tag.merge(weapon.nbt());
             stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         }
-        markMobGun(stack);
+        markMobGun(stack, mob);
         mob.setItemSlot(EquipmentSlot.MAINHAND, stack);
         mob.setDropChance(EquipmentSlot.MAINHAND, Math.max(0.0F, Math.min(1.0F, weapon.dropChance())));
         mob.getPersistentData().putBoolean("scguns:GunnerMob", true);
@@ -524,13 +524,14 @@ public class RaidManager {
         };
     }
 
-    private void markMobGun(ItemStack stack) {
+    private void markMobGun(ItemStack stack, Mob mob) {
         if (!(stack.getItem() instanceof GunItem gunItem)) {
             return;
         }
         Gun gun = gunItem.getModifiedGun(stack);
+        int maxAmmo = Math.max(1, gun.getReloads().getMaxAmmo());
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        tag.putInt("AmmoCount", Math.max(1, gun.getReloads().getMaxAmmo()));
+        tag.putInt("AmmoCount", mob.getRandom().nextInt(maxAmmo));
         tag.putBoolean("scguns:MobGun", true);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }

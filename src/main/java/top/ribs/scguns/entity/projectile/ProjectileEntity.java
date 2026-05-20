@@ -257,6 +257,10 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
 
         damage *= Config.COMMON.gameplay.globalDamageMultiplier.get().floatValue();
 
+        if (this.getPersistentData().contains("AIDamageScale")) {
+            damage *= this.getPersistentData().getFloat("AIDamageScale");
+        }
+
         return Math.max(0F, damage);
     }
     @Override

@@ -201,7 +201,7 @@ public class GunnerMobSpawner {
     }
 
     private static void equipGun(PathfinderMob mob, ItemStack gun, int aiDifficulty, double weaponDropChance) {
-        markMobGun(gun);
+        markMobGun(gun, mob);
         mob.setItemSlot(EquipmentSlot.MAINHAND, gun);
         mob.setDropChance(EquipmentSlot.MAINHAND, (float) Math.max(0.0D, Math.min(1.0D, weaponDropChance)));
         mob.getPersistentData().putBoolean(GUNNER_KEY, true);
@@ -291,13 +291,14 @@ public class GunnerMobSpawner {
         return ScorchedGuns.TIERED_WEAPON_CONFIG.getTierForItem(itemId.toString());
     }
 
-    private static void markMobGun(ItemStack stack) {
+    private static void markMobGun(ItemStack stack, PathfinderMob mob) {
         if (!(stack.getItem() instanceof GunItem gunItem)) {
             return;
         }
         Gun gun = gunItem.getModifiedGun(stack);
+        int maxAmmo = Math.max(1, gun.getReloads().getMaxAmmo());
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        tag.putInt("AmmoCount", Math.max(1, gun.getReloads().getMaxAmmo()));
+        tag.putInt("AmmoCount", mob.getRandom().nextInt(maxAmmo));
         tag.putBoolean("scguns:MobGun", true);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }

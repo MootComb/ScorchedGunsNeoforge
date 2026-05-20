@@ -4,6 +4,28 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ## Unreleased
 
+## 1.4.1 - 2026-05-20
+
+### Added
+
+- Added optional Fungal Infection: Spore compatibility: Scorched Guns respirators and ExoSuit gas mask modules can block Spore's mycelium infection effect, and Spore gas masks now count as Scorched Guns gas masks for sulfur gas protection.
+
+### Fixed
+
+- Reduced mob fleeing overreaction to automatic gunfire by throttling flee reactions per entity and softening the initial panic knockback.
+- Removed forced raid saved-data disk writes from regular level ticks; raid state now marks data dirty and relies on normal autosave, reducing periodic server lag spikes.
+- Fixed dedicated-server turret visual rotation on normal blocks by moving turret yaw/pitch visuals to a lightweight server-to-client sync packet with safe shortest-path yaw interpolation.
+- Fixed turret visual sync startup and client interpolation so turrets no longer freeze on the first target, spin wildly, or shake while tracking targets in singleplayer and dedicated servers.
+- Restored upstream gunner mob weapon-tier pools so progression-based zombie/skeleton-style gunners no longer roll the wider player weapon pool added during content parity work.
+- Restored upstream-style gunner and raid mob damage scaling by difficulty, including the configurable mob gun damage multiplier, so AI-held guns no longer deal full player weapon damage.
+- Restored upstream-style gunner fire-rate and reload timing controls, including mob fire-rate and burst-delay multipliers, while preserving mob-gun ammo cleanup when weapons drop to players.
+- Fixed a server crash when enemy turret projectiles hit players and advancement checks tried to serialize a projectile with an empty pickup item stack.
+- Fixed Supply Scamp patrol sorting so modded barrel inventories, including Sophisticated Storage barrels, are recognized through NeoForge item-handler capabilities.
+
+### Changed
+
+- Raised the public version to `1.4.1`.
+
 ## 1.4.0 - 2026-05-18
 
 ### Added

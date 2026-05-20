@@ -67,6 +67,7 @@ import top.ribs.scguns.item.TeamLogItem;
 import top.ribs.scguns.network.PacketHandler;
 import top.ribs.scguns.network.message.S2CMessageGunSound;
 import top.ribs.scguns.network.message.S2CMessageMuzzleFlash;
+import top.ribs.scguns.network.message.S2CMessageTurretVisualSync;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -106,6 +107,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
     protected double smoothedTargetX;
     protected double smoothedTargetY;
     protected double smoothedTargetZ;
+    protected boolean hasSmoothedTarget;
     public float recoilPitchOffset = 0.0F;
     protected boolean hasFireRateModule;
     protected boolean hasDamageModule;
@@ -255,39 +257,9 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
     }
 
     private void tickClientVisual(Level level, BlockPos pos, BlockState state) {
-        this.hasRangeModule = this.isAdjacentToRangeModule(level, pos);
-        double rangeModifier = this.hasRangeModule ? RANGE_MODULE_BONUS : 0.0D;
+        this.previousYaw = this.yaw;
+        this.previousPitch = this.pitch;
         this.tickRecoil();
-
-        if (this.disabled || this.isPowered(state)) {
-            this.resetToRestPosition();
-            this.idleTicks = 0;
-            this.isScanning = false;
-            this.returningToScanPitch = false;
-            return;
-        }
-
-        this.updateTargetRange(rangeModifier);
-        if (!this.isTargetValid()) {
-            this.target = null;
-        }
-        this.findTarget(level, pos);
-
-        if (this.target != null) {
-            this.idleTicks = 0;
-            this.isScanning = false;
-            this.returningToScanPitch = false;
-            this.updateYaw();
-            this.updatePitch();
-        } else {
-            this.idleTicks++;
-            if (this.idleTicks < IDLE_BEFORE_SCAN) {
-                this.previousYaw = this.yaw;
-                this.previousPitch = this.pitch;
-            } else {
-                this.updateScanningBehavior();
-            }
-        }
     }
 
     private void syncVisualState(Level level) {
@@ -295,7 +267,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             return;
         }
         long gameTime = level.getGameTime();
-        boolean due = gameTime - this.lastVisualSyncTime >= 2L;
+        boolean due = this.lastVisualSyncTime == Long.MIN_VALUE || gameTime - this.lastVisualSyncTime >= 1L;
         boolean changed = Float.isNaN(this.lastSyncedYaw)
                 || Math.abs(Mth.wrapDegrees(this.yaw - this.lastSyncedYaw)) > 0.35F
                 || Math.abs(this.pitch - this.lastSyncedPitch) > 0.25F
@@ -307,7 +279,10 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         this.lastSyncedYaw = this.yaw;
         this.lastSyncedPitch = this.pitch;
         this.lastSyncedRecoil = this.recoilPitchOffset;
-        level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        PacketHandler.getPlayChannel().sendToTrackingChunk(
+                () -> level.getChunkAt(this.worldPosition),
+                new S2CMessageTurretVisualSync(this.worldPosition, this.yaw, this.pitch, this.recoilPitchOffset)
+        );
     }
 
     public static void sablePhysicsTickBridge(TurretBlockEntity turret, Object subLevel) {
@@ -616,6 +591,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         this.smoothedTargetX = 0.0D;
         this.smoothedTargetY = 0.0D;
         this.smoothedTargetZ = 0.0D;
+        this.hasSmoothedTarget = false;
     }
 
     public void onHitByLightningProjectile() {
@@ -704,6 +680,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         if (this.config == null) {
             return;
         }
+        UUID previousTargetUUID = this.target != null ? this.target.getUUID() : null;
         this.target = null;
         boolean hasTargetingModule = false;
         boolean isPlayerTargetingModule = false;
@@ -723,6 +700,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         }
 
         if (!hasTargetingModule) {
+            this.hasSmoothedTarget = false;
             return;
         }
 
@@ -788,6 +766,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
                         && !entity.getType().is(ModTags.Entities.TURRET_BLACKLIST));
 
         if (potentialTargets.isEmpty()) {
+            this.hasSmoothedTarget = false;
             return;
         }
 
@@ -808,10 +787,19 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             double predictedY = this.target.getY() + (this.target.getBbHeight() / 2.0F);
             double predictedZ = this.target.getZ() + this.target.getDeltaMovement().z * predictionMultiplier;
             Vec3 localPredictedTarget = transformSablePosition(sablePose, new Vec3(predictedX, predictedY, predictedZ), true);
-            float smoothing = this.config.getTargeting().getPositionSmoothing();
-            this.smoothedTargetX = lerp(this.smoothedTargetX, localPredictedTarget.x, smoothing);
-            this.smoothedTargetY = lerp(this.smoothedTargetY, localPredictedTarget.y, smoothing);
-            this.smoothedTargetZ = lerp(this.smoothedTargetZ, localPredictedTarget.z, smoothing);
+            if (!this.hasSmoothedTarget || previousTargetUUID == null || !previousTargetUUID.equals(this.target.getUUID())) {
+                this.smoothedTargetX = localPredictedTarget.x;
+                this.smoothedTargetY = localPredictedTarget.y;
+                this.smoothedTargetZ = localPredictedTarget.z;
+                this.hasSmoothedTarget = true;
+            } else {
+                float smoothing = this.config.getTargeting().getPositionSmoothing();
+                this.smoothedTargetX = lerp(this.smoothedTargetX, localPredictedTarget.x, smoothing);
+                this.smoothedTargetY = lerp(this.smoothedTargetY, localPredictedTarget.y, smoothing);
+                this.smoothedTargetZ = lerp(this.smoothedTargetZ, localPredictedTarget.z, smoothing);
+            }
+        } else {
+            this.hasSmoothedTarget = false;
         }
     }
 
@@ -938,7 +926,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
 
     protected void updateYaw() {
         this.previousYaw = this.yaw;
-        if (this.config != null && (this.smoothedTargetX != 0.0D || this.smoothedTargetZ != 0.0D)) {
+        if (this.config != null && this.hasSmoothedTarget) {
             double dx = this.smoothedTargetX - (this.worldPosition.getX() + 0.5D);
             double dz = this.smoothedTargetZ - (this.worldPosition.getZ() + 0.5D);
             float targetYaw = (float) (Math.atan2(dx, dz) * (180.0D / Math.PI)) + 180.0F;
@@ -954,7 +942,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
 
     protected void updatePitch() {
         this.previousPitch = this.pitch;
-        if (this.config != null && this.smoothedTargetY != 0.0D) {
+        if (this.config != null && this.hasSmoothedTarget) {
             double dx = this.smoothedTargetX - (this.worldPosition.getX() + 0.5D);
             double dy = this.smoothedTargetY - (this.worldPosition.getY() + 1.0D);
             double dz = this.smoothedTargetZ - (this.worldPosition.getZ() + 0.5D);
@@ -1028,6 +1016,18 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         return this.recoilPitchOffset;
     }
 
+    public void applyRemoteVisualState(float yaw, float pitch, float recoilPitchOffset) {
+        this.previousYaw = this.yaw;
+        this.previousPitch = this.pitch;
+        this.yaw = this.yaw + Mth.wrapDegrees(yaw - this.yaw);
+        this.yaw %= 360.0F;
+        if (this.yaw < 0.0F) {
+            this.yaw += 360.0F;
+        }
+        this.pitch = pitch;
+        this.recoilPitchOffset = Math.max(this.recoilPitchOffset, recoilPitchOffset);
+    }
+
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(this.itemHandler.getSlots());
         for (int i = 0; i < this.itemHandler.getSlots(); i++) {
@@ -1057,13 +1057,8 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         super.loadAdditional(tag, registries);
         float oldYaw = this.yaw;
         float oldPitch = this.pitch;
-        boolean keepClientVisualAngles = this.level != null
-                && this.level.isClientSide()
-                && this.resolveSablePose(this.level, this.worldPosition) != null;
-        if (!keepClientVisualAngles) {
-            this.yaw = tag.getFloat("Yaw");
-            this.pitch = tag.getFloat("Pitch");
-        }
+        this.yaw = tag.getFloat("Yaw");
+        this.pitch = tag.getFloat("Pitch");
         if (this.level != null && this.level.isClientSide()) {
             this.previousYaw = oldYaw;
             this.previousPitch = oldPitch;
@@ -1073,6 +1068,22 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         }
         this.disabled = tag.getBoolean("Disabled");
         this.disableCooldown = tag.getInt("DisableCooldown");
+        if (tag.contains("RecoilPitchOffset", Tag.TAG_FLOAT)) {
+            this.recoilPitchOffset = tag.getFloat("RecoilPitchOffset");
+        }
+        if (tag.contains("HasSmoothedTarget", Tag.TAG_BYTE)) {
+            this.hasSmoothedTarget = tag.getBoolean("HasSmoothedTarget");
+            if (this.hasSmoothedTarget
+                    && tag.contains("SmoothedTargetX", Tag.TAG_DOUBLE)
+                    && tag.contains("SmoothedTargetY", Tag.TAG_DOUBLE)
+                    && tag.contains("SmoothedTargetZ", Tag.TAG_DOUBLE)) {
+                this.smoothedTargetX = tag.getDouble("SmoothedTargetX");
+                this.smoothedTargetY = tag.getDouble("SmoothedTargetY");
+                this.smoothedTargetZ = tag.getDouble("SmoothedTargetZ");
+            }
+        } else if (this.level == null || !this.level.isClientSide()) {
+            this.hasSmoothedTarget = false;
+        }
         if (tag.contains("Inventory", Tag.TAG_COMPOUND)) {
             this.itemHandler.deserializeNBT(registries, tag.getCompound("Inventory"));
         }
@@ -1090,7 +1101,15 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
 
     @Override
     public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        return this.saveWithoutMetadata(registries);
+        CompoundTag tag = this.saveWithoutMetadata(registries);
+        tag.putFloat("RecoilPitchOffset", this.recoilPitchOffset);
+        tag.putBoolean("HasSmoothedTarget", this.hasSmoothedTarget);
+        if (this.hasSmoothedTarget) {
+            tag.putDouble("SmoothedTargetX", this.smoothedTargetX);
+            tag.putDouble("SmoothedTargetY", this.smoothedTargetY);
+            tag.putDouble("SmoothedTargetZ", this.smoothedTargetZ);
+        }
+        return tag;
     }
 
     @Override

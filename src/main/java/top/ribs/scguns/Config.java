@@ -264,6 +264,9 @@ public class Config
         public final ModConfigSpec.BooleanValue disableVillagerSpawning;
         public final ModConfigSpec.DoubleValue dissidentSpawnChance;
         public final ModConfigSpec.BooleanValue enableAutoReload;
+        public final ModConfigSpec.DoubleValue mobFireRateMultiplier;
+        public final ModConfigSpec.DoubleValue mobBurstDelayMultiplier;
+        public final ModConfigSpec.DoubleValue mobGunDamageMultiplier;
         public Gameplay(ModConfigSpec.Builder builder)
         {
             builder.comment("Properties relating to gameplay").push("gameplay");
@@ -305,6 +308,15 @@ public class Config
                 this.enableAutoReload = builder
                         .comment("If true, guns will automatically start reloading when fired with an empty magazine if ammo is available")
                         .define("enableAutoReload", true);
+                this.mobFireRateMultiplier = builder
+                        .comment("Global multiplier for mob fire rate. 1.0 = normal speed, 0.5 = faster, 2.0 = slower.")
+                        .defineInRange("mobFireRateMultiplier", 1.0, 0.1, 5.0);
+                this.mobBurstDelayMultiplier = builder
+                        .comment("Multiplier for delay between mob gun bursts. Higher values add longer pauses between bursts.")
+                        .defineInRange("mobBurstDelayMultiplier", 1.0, 0.1, 5.0);
+                this.mobGunDamageMultiplier = builder
+                        .comment("Global multiplier for mob gun damage after difficulty scaling.")
+                        .defineInRange("mobGunDamageMultiplier", 1.0, 0.01, 100.0);
                 this.enableFirePlacement = builder.comment("If true, allows flamethrowers to place fire on blocks").define("enableFirePlacement", true);
             }
             builder.pop();

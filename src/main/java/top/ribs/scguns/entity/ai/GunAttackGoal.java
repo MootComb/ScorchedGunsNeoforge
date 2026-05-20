@@ -142,10 +142,10 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
 
         if (remainingBursts > 0) {
             remainingBursts--;
-            burstTimer = Math.max(getWeaponCooldown(), Math.max(3, 8 - aiDifficulty));
+            burstTimer = 2 + shooter.getRandom().nextInt(6);
         } else {
-            remainingBursts = aiDifficulty > 1 ? shooter.getRandom().nextInt(aiDifficulty) : 0;
-            attackTime = Math.max(10, weapon.getAdjustedAttackCooldown(1.4D - Math.min(0.4D, aiDifficulty * 0.1D)));
+            remainingBursts = aiDifficulty > 1 ? 1 + shooter.getRandom().nextInt(getBurstAmount()) : 0;
+            attackTime = Math.max(getMobAttackCooldown(), getBurstResetDelay());
         }
     }
 
@@ -190,15 +190,29 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         return Config.COMMON.gunnerMobs.gunnerMobInaccuracyMultiplier.get();
     }
 
-    private int getWeaponCooldown() {
-        return weapon != null ? Math.max(1, weapon.getAttackCooldown()) : 20;
+    private int getMobAttackCooldown() {
+        if (weapon == null) {
+            return 20;
+        }
+        double multiplier = Config.COMMON.gameplay.mobFireRateMultiplier.get();
+        return Math.max(1, (int) (weapon.getMobAttackCooldown() * multiplier));
+    }
+
+    private int getBurstAmount() {
+        return Math.max(1, 2 + aiDifficulty / 2);
+    }
+
+    private int getBurstResetDelay() {
+        double multiplier = Config.COMMON.gameplay.mobBurstDelayMultiplier.get();
+        int base = 40 + shooter.getRandom().nextInt(40);
+        return Math.max(5, (int) (base * multiplier));
     }
 
     private void tickReload() {
         shooter.getNavigation().stop();
         if (!reloading) {
             reloading = true;
-            reloadTime = weapon.getReloadTime();
+            reloadTime = weapon.getMobReloadTime();
             SoundEvent reloadSound = weapon.getLoadSound();
             if (reloadSound != null) {
                 shooter.level().playSound(null, shooter, reloadSound, SoundSource.HOSTILE, 0.8F, 1.0F);
@@ -213,7 +227,7 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         refillCurrentWeapon();
         reloading = false;
         reloadTime = 0;
-        attackTime = Math.max(5, getWeaponCooldown());
+        attackTime = Math.max(5, getMobAttackCooldown());
     }
 
     private void refillCurrentWeapon() {

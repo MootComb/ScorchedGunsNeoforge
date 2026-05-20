@@ -6,8 +6,7 @@
     "scguns:blunderbuss",
     "scguns:doublet",
     "scguns:repeating_musket",
-    "scguns:laser_musket",
-    "scguns:plasmabuss"
+    "scguns:longarm"
   ],
   "FRONTIER": [
     "scguns:pax",
@@ -15,126 +14,47 @@
     "scguns:winnie_millend",
     "scguns:callwell",
     "scguns:callwell_conversion",
-    "scguns:callwell_terminal",
-    "scguns:saketini",
-    "scguns:saketini_ironport",
-    "scguns:big_bore"
+    "scguns:saketini"
   ],
   "COPPER": [
     "scguns:scrapper",
     "scguns:rusty_gnat",
-    "scguns:umax_pistol",
     "scguns:makeshift_rifle",
     "scguns:boomstick",
     "scguns:bruiser",
     "scguns:llr_director",
-    "scguns:birdfeeder",
-    "scguns:arc_worker"
+    "scguns:birdfeeder"
   ],
   "IRON": [
     "scguns:defender_pistol",
     "scguns:trenchur",
     "scguns:greaser_smg",
     "scguns:m3_carabine",
-    "scguns:m3_marksman",
     "scguns:combat_shotgun",
-    "scguns:venturi",
-    "scguns:iron_javelin",
-    "scguns:iron_spear",
-    "scguns:auvtomag",
-    "scguns:pulsar",
-    "scguns:gyrojet_pistol",
-    "scguns:brawler",
-    "scguns:crusader",
-    "scguns:mk43_rifle",
-    "scguns:rocket_rifle",
-    "scguns:ultra_knight_hawk"
+    "scguns:gyrojet_pistol"
   ],
-  "WRECKER": [
-    "scguns:mokova",
-    "scguns:mak_mkii",
-    "scguns:turnpike",
-    "scguns:killer_23",
-    "scguns:homemaker",
-    "scguns:kalaskah",
-    "scguns:basker",
-    "scguns:tl_runner",
-    "scguns:stigg"
-  ],
-  "OCEAN": [
-    "scguns:floundergat",
-    "scguns:marlin",
-    "scguns:bomb_lance",
-    "scguns:hullbreaker",
-    "scguns:sequoia"
-  ],
+  "WRECKER": [],
+  "OCEAN": [],
   "DIAMOND_STEEL": [
     "scguns:krauser",
     "scguns:soul_drummer",
-    "scguns:uppercut",
     "scguns:micina",
     "scguns:valora",
     "scguns:prush_gun",
-    "scguns:lockewood",
-    "scguns:rg_jigsaw",
-    "scguns:inertial",
-    "scguns:mas_55",
-    "scguns:plasgun",
-    "scguns:cyclone",
-    "scguns:shard_culler"
+    "scguns:drill",
+    "scguns:drill_conversion",
+    "scguns:lockewood"
   ],
   "TREATED_BRASS": [
     "scguns:m22_waltz",
-    "scguns:waltz_conversion",
-    "scguns:osgood_50",
     "scguns:grandle_og",
     "scguns:grandle",
     "scguns:cogloader",
-    "scguns:gale",
     "scguns:jackhammer",
-    "scguns:howler",
-    "scguns:howler_conversion",
-    "scguns:gauss_rifle",
-    "scguns:niami",
-    "scguns:spitfire",
-    "scguns:gattaler",
-    "scguns:thunderhead",
-    "scguns:scratches",
-    "scguns:cr4k_mining_laser",
-    "scguns:dozier_rl"
+    "scguns:niami"
   ],
-  "PIGLIN": [
-    "scguns:empty_blasphemy",
-    "scguns:blasphemy",
-    "scguns:pyroclastic_flow",
-    "scguns:freyr",
-    "scguns:mangalitsa",
-    "scguns:vulcanic_repeater",
-    "scguns:super_shotgun"
-  ],
-  "DEEP_DARK": [
-    "scguns:whispers",
-    "scguns:echoes_2",
-    "scguns:sculk_resonator",
-    "scguns:forlorn_hope"
-  ],
-  "END": [
-    "scguns:carapice",
-    "scguns:shellurker",
-    "scguns:weevil",
-    "scguns:dark_matter",
-    "scguns:lone_wonder",
-    "scguns:raygun"
-  ],
-  "SCORCHED": [
-    "scguns:prima_materia",
-    "scguns:rat_king_and_queen",
-    "scguns:locust",
-    "scguns:newborn_cyst",
-    "scguns:earths_corpse",
-    "scguns:flayed_god",
-    "scguns:nervepinch",
-    "scguns:terra_incognita",
-    "scguns:astella"
-  ]
+  "PIGLIN": [],
+  "DEEP_DARK": [],
+  "END": [],
+  "SCORCHED": []
 }

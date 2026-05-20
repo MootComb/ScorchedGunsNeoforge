@@ -22,6 +22,7 @@ public class PacketHandler
                 .registerPlayMessage("c2s_jetpack_flight_state", C2SMessageJetpackFlightState.class, C2SMessageJetpackFlightState.STREAM_CODEC, C2SMessageJetpackFlightState::handle, PacketFlow.SERVERBOUND)
                 .registerPlayMessage("c2s_melee_attack", C2SMessageMeleeAttack.class, C2SMessageMeleeAttack.STREAM_CODEC, C2SMessageMeleeAttack::handle, PacketFlow.SERVERBOUND)
                 .registerPlayMessage("s2c_muzzle_flash", S2CMessageMuzzleFlash.class, S2CMessageMuzzleFlash.STREAM_CODEC, S2CMessageMuzzleFlash::handle, PacketFlow.CLIENTBOUND)
+                .registerPlayMessage("s2c_turret_visual_sync", S2CMessageTurretVisualSync.class, S2CMessageTurretVisualSync.STREAM_CODEC, S2CMessageTurretVisualSync::handle, PacketFlow.CLIENTBOUND)
                 .registerPlayMessage("c2s_reload", C2SMessageReload.class, C2SMessageReload.STREAM_CODEC, C2SMessageReload::handle, PacketFlow.SERVERBOUND)
                 .registerPlayMessage("c2s_save_exo_suit_upgrades", C2SMessageSaveExoSuitUpgrades.class, C2SMessageSaveExoSuitUpgrades.STREAM_CODEC, C2SMessageSaveExoSuitUpgrades::handle, PacketFlow.SERVERBOUND)
                 .registerPlayMessage("c2s_gun_loaded", C2SMessageGunLoaded.class, C2SMessageGunLoaded.STREAM_CODEC, C2SMessageGunLoaded::handle, PacketFlow.SERVERBOUND)
