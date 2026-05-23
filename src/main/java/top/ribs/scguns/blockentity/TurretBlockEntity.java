@@ -82,7 +82,6 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
     private static final float SCAN_ANGLE = 60.0F;
     private static final float SCAN_SPEED = 0.02F;
     private static final float SCAN_PITCH = 0.0F;
-
     protected final ResourceLocation turretId;
     protected Turret config;
     protected double targetingRadius;
@@ -122,6 +121,8 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
     private float lastSyncedRecoil = Float.NaN;
     @Nullable
     private Object activeSablePose;
+    @Nullable
+    private Level activeSableLevel;
     private boolean tickingFromSable;
     private int idleTicks = 0;
     private boolean isScanning = false;
@@ -140,6 +141,8 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
     private static Method sableGetSubLevelMethod;
     @Nullable
     private static Method sableLogicalPoseMethod;
+    @Nullable
+    private static Method sableSubLevelGetLevelMethod;
     @Nullable
     private static Method sableTransformPositionMethod;
     @Nullable
@@ -290,13 +293,16 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             return;
         }
         Object previousPose = turret.activeSablePose;
+        Level previousSableLevel = turret.activeSableLevel;
         boolean previousSableTick = turret.tickingFromSable;
         turret.activeSablePose = getSablePoseFromSubLevel(subLevel);
+        turret.activeSableLevel = getSableLevelFromSubLevel(subLevel);
         turret.tickingFromSable = true;
         try {
             turret.tickTurret(turret.level, turret.worldPosition, turret.getBlockState());
         } finally {
             turret.activeSablePose = previousPose;
+            turret.activeSableLevel = previousSableLevel;
             turret.tickingFromSable = previousSableTick;
         }
     }
@@ -371,41 +377,46 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         if (this.level == null || this.target == null || this.config == null) {
             return;
         }
+        Level actionLevel = this.getActionLevel();
+        if (actionLevel == null) {
+            return;
+        }
 
         float yaw = this.getYaw();
         float pitch = this.getPitch();
         Vec3 muzzlePos = this.getMuzzlePosition(yaw, pitch);
 
-        if (!this.level.isClientSide) {
-            PacketHandler.getPlayChannel().sendToTrackingChunk(() -> level.getChunkAt(worldPosition), new S2CMessageMuzzleFlash(muzzlePos, yaw, pitch));
+        if (!actionLevel.isClientSide) {
+            BlockPos muzzleBlockPos = BlockPos.containing(muzzlePos);
+            PacketHandler.getPlayChannel().sendToTrackingChunk(() -> actionLevel.getChunkAt(muzzleBlockPos), new S2CMessageMuzzleFlash(muzzlePos, yaw, pitch));
         }
 
-        this.playFireSound(muzzlePos);
+        this.playFireSound(actionLevel, muzzlePos);
 
         Vec3 targetPos = new Vec3(this.target.getX(), this.target.getY() + this.target.getEyeHeight() * 0.5, this.target.getZ());
         Vec3 direction = targetPos.subtract(muzzlePos).normalize();
         float inaccuracy = this.config.getCombat().getInaccuracy();
         if (inaccuracy > 0.0F) {
             direction = direction.add(
-                    this.level.random.triangle(0.0D, inaccuracy),
-                    this.level.random.triangle(0.0D, inaccuracy),
-                    this.level.random.triangle(0.0D, inaccuracy)
+                    actionLevel.random.triangle(0.0D, inaccuracy),
+                    actionLevel.random.triangle(0.0D, inaccuracy),
+                    actionLevel.random.triangle(0.0D, inaccuracy)
             ).normalize();
         }
 
         int pelletCount = Math.max(1, this.config.getCombat().getPelletCount());
         if (pelletCount > 1) {
-            this.fireCluster(ammoType, muzzlePos, direction, damageModifier, pelletCount);
+            this.fireCluster(actionLevel, ammoType, muzzlePos, direction, damageModifier, pelletCount);
         } else {
-            this.fireSingleProjectile(ammoType, muzzlePos, direction, damageModifier);
+            this.fireSingleProjectile(actionLevel, ammoType, muzzlePos, direction, damageModifier);
         }
 
         this.recoilPitchOffset = this.config.getCombat().getRecoilMax();
         this.handleCasingEjection(ammoType);
     }
 
-    private void playFireSound(Vec3 muzzlePos) {
-        if (!(this.level instanceof ServerLevel serverLevel) || this.config == null || this.config.getCombat().getFireSound() == null) {
+    private void playFireSound(Level actionLevel, Vec3 muzzlePos) {
+        if (!(actionLevel instanceof ServerLevel serverLevel) || this.config == null || this.config.getCombat().getFireSound() == null) {
             return;
         }
 
@@ -428,31 +439,31 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         );
     }
 
-    protected void fireSingleProjectile(Turret.Ammunition.AmmoType ammoType, Vec3 muzzlePos, Vec3 direction, int damageModifier) {
-        TurretProjectileEntity projectile = new TurretProjectileEntity(this.level);
+    protected void fireSingleProjectile(Level actionLevel, Turret.Ammunition.AmmoType ammoType, Vec3 muzzlePos, Vec3 direction, int damageModifier) {
+        TurretProjectileEntity projectile = new TurretProjectileEntity(actionLevel);
         projectile.setPos(muzzlePos.x, muzzlePos.y, muzzlePos.z);
         projectile.shoot(direction.x, direction.y, direction.z, (float) this.config.getCombat().getProjectileSpeed(), 0.0F);
         projectile.setBaseDamage(this.getScaledDamage(ammoType.getDamage()) + damageModifier);
-        this.level.addFreshEntity(projectile);
+        actionLevel.addFreshEntity(projectile);
     }
 
-    protected void fireCluster(Turret.Ammunition.AmmoType ammoType, Vec3 muzzlePos, Vec3 baseDirection, int damageModifier, int pelletCount) {
+    protected void fireCluster(Level actionLevel, Turret.Ammunition.AmmoType ammoType, Vec3 muzzlePos, Vec3 baseDirection, int damageModifier, int pelletCount) {
         double finalDamage = this.getScaledDamage(ammoType.getDamage()) + damageModifier;
         double pelletDamage = finalDamage / pelletCount;
 
         for (int i = 0; i < pelletCount; i++) {
-            Vec3 spreadDirection = this.applySpread(baseDirection, this.config.getCombat().getSpreadAngle());
-            TurretProjectileEntity projectile = new TurretProjectileEntity(this.level);
+            Vec3 spreadDirection = this.applySpread(actionLevel, baseDirection, this.config.getCombat().getSpreadAngle());
+            TurretProjectileEntity projectile = new TurretProjectileEntity(actionLevel);
             projectile.setPos(muzzlePos.x, muzzlePos.y, muzzlePos.z);
             projectile.shoot(spreadDirection.x, spreadDirection.y, spreadDirection.z, (float) this.config.getCombat().getProjectileSpeed(), 0.0F);
             projectile.setBaseDamage(pelletDamage);
-            this.level.addFreshEntity(projectile);
+            actionLevel.addFreshEntity(projectile);
         }
     }
 
-    protected Vec3 applySpread(Vec3 baseDirection, float spreadAngle) {
-        double yawRad = Math.toRadians(this.level.random.triangle(0.0D, spreadAngle));
-        double pitchRad = Math.toRadians(this.level.random.triangle(0.0D, spreadAngle));
+    protected Vec3 applySpread(Level actionLevel, Vec3 baseDirection, float spreadAngle) {
+        double yawRad = Math.toRadians(actionLevel.random.triangle(0.0D, spreadAngle));
+        double pitchRad = Math.toRadians(actionLevel.random.triangle(0.0D, spreadAngle));
         double x = baseDirection.x;
         double y = baseDirection.y;
         double z = baseDirection.z;
@@ -488,13 +499,18 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         if (this.level == null || ammoType.getCasingType() == null) {
             return;
         }
+        Level actionLevel = this.getActionLevel();
+        if (actionLevel == null) {
+            return;
+        }
         Item item = BuiltInRegistries.ITEM.get(ammoType.getCasingType());
         if (item == Items.AIR) {
             return;
         }
-        ItemEntity casingEntity = new ItemEntity(this.level, this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 1.0, this.worldPosition.getZ() + 0.5, new ItemStack(item));
+        Vec3 casingPos = this.toSableGlobalPosition(new Vec3(this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 1.0D, this.worldPosition.getZ() + 0.5D));
+        ItemEntity casingEntity = new ItemEntity(actionLevel, casingPos.x, casingPos.y, casingPos.z, new ItemStack(item));
         casingEntity.setDeltaMovement(Direction.NORTH.getStepX() * 0.1D, 0.15D, Direction.NORTH.getStepZ() * 0.1D);
-        this.level.addFreshEntity(casingEntity);
+        actionLevel.addFreshEntity(casingEntity);
     }
 
     protected boolean tryInsertIntoShellCatcher(Turret.Ammunition.AmmoType ammoType) {
@@ -748,11 +764,12 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         Object sablePose = this.resolveSablePose(level, pos);
         Vec3 localTurretPos = new Vec3(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
         Vec3 turretPos = transformSablePosition(sablePose, localTurretPos, false);
+        Level targetLevel = this.getActionLevel(level);
         AABB searchBox = new AABB(turretPos, turretPos).inflate(this.targetingRadius, this.config.getTargeting().getVerticalRange(), this.targetingRadius);
         boolean playerTargeting = isPlayerTargetingModule;
         boolean hostileTargeting = isHostileTargetingModule;
 
-        List<LivingEntity> potentialTargets = level.getEntitiesOfClass(LivingEntity.class, searchBox,
+        List<LivingEntity> potentialTargets = targetLevel.getEntitiesOfClass(LivingEntity.class, searchBox,
                 entity -> entity != null
                         && entity.isAlive()
                         && !this.isOwner(entity)
@@ -771,15 +788,14 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         }
 
         if (this.config.getTargeting().requiresLineOfSight()) {
-            this.target = potentialTargets.stream()
-                    .filter(entity -> this.hasLineOfSight(level, turretPos, entity))
-                    .min(Comparator.comparingDouble(entity -> entity.distanceToSqr(turretPos)))
-                    .orElse(null);
-        } else {
-            this.target = potentialTargets.stream()
-                    .min(Comparator.comparingDouble(entity -> entity.distanceToSqr(turretPos)))
-                    .orElse(null);
+            potentialTargets = potentialTargets.stream()
+                    .filter(entity -> this.hasLineOfSight(targetLevel, turretPos, entity))
+                    .toList();
         }
+
+        this.target = potentialTargets.stream()
+                .min(Comparator.comparingDouble(entity -> entity.distanceToSqr(turretPos)))
+                .orElse(null);
 
         if (this.target != null) {
             int predictionMultiplier = this.config.getTargeting().getPredictionMultiplier();
@@ -816,8 +832,9 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         if (this.target == null || !this.target.isAlive() || this.target.isRemoved() || this.level == null) {
             return false;
         }
+        Level targetLevel = this.getActionLevel(this.level);
         ChunkPos targetChunkPos = new ChunkPos(this.target.blockPosition());
-        if (!this.level.hasChunk(targetChunkPos.x, targetChunkPos.z)) {
+        if (!targetLevel.hasChunk(targetChunkPos.x, targetChunkPos.z)) {
             return false;
         }
         Vec3 turretPos = this.toSableGlobalPosition(new Vec3(this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 0.5D, this.worldPosition.getZ() + 0.5D));
@@ -827,6 +844,15 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
 
     private Vec3 toSableGlobalPosition(Vec3 localPosition) {
         return transformSablePosition(this.resolveSablePose(this.level, this.worldPosition), localPosition, false);
+    }
+
+    @Nullable
+    private Level getActionLevel() {
+        return this.activeSableLevel != null ? this.activeSableLevel : this.level;
+    }
+
+    private Level getActionLevel(Level fallback) {
+        return this.activeSableLevel != null ? this.activeSableLevel : fallback;
     }
 
     @Nullable
@@ -847,6 +873,25 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
                 sableLogicalPoseMethod = logicalPose;
             }
             return logicalPose.invoke(subLevel);
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static Level getSableLevelFromSubLevel(@Nullable Object subLevel) {
+        if (!ScorchedGuns.sableLoaded || subLevel == null) {
+            return null;
+        }
+        try {
+            Method getLevel = sableSubLevelGetLevelMethod;
+            if (getLevel == null || !getLevel.getDeclaringClass().isAssignableFrom(subLevel.getClass())) {
+                Class<?> subLevelClass = Class.forName("dev.ryanhcode.sable.sublevel.SubLevel");
+                getLevel = subLevelClass.getMethod("getLevel");
+                sableSubLevelGetLevelMethod = getLevel;
+            }
+            Object result = getLevel.invoke(subLevel);
+            return result instanceof Level level ? level : null;
         } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
             return null;
         }
@@ -904,7 +949,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         }
         try {
             Method method = inverse ? sableTransformPositionInverseMethod : sableTransformPositionMethod;
-            if (method == null) {
+            if (method == null || !method.getDeclaringClass().isAssignableFrom(pose.getClass())) {
                 method = pose.getClass().getMethod(inverse ? "transformPositionInverse" : "transformPosition", Vec3.class);
                 if (inverse) {
                     sableTransformPositionInverseMethod = method;

@@ -49,7 +49,9 @@ public class HiveEntity extends Monster {
         if (swarmSummonCooldown > 0) {
             --swarmSummonCooldown;
         }
-        summonedSwarm.removeIf(swarm -> !swarm.isAlive());
+        if (!this.level().isClientSide()) {
+            summonedSwarm.removeIf(swarm -> !swarm.isAlive());
+        }
     }
     private void setupAnimationStates() {
         if (this.idleAnimationTimeout <= 0) {
@@ -83,13 +85,14 @@ public class HiveEntity extends Monster {
     @Override
     public void die(@NotNull DamageSource cause) {
         super.die(cause);
+
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
         List<SwarmEntity> swarms = List.copyOf(summonedSwarm);
         summonedSwarm.clear();
-        if (this.level() instanceof ServerLevel serverLevel) {
-            serverLevel.getServer().execute(() -> discardSwarms(swarms));
-        } else {
-            discardSwarms(swarms);
-        }
+        serverLevel.getServer().execute(() -> discardSwarms(swarms));
     }
 
     private static void discardSwarms(List<SwarmEntity> swarms) {
@@ -124,6 +127,10 @@ public class HiveEntity extends Monster {
     }
 
     private void summonSwarm() {
+        if (this.level().isClientSide()) {
+            return;
+        }
+
         if (canSummonSwarm()) {
             SwarmEntity swarm = ModEntities.SWARM.get().create(this.level());
             if (swarm != null) {

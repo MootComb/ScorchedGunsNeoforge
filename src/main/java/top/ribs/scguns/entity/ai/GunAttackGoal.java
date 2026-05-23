@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import top.ribs.scguns.Config;
+import top.ribs.scguns.common.FireMode;
 import top.ribs.scguns.entity.weapon.ScGunsWeapon;
 import top.ribs.scguns.item.GunItem;
 import top.ribs.scguns.network.PacketHandler;
@@ -28,7 +29,6 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
     private static final double MIN_MAX_ATTACK_RANGE = 8.0D;
     private static final double MAX_MAX_ATTACK_RANGE = 48.0D;
     private static final double CLOSE_STOP_RANGE_SQR = 36.0D;
-    private static final double PREFERRED_STOP_RANGE_SQR = 196.0D;
     private static final String MOB_GUN_KEY = "scguns:MobGun";
     private static final String VIVENTRUM_MOB_GUN_KEY = "scguns:ViventrumMobGun";
 
@@ -101,10 +101,8 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
 
         if (distance < CLOSE_STOP_RANGE_SQR) {
             shooter.getNavigation().stop();
-        } else if (distance > PREFERRED_STOP_RANGE_SQR) {
-            shooter.getNavigation().moveTo(target, weapon != null ? weapon.getMoveSpeedAmp() : 0.4D);
         } else {
-            shooter.getNavigation().stop();
+            shooter.getNavigation().moveTo(target, getCombatMoveSpeed());
         }
 
         shooter.getLookControl().setLookAt(target, 30.0F, 30.0F);
@@ -138,14 +136,23 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
             return;
         }
 
+        boolean nativeBurstWeapon = isNativeBurstWeapon();
+        boolean continuingNativeBurst = nativeBurstWeapon && remainingBursts > 0;
         shoot(target);
 
-        if (remainingBursts > 0) {
-            remainingBursts--;
-            burstTimer = 2 + shooter.getRandom().nextInt(6);
+        if (nativeBurstWeapon) {
+            if (continuingNativeBurst) {
+                remainingBursts--;
+            } else {
+                remainingBursts = Math.max(0, weapon.getBurstAmount() - 1);
+            }
+            if (remainingBursts > 0) {
+                burstTimer = weapon.getBurstCooldown();
+            } else {
+                attackTime = Math.max(getMobAttackCooldown(), getBurstResetDelay());
+            }
         } else {
-            remainingBursts = aiDifficulty > 1 ? 1 + shooter.getRandom().nextInt(getBurstAmount()) : 0;
-            attackTime = Math.max(getMobAttackCooldown(), getBurstResetDelay());
+            attackTime = getMobAttackCooldown();
         }
     }
 
@@ -198,8 +205,12 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         return Math.max(1, (int) (weapon.getMobAttackCooldown() * multiplier));
     }
 
-    private int getBurstAmount() {
-        return Math.max(1, 2 + aiDifficulty / 2);
+    private boolean isNativeBurstWeapon() {
+        return weapon != null && FireMode.BURST.equals(weapon.getFireMode());
+    }
+
+    private double getCombatMoveSpeed() {
+        return Math.max(0.8D, weapon != null ? weapon.getMoveSpeedAmp() : 0.4D);
     }
 
     private int getBurstResetDelay() {

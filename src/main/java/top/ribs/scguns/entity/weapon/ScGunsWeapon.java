@@ -18,6 +18,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import top.ribs.scguns.Config;
+import top.ribs.scguns.common.FireMode;
 import top.ribs.scguns.common.Gun;
 import top.ribs.scguns.common.ProjectileManager;
 import top.ribs.scguns.entity.projectile.ProjectileEntity;
@@ -70,6 +71,18 @@ public class ScGunsWeapon implements IWeapon {
 
     public int getMobAttackCooldown() {
         return Math.max(1, gun.getGeneral().getRate());
+    }
+
+    public FireMode getFireMode() {
+        return gun.getGeneral().getFireMode();
+    }
+
+    public int getBurstAmount() {
+        return Math.max(1, gun.getGeneral().getBurstAmount());
+    }
+
+    public int getBurstCooldown() {
+        return Math.max(1, gun.getGeneral().getBurstCooldown());
     }
 
     public int getAdjustedAttackCooldown(double modifier) {
