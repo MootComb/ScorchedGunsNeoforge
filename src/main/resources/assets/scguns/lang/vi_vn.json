@@ -1025,7 +1025,7 @@
   "scguns.jei.info.ammo_turret_module": "Phải được kết nối với một tháp pháo. Hoạt động như một chiếc máng sẽ cung cấp đạn cho kho vũ khí của tháp pháo",
   "scguns.jei.info.range_turret_module": "Phải được kết nối với một tháp pháo. Sẽ tăng tầm bắn của tháp pháo",
   "scguns.jei.info.shell_catcher_turret_module": "Phải được kết nối với một tháp pháo. Sẽ tăng khả năng thu hồi vỏ đã bắn lên 100%",
-  "scguns.jei.info.ancient_brass": "Có thể dùng thay cho Đồng Thau, hoặc dùng để thuần hóa Supply Scamps",
+  "scguns.jei.info.ancient_brass": "Dùng để thuần hóa Supply Scamps",
   "scguns.jei.info.scamp_controller": "Dùng để liên kết Supply Scamp với một thùng chứa, hoặc thay đổi hành vi của Supply Scamp bằng cách nhấn chuột phải vào vị trí",
   "scguns.jei.info.enemy_log": "Dùng để whitelist các mob mà tháp pháo sẽ bắn. Nhấn chuột phải vào một mob để tháp pháo bắn chỉ mob đó, Nhấn Shift + chuột phải để whitelist toàn bộ loại mob đó.",
   "scguns.jei.info.team_log": "Dùng để blacklist các mob mà tháp pháo sẽ bắn. Nhấn chuột phải vào một mob để tháp pháo bỏ qua chỉ mob đó, Nhấn Shift + chuột phải để blacklist toàn bộ loại mob đó.",

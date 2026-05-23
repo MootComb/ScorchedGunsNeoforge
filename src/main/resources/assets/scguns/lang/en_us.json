@@ -1025,7 +1025,7 @@
   "scguns.jei.info.ammo_turret_module": "Must be connected to a turret. Acts as a hopper will supply turrets inventory",
   "scguns.jei.info.range_turret_module": "Must be connected to a turret. Will increase the range of the turret",
   "scguns.jei.info.shell_catcher_turret_module": "Must be connected to a turret. Will increase the chance of retrieving spent casings to 100%",
-  "scguns.jei.info.ancient_brass": "Can be used in place of Brass, or used to tame Supply Scamps",
+  "scguns.jei.info.ancient_brass": "Used to tame Supply Scamps",
   "scguns.jei.info.scamp_controller": "Used to link a Supply Scamp to a container, or to change the behavior of a Supply Scamp, via shift right clicking",
   "scguns.jei.info.enemy_log": "Used to whitelist mobs a turret will fire at. Right click a mob to have the turrets fire at just that mob, Shift right click to whitelist that whole mob type.",
   "scguns.jei.info.team_log": "Used to blacklist mobs a turret will fire at. Right click a mob to have the turrets ignore just that mob, Shift right click to blacklist that whole mob type.",

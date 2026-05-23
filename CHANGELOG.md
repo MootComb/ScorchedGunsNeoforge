@@ -8,7 +8,7 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ### Fixed
 
-- Fixed Ancient Brass not being accepted by recipes that use the common brass ingot tag, matching its JEI info text.
+- Corrected the outdated Ancient Brass JEI info text; Ancient Brass is intentionally converted through Create mixing instead of acting as a direct Brass substitute.
 - Fixed C2ME/Sable client disconnects caused by Hive swarm tracking touching swarm entities from the client-side entity event path.
 - Fixed gunner and raid mob combat pacing after the upstream-style timing pass so automatic weapons fire at their configured rate again while burst weapons still respect burst delays and reload windows.
 - Fixed gunner and raid mob movement so armed mobs keep closing distance toward their target instead of freezing at medium range as soon as they start shooting.

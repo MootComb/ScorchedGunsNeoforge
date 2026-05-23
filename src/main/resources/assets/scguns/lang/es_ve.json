@@ -1320,7 +1320,7 @@
   "scguns.jei.info.ammo_turret_module": "Se debe conectar en una torreta. Funciona como una tolva que inserta munición en el inventario de la torreta.",
   "scguns.jei.info.range_turret_module": "Se debe conectar en una torreta. Aumentara el alcance de la torreta.",
   "scguns.jei.info.shell_catcher_turret_module": "Se debe conectar en una torreta. Aumenta la posibilidad de recuperar casquillos al 100%.",
-  "scguns.jei.info.ancient_brass": "Puede ser usado en vez del latón, o para domesticar suministradores pícaros.",
+  "scguns.jei.info.ancient_brass": "Sirve para domesticar suministradores pícaros.",
   "scguns.jei.info.scamp_controller": "Usado para vincular suministradores pícaros a un contenedor, o para cambiar su comportamiento al presionar Mayús clic derecho.",
   "scguns.jei.info.enemy_log": "Usado para registrar en una lista a que entidades dispara la torreta. Haz clic derecho en una entidad para hacer que las torretas solo disparen a tal, y Mayús clic derecho para incluir a todo ese tipo de entidades.",
   "scguns.jei.info.team_log": "Usado para registrar en una lista a que entidades NO dispara la torreta. Haz clic derecho en una entidad para hacer que las torretas no le disparen a tal, y Mayús clic derecho para excluir a todo ese tipo de entidades.",
