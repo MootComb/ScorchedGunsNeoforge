@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 1.0,
@@ -53,6 +53,7 @@
   "projectile": {
     "advantage": "scguns:heavy",
     "damage": 19.5,
+    "armorPen": 4.5,
     "ejectsCasing": true,
     "gravity": false  ,
     "item": "scguns:gibbs_round",

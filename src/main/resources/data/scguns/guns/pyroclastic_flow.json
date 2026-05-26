@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 1.0,
@@ -41,6 +41,7 @@
   "projectile": {
     "advantage": "scguns:wither",
     "damage": 15.0,
+    "armorPen": 2.0,
     "ejectsCasing": false,
     "gravity": false,
     "item": "scguns:blaze_fuel",

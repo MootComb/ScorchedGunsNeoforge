@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 2.0,
@@ -49,6 +49,7 @@
   "projectile": {
     "advantage": "scguns:heavy",
     "damage": 74.0,
+    "armorPen": 2.0,
     "ejectsCasing": true,
     "gravity": false  ,
     "item": "scguns:osborne_slug",

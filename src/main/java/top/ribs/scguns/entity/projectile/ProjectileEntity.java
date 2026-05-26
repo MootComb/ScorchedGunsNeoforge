@@ -108,6 +108,9 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
     private int soundTime = 0;
     private float chargeProgress;
     protected float armorBypassAmount = 2.0F;
+    private double damageFalloffOriginX;
+    private double damageFalloffOriginY;
+    private double damageFalloffOriginZ;
     @Nullable
     private static Method valkyrienSkiesClipIncludeShipsMethod;
     private static boolean valkyrienSkiesClipIncludeShipsUnavailable;
@@ -143,9 +146,7 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
             ChargeHandler.clearLastChargeProgress(player.getUUID());
         }
         float puncturingBypass = GunEnchantmentHelper.getPuncturingArmorBypass(weapon);
-        if (puncturingBypass > 0) {
-            this.setArmorBypassAmount(this.armorBypassAmount + puncturingBypass);
-        }
+        this.setArmorBypassAmount(this.projectile.getArmorPen() + puncturingBypass);
         AttributeInstance additionalDamageAttr = shooter.getAttribute(SCAttributes.ADDITIONAL_BULLET_DAMAGE);
         this.attributeAdditionalDamage = additionalDamageAttr != null ? (float) additionalDamageAttr.getValue() : 0.0F;
 
@@ -176,6 +177,9 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
         double posY = shooter.yOld + (shooter.getY() - shooter.yOld) / 2.0 + shooter.getEyeHeight();
         double posZ = shooter.zOld + (shooter.getZ() - shooter.zOld) / 2.0;
         this.setPos(posX, posY, posZ);
+        this.damageFalloffOriginX = posX;
+        this.damageFalloffOriginY = posY;
+        this.damageFalloffOriginZ = posZ;
 
         Item ammo = this.projectile.getItem();
         if (ammo != null) {
@@ -348,7 +352,34 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
             float modifier = ((float) this.projectile.getLife() - (float) (this.tickCount - 1)) / (float) this.projectile.getLife();
             initialDamage *= modifier;
         }
+        if (this.projectile.hasDamageFalloff()) {
+            initialDamage *= this.getDamageFalloffMultiplier();
+        }
         return initialDamage / this.general.getProjectileAmount();
+    }
+
+    private float getDamageFalloffMultiplier() {
+        float start = this.projectile.getDamageFalloffStart();
+        float end = this.projectile.getDamageFalloffEnd();
+        if (end <= start) {
+            return 1.0F;
+        }
+
+        double dx = this.getX() - this.damageFalloffOriginX;
+        double dy = this.getY() - this.damageFalloffOriginY;
+        double dz = this.getZ() - this.damageFalloffOriginZ;
+        float distance = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (distance <= start) {
+            return 1.0F;
+        }
+
+        float minMultiplier = Mth.clamp(this.projectile.getDamageFalloffMinMultiplier(), 0.0F, 1.0F);
+        if (distance >= end) {
+            return minMultiplier;
+        }
+
+        float progress = (distance - start) / (end - start);
+        return Mth.lerp(progress, 1.0F, minMultiplier);
     }
 
     public void setWeapon(ItemStack weapon) {
@@ -782,6 +813,10 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
             }
         }
 
+        if (!hasMatchingTag && advantage.equals(ModTags.Entities.UNDEAD.location()) && entity instanceof LivingEntity livingEntity) {
+            hasMatchingTag = livingEntity.isInvertedHealAndHarm();
+        }
+
         if (hasMatchingTag) {
             if (advantageData.causesFire() && advantageData.fireDuration() > 0) {
                 entity.igniteForSeconds(advantageData.fireDuration());
@@ -953,6 +988,9 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
         this.general.deserializeNBT(compound.getCompound("General"));
         this.modifiedGravity = compound.getDouble("ModifiedGravity");
         this.life = compound.getInt("MaxLife");
+        this.damageFalloffOriginX = compound.contains("DamageFalloffOriginX", Tag.TAG_ANY_NUMERIC) ? compound.getDouble("DamageFalloffOriginX") : this.getX();
+        this.damageFalloffOriginY = compound.contains("DamageFalloffOriginY", Tag.TAG_ANY_NUMERIC) ? compound.getDouble("DamageFalloffOriginY") : this.getY();
+        this.damageFalloffOriginZ = compound.contains("DamageFalloffOriginZ", Tag.TAG_ANY_NUMERIC) ? compound.getDouble("DamageFalloffOriginZ") : this.getZ();
     }
 
     @Override
@@ -961,6 +999,9 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
         compound.put("General", this.general.serializeNBT());
         compound.putDouble("ModifiedGravity", this.modifiedGravity);
         compound.putInt("MaxLife", this.life);
+        compound.putDouble("DamageFalloffOriginX", this.damageFalloffOriginX);
+        compound.putDouble("DamageFalloffOriginY", this.damageFalloffOriginY);
+        compound.putDouble("DamageFalloffOriginZ", this.damageFalloffOriginZ);
     }
 
     @Override

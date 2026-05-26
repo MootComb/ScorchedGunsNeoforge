@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 1.8,
@@ -41,6 +41,7 @@
   "projectile": {
     "advantage": "scguns:none",
     "damage": 6.0,
+    "armorPen": 4.0,
     "gravity": false,
     "ejectsCasing": false,
     "item": "scguns:energy_core",

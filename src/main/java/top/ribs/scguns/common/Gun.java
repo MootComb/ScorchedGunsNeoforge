@@ -1235,6 +1235,8 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         private float damage;
         @Optional
         private ResourceLocation advantage = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "none");
+        @Optional
+        private float armorPen = 2.0F;
         private float size;
         private double speed;
         private int life;
@@ -1242,6 +1244,12 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         private boolean gravity;
         @Optional
         private boolean damageReduceOverLife;
+        @Optional
+        private float damageFalloffStart = -1.0F;
+        @Optional
+        private float damageFalloffEnd = -1.0F;
+        @Optional
+        private float damageFalloffMinMultiplier = 1.0F;
         @Optional
         private int trailColor = 0xFFD289;
         @Optional
@@ -1277,11 +1285,15 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             tag.putBoolean("Visible", this.visible);
             tag.putFloat("Damage", this.damage);
             tag.putString("Advantage", this.advantage.toString());
+            tag.putFloat("ArmorPen", this.armorPen);
             tag.putFloat("Size", this.size);
             tag.putDouble("Speed", this.speed);
             tag.putInt("Life", this.life);
             tag.putBoolean("Gravity", this.gravity);
             tag.putBoolean("DamageReduceOverLife", this.damageReduceOverLife);
+            tag.putFloat("DamageFalloffStart", this.damageFalloffStart);
+            tag.putFloat("DamageFalloffEnd", this.damageFalloffEnd);
+            tag.putFloat("DamageFalloffMinMultiplier", this.damageFalloffMinMultiplier);
             tag.putInt("TrailColor", this.trailColor);
             tag.putDouble("TrailLengthMultiplier", this.trailLengthMultiplier);
             if (this.casingType != null) {
@@ -1325,6 +1337,9 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             if (tag.contains("Advantage", Tag.TAG_STRING)) {
                 this.advantage = ResourceLocation.parse(tag.getString("Advantage"));
             }
+            if (tag.contains("ArmorPen", Tag.TAG_ANY_NUMERIC)) {
+                this.armorPen = tag.getFloat("ArmorPen");
+            }
             if (tag.contains("Size", Tag.TAG_ANY_NUMERIC)) {
                 this.size = tag.getFloat("Size");
             }
@@ -1339,6 +1354,15 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             }
             if (tag.contains("DamageReduceOverLife", Tag.TAG_ANY_NUMERIC)) {
                 this.damageReduceOverLife = tag.getBoolean("DamageReduceOverLife");
+            }
+            if (tag.contains("DamageFalloffStart", Tag.TAG_ANY_NUMERIC)) {
+                this.damageFalloffStart = tag.getFloat("DamageFalloffStart");
+            }
+            if (tag.contains("DamageFalloffEnd", Tag.TAG_ANY_NUMERIC)) {
+                this.damageFalloffEnd = tag.getFloat("DamageFalloffEnd");
+            }
+            if (tag.contains("DamageFalloffMinMultiplier", Tag.TAG_ANY_NUMERIC)) {
+                this.damageFalloffMinMultiplier = tag.getFloat("DamageFalloffMinMultiplier");
             }
             if (tag.contains("TrailColor", Tag.TAG_ANY_NUMERIC)) {
                 this.trailColor = tag.getInt("TrailColor");
@@ -1375,11 +1399,17 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             if (this.visible) object.addProperty("visible", true);
             object.addProperty("damage", this.damage);
             if (this.advantage != null) object.addProperty("advantage", this.advantage.toString());
+            if (this.armorPen != 2.0F) object.addProperty("armorPen", this.armorPen);
             object.addProperty("size", this.size);
             object.addProperty("speed", this.speed);
             object.addProperty("life", this.life);
             if (this.gravity) object.addProperty("gravity", true);
             if (this.damageReduceOverLife) object.addProperty("damageReduceOverLife", true);
+            if (this.hasDamageFalloff()) {
+                object.addProperty("damageFalloffStart", this.damageFalloffStart);
+                object.addProperty("damageFalloffEnd", this.damageFalloffEnd);
+                object.addProperty("damageFalloffMinMultiplier", this.damageFalloffMinMultiplier);
+            }
             if (this.trailColor != 0xFFFF00) object.addProperty("trailColor", this.trailColor);
             if (this.trailLengthMultiplier != 1.0)
                 object.addProperty("trailLengthMultiplier", this.trailLengthMultiplier);
@@ -1406,11 +1436,15 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             projectile.visible = this.visible;
             projectile.damage = this.damage;
             projectile.advantage = this.advantage;
+            projectile.armorPen = this.armorPen;
             projectile.size = this.size;
             projectile.speed = this.speed;
             projectile.life = this.life;
             projectile.gravity = this.gravity;
             projectile.damageReduceOverLife = this.damageReduceOverLife;
+            projectile.damageFalloffStart = this.damageFalloffStart;
+            projectile.damageFalloffEnd = this.damageFalloffEnd;
+            projectile.damageFalloffMinMultiplier = this.damageFalloffMinMultiplier;
             projectile.trailColor = this.trailColor;
             projectile.trailLengthMultiplier = this.trailLengthMultiplier;
             projectile.casingType = this.casingType;
@@ -1487,6 +1521,10 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             return this.advantage;
         }
 
+        public float getArmorPen() {
+            return this.armorPen;
+        }
+
         /**
          * @return The size of the projectile entity bounding box
          */
@@ -1520,6 +1558,22 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
          */
         public boolean isDamageReduceOverLife() {
             return this.damageReduceOverLife;
+        }
+
+        public boolean hasDamageFalloff() {
+            return this.damageFalloffStart >= 0.0F && this.damageFalloffEnd > this.damageFalloffStart && this.damageFalloffMinMultiplier < 1.0F;
+        }
+
+        public float getDamageFalloffStart() {
+            return this.damageFalloffStart;
+        }
+
+        public float getDamageFalloffEnd() {
+            return this.damageFalloffEnd;
+        }
+
+        public float getDamageFalloffMinMultiplier() {
+            return this.damageFalloffMinMultiplier;
         }
 
         /**

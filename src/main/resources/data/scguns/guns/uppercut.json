@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 1.0,
@@ -44,6 +44,7 @@
   "projectile": {
     "advantage": "scguns:none",
     "damage": 23.0,
+    "armorPen": 4.5,
     "gravity": false,
     "item": "scguns:beowulf_round",
     "casingType": "scguns:small_diamond_steel_casing",

@@ -50,6 +50,15 @@
     {
       "weight": 8,
       "element": {
+        "location": "scguns:chambers/chamber_water_2",
+        "processors": "scguns:generic",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 8,
+      "element": {
         "location": "scguns:chambers/chamber_tree",
         "processors": "scguns:generic",
         "projection": "rigid",
@@ -105,6 +114,15 @@
       "weight": 6,
       "element": {
         "location": "scguns:chambers/chamber_corner",
+        "processors": "scguns:generic",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 6,
+      "element": {
+        "location": "scguns:chambers/chamber_corner_2",
         "processors": "scguns:generic",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"

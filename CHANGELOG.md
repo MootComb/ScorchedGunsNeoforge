@@ -4,6 +4,25 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ## Unreleased
 
+## 1.4.3 - 2026-05-26
+
+### Fixed
+
+- Fixed Scorched Guns armor not being accepted by vanilla armor enchantments by restoring the Minecraft armor item tags for all mod armor sets, masks and respirators.
+- Fixed the standard grenade fuse being much shorter than the other timed throwables.
+- Restored suffocation damage inside active Choke Bomb clouds while preserving their existing confusion and fire-extinguishing behavior.
+- Restored the existing 3D throwable models for grenade and bomb items in first-person, third-person and dropped-item views while keeping inventory icons flat.
+- Restored missing Mob Trap and Enemy Turret placements in Scorched Guns structures by syncing the affected structure templates and jigsaw pools with upstream data.
+- Fixed visible grenade-round and shotball projectiles rendering as flat item sprites instead of their 3D projectile models.
+- Restored projectile damage falloff support from gun data and re-enabled Hullbreaker shotball falloff/visible cannonball rendering.
+- Improved Ramrod-style undead advantage detection so modded undead mobs using vanilla undead healing/harming semantics are recognized.
+- Restored gun-data armor penetration handling so firearm `armorPen` values from Scorched Guns gun JSON affect projectile damage against armored targets again.
+- Fixed Advanced Composter input checks so items registered as compostable through NeoForge's compostable data map are accepted, including compostable items from other mods.
+
+### Changed
+
+- Raised the public version to `1.4.3`.
+
 ## 1.4.2 - 2026-05-21
 
 ### Fixed

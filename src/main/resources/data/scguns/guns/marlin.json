@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 1.0,
@@ -49,6 +49,7 @@
   "projectile": {
     "advantage": "scguns:fire",
     "damage": 15.0,
+    "armorPen": 3.5,
     "ejectsCasing": true,
     "gravity": false,
     "item": "scguns:advanced_round",

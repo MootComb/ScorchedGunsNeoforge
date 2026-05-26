@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 1.0,
@@ -47,6 +47,7 @@
   "projectile": {
     "advantage": "scguns:none",
     "damage": 7.0,
+    "armorPen": 3.0,
     "ejectsCasing": true,
     "item": "scguns:compact_advanced_round",
     "casingType": "scguns:small_brass_casing",

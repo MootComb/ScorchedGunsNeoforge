@@ -10,16 +10,16 @@
   },
   "perspectives": {
     "firstperson_righthand": {
-      "parent": "scguns:item/choke_bomb_2d"
+      "parent": "scguns:item/choke_bomb_3d"
     },
     "firstperson_lefthand": {
-      "parent": "scguns:item/choke_bomb_2d"
+      "parent": "scguns:item/choke_bomb_3d"
     },
     "thirdperson_righthand": {
-      "parent": "scguns:item/choke_bomb_2d"
+      "parent": "scguns:item/choke_bomb_3d"
     },
     "thirdperson_lefthand": {
-      "parent": "scguns:item/choke_bomb_2d"
+      "parent": "scguns:item/choke_bomb_3d"
     },
     "fixed": {
       "parent": "scguns:item/choke_bomb_2d"
@@ -28,7 +28,7 @@
       "parent": "scguns:item/choke_bomb_2d"
     },
     "ground": {
-      "parent": "scguns:item/choke_bomb_2d"
+      "parent": "scguns:item/choke_bomb_3d"
     },
     "frame": {
       "parent": "scguns:item/choke_bomb_2d"

@@ -2017,7 +2017,7 @@ public class ModItems {
 
 
     // Projectiles And Throwables
-    public static final DeferredItem<Item> GRENADE = REGISTER.register("grenade", () -> new GrenadeItem(new Item.Properties().stacksTo(32), 10 * 3));
+    public static final DeferredItem<Item> GRENADE = REGISTER.register("grenade", () -> new GrenadeItem(new Item.Properties().stacksTo(32), 20 * 3));
     public static final DeferredItem<Item> STUN_GRENADE = REGISTER.register("stun_grenade", () -> new StunGrenadeItem(new Item.Properties().stacksTo(32), 72000));
     public static final DeferredItem<Item> MOLOTOV_COCKTAIL = REGISTER.register("molotov_cocktail", () -> new MolotovCocktailItem(new Item.Properties().stacksTo(32), 72000));
     public static final DeferredItem<Item> CHOKE_BOMB = REGISTER.register("choke_bomb", () -> new ChokeBombItem(new Item.Properties().stacksTo(32), 72000));

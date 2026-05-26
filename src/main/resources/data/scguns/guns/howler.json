@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 1.0,
@@ -55,6 +55,7 @@
   "projectile": {
     "advantage": "scguns:heavy",
     "damage": 26.0,
+    "armorPen": 5.0,
     "ejectsCasing": true,
     "gravity": false  ,
     "item": "scguns:krahg_round",

@@ -248,7 +248,8 @@ public class AdvancedComposterBlock extends BaseEntityBlock {
     public boolean isCompostable(ItemStack stack) {
         return stack.is(ModTags.Items.WEAK_COMPOST) ||
                 stack.is(ModTags.Items.NORMAL_COMPOST) ||
-                stack.is(ModTags.Items.STRONG_COMPOST);
+                stack.is(ModTags.Items.STRONG_COMPOST) ||
+                ComposterBlock.getValue(stack) > 0.0F;
     }
 
     private float getCompostChance(ItemStack stack) {
@@ -259,6 +260,6 @@ public class AdvancedComposterBlock extends BaseEntityBlock {
         } else if (stack.is(ModTags.Items.STRONG_COMPOST)) {
             return 0.8F;
         }
-        return 0.0F;
+        return Math.max(0.0F, ComposterBlock.getValue(stack));
     }
 }

@@ -32,6 +32,8 @@ public class ThrowableChokeBombEntity extends ThrowableGrenadeEntity
     private static final int ACTIVATION_DELAY = 40;
     private static final int CLOUD_DURATION = 400;
     private static final int EFFECT_INTERVAL = 10;
+    private static final int SUFFOCATION_INTERVAL = 20;
+    private static final float SUFFOCATION_DAMAGE = 1.0F;
     private static final double PARTICLE_RENDER_DISTANCE = 256.0;
     private final float explosionRadius;
     private boolean cloudActive;
@@ -143,6 +145,7 @@ public class ThrowableChokeBombEntity extends ThrowableGrenadeEntity
         if (this.level().isClientSide) {
             return;
         }
+        boolean shouldSuffocate = this.cloudTicks == 0 || this.cloudTicks % SUFFOCATION_INTERVAL == 0;
         Vec3 center = this.position();
         double radiusSquared = this.explosionRadius * this.explosionRadius;
         AABB area = new AABB(center.subtract(this.explosionRadius, this.explosionRadius, this.explosionRadius),
@@ -153,6 +156,9 @@ public class ThrowableChokeBombEntity extends ThrowableGrenadeEntity
                     entity.clearFire();
                 }
                 entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, true));
+                if (shouldSuffocate) {
+                    entity.hurt(entity.damageSources().inWall(), SUFFOCATION_DAMAGE);
+                }
             }
         }
     }

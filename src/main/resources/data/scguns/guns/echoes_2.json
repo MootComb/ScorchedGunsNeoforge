@@ -1,4 +1,4 @@
-{
+﻿{
   "display": {
     "flash": {
       "size": 1.6,
@@ -49,6 +49,7 @@
   "projectile": {
     "advantage": "scguns:none",
     "damage": 22.0,
+    "armorPen": 7.0,
     "ejectsCasing": true,
     "gravity": false,
     "item": "scguns:sculk_cell",
