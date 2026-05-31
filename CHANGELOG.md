@@ -4,6 +4,38 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ## Unreleased
 
+## 1.4.4.1 - 2026-05-31
+
+### Fixed
+
+- Fixed Inquisitor fire rounds ignoring their `isSoulFire` gun data flag, so they now use Scorched Guns soul-fire visuals and place temporary soul fire instead of normal fire.
+- Fixed bullet death messages from mob-held guns using a different random translation id between calls, which could disconnect players when a gun mob killed someone.
+- Fixed ocean weapon Dolphin's Grace cleanup so Scorched Guns no longer removes Dolphin's Grace applied by dolphins, commands or other mods.
+
+### Changed
+
+- Raised the public version to `1.4.4.1`.
+
+## 1.4.4 - 2026-05-30
+
+### Fixed
+
+- Restored vanilla durability enchantment support for Scorched Guns firearms and damageable attachments, so Mending and Unbreaking can be applied again through the normal 1.21.1 enchantment tag system.
+- Improved Create mixing recipe compatibility with Almost Unified by replacing nested compound inputs in Scorched Guns sulfur, phosphorus, iron, anthralite and treated-iron mixing recipes with equivalent item tags.
+- Updated Scorched Guns Create processing recipes to the current `processing_time` field name used by Create 6, fixing millstone recipes that could break when recipe-unification mods rewrote Create recipes.
+- Fixed gunner and raid mob accuracy configuration so `gunnerMobInaccuracyMultiplier` now affects actual mob projectile spread, and prevented raid gunners from broadcasting accidental non-player targets to nearby allies.
+- Removed Drowned from the general natural gunner mob pool so regular underwater Drowned no longer spawn with progression guns; Ocean Raid Drowned remain unchanged.
+- Added missing item-specific Scorched Guns bullet death messages so kills with renamed guns no longer show raw translation keys.
+- Fixed animated first-person gun alignment for players using the vanilla left-hand main-hand setting, including The Rat King and Queen, without increasing movement bobbing on animated guns.
+- Fixed turret projectile damage being applied twice on entity hits and restored turret ammo armor-penetration handling from upstream data, reducing excessive Auto Turret damage against armored players.
+- Fixed Gun Bench inventory persistence so ingredients and blueprints left inside the bench survive world reloads, while the virtual output slot is no longer saved or dropped as a real inventory slot.
+- Fixed attachment durability when attachment damage is enabled: installed modules now save their accumulated wear back onto the weapon and break/remove correctly instead of resetting every shot.
+- Fixed ExoSuit effect cleanup so Scorched Guns no longer removes or flickers night vision, jump boost or water breathing effects provided by other mods/items.
+
+### Changed
+
+- Raised the public version to `1.4.4`.
+
 ## 1.4.3 - 2026-05-26
 
 ### Fixed

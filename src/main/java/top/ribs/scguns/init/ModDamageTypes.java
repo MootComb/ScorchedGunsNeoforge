@@ -59,10 +59,14 @@ public class ModDamageTypes
                     "scguns.bullet.annihilated",
                     "scguns.bullet.decimated"
             };
+            private final String msgId;
+
             public BulletDamageSource(Holder<DamageType> pType, Entity pDirectEntity, Entity pCausingEntity) {
                 super(pType, pDirectEntity, pCausingEntity);
+                this.msgId = msgSuffix[ThreadLocalRandom.current().nextInt(msgSuffix.length)];
             }
 
+            @Override
             public Component getLocalizedDeathMessage(LivingEntity pLivingEntity) {
                 final String s = "death.attack." + this.getMsgId();
 
@@ -86,7 +90,7 @@ public class ModDamageTypes
 
             @Override
             public String getMsgId() {
-                return msgSuffix[ThreadLocalRandom.current().nextInt(5)];
+                return this.msgId;
             }
         }
     }

@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import top.ribs.scguns.Config;
 import top.ribs.scguns.common.Gun;
+import top.ribs.scguns.init.ModBlocks;
 import top.ribs.scguns.init.ModDamageTypes;
 import top.ribs.scguns.init.ModTags;
 import top.ribs.scguns.item.GunItem;
@@ -54,8 +55,13 @@ public class FireRoundEntity extends ProjectileEntity {
                 double offsetX = (this.random.nextDouble() - 0.5) * 0.5;
                 double offsetY = (this.random.nextDouble() - 0.5) * 0.5;
                 double offsetZ = (this.random.nextDouble() - 0.5) * 0.5;
-                this.level().addParticle(ParticleTypes.FLAME, true, this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, 0, 0, 0);
-                this.level().addParticle(ParticleTypes.LAVA, true, this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, 0, 0, 0);
+                if (this.isSoulFireProjectile()) {
+                    this.level().addParticle(ParticleTypes.SOUL_FIRE_FLAME, true, this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, 0, 0, 0);
+                    this.level().addParticle(ParticleTypes.SOUL, true, this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, 0, 0, 0);
+                } else {
+                    this.level().addParticle(ParticleTypes.FLAME, true, this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, 0, 0, 0);
+                    this.level().addParticle(ParticleTypes.LAVA, true, this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, 0, 0, 0);
+                }
             }
             if (this.tickCount % 6 == 0) {
                 double offsetX = (this.random.nextDouble() - 0.5) * 0.5;
@@ -204,11 +210,20 @@ public class FireRoundEntity extends ProjectileEntity {
                 double speedX = (this.random.nextDouble() - 0.5) * 0.5;
                 double speedY = (this.random.nextDouble() - 0.5) * 0.5;
                 double speedZ = (this.random.nextDouble() - 0.5) * 0.5;
-                serverLevel.sendParticles(ParticleTypes.LAVA, position.x + offsetX, position.y + offsetY, position.z + offsetZ, 1, speedX, speedY, speedZ, 0.1);
-                serverLevel.sendParticles(ParticleTypes.DRIPPING_LAVA, position.x + offsetX, position.y + offsetY, position.z + offsetZ, 1, speedX, speedY, speedZ, 0.1);
-                serverLevel.sendParticles(ParticleTypes.SMALL_FLAME, position.x + offsetX, position.y + offsetY, position.z + offsetZ, 1, speedX, speedY, speedZ, 0.1);
+                if (this.isSoulFireProjectile()) {
+                    serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, position.x + offsetX, position.y + offsetY, position.z + offsetZ, 1, speedX, speedY, speedZ, 0.1);
+                    serverLevel.sendParticles(ParticleTypes.SOUL, position.x + offsetX, position.y + offsetY, position.z + offsetZ, 1, speedX, speedY, speedZ, 0.1);
+                } else {
+                    serverLevel.sendParticles(ParticleTypes.LAVA, position.x + offsetX, position.y + offsetY, position.z + offsetZ, 1, speedX, speedY, speedZ, 0.1);
+                    serverLevel.sendParticles(ParticleTypes.DRIPPING_LAVA, position.x + offsetX, position.y + offsetY, position.z + offsetZ, 1, speedX, speedY, speedZ, 0.1);
+                    serverLevel.sendParticles(ParticleTypes.SMALL_FLAME, position.x + offsetX, position.y + offsetY, position.z + offsetZ, 1, speedX, speedY, speedZ, 0.1);
+                }
             }
         }
+    }
+
+    private boolean isSoulFireProjectile() {
+        return this.getProjectile().isSoulFire();
     }
 
     private void setBlockOnFire(Level level, BlockPos pos, Direction face) {
@@ -235,6 +250,9 @@ public class FireRoundEntity extends ProjectileEntity {
     }
 
     private BlockState getWallFireState(Direction attachedFace) {
+        if (this.isSoulFireProjectile()) {
+            return ModBlocks.FAKE_SOUL_FIRE.get().defaultBlockState();
+        }
         BlockState fireState = Blocks.FIRE.defaultBlockState();
         return switch (attachedFace) {
             case UP -> fireState.setValue(FireBlock.UP, true);
@@ -254,7 +272,9 @@ public class FireRoundEntity extends ProjectileEntity {
 
             if (canSustainFireOnFace(level, hitBlockState, pos, face)) {
                 BlockState fireState = getWallFireState(face.getOpposite());
-                level.setBlock(offsetPos, fireState, 11);
+                if (fireState.canSurvive(level, offsetPos)) {
+                    level.setBlock(offsetPos, fireState, 11);
+                }
             }
         }
     }

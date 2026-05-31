@@ -173,11 +173,7 @@ public class ScGunsWeapon implements IWeapon {
             }
             final Vec3 startPos = shooter.getEyePosition();
             final float gunSpread = GunModifierHelper.getModifiedSpread(gunStack, gun.getGeneral().getSpread()) * .5F;
-            final Vec3 track = new Vec3(x, y, z).subtract(startPos).normalize().add(
-                    ThreadLocalRandom.current().nextFloat() * gunSpread / 100.0,
-                    ThreadLocalRandom.current().nextFloat() * gunSpread / 100.0,
-                    ThreadLocalRandom.current().nextFloat() * gunSpread / 100.0
-            );
+            final Vec3 track = new Vec3(x, y, z).subtract(startPos).normalize().add(getProjectileSpread(shooter, gunSpread));
             projectileEntity.setPos(startPos.add(track));
             projectileEntity.setDeltaMovement(track.scale(projectileSpeed));
             level.addFreshEntity(projectileEntity);
@@ -207,6 +203,28 @@ public class ScGunsWeapon implements IWeapon {
         }
         return getDifficultyDamageMultiplier(shooter.level().getDifficulty())
                 * Config.COMMON.gameplay.mobGunDamageMultiplier.get().floatValue();
+    }
+
+    private Vec3 getProjectileSpread(Mob shooter, float gunSpread) {
+        double spread = gunSpread / 100.0D;
+        CompoundTag tag = getCustomData(gunStack);
+        if (tag.getBoolean(MOB_GUN_KEY) && !tag.getBoolean(VIVENTRUM_MOB_GUN_KEY)) {
+            spread *= Math.max(0.0D, Config.COMMON.gunnerMobs.gunnerMobInaccuracyMultiplier.get());
+            return new Vec3(
+                    centeredRandom(shooter, spread),
+                    centeredRandom(shooter, spread),
+                    centeredRandom(shooter, spread)
+            );
+        }
+        return new Vec3(
+                ThreadLocalRandom.current().nextFloat() * spread,
+                ThreadLocalRandom.current().nextFloat() * spread,
+                ThreadLocalRandom.current().nextFloat() * spread
+        );
+    }
+
+    private static double centeredRandom(Mob shooter, double spread) {
+        return (shooter.getRandom().nextDouble() - 0.5D) * 2.0D * spread;
     }
 
     private static float getDifficultyDamageMultiplier(Difficulty difficulty) {

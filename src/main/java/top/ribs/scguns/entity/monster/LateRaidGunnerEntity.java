@@ -156,7 +156,7 @@ public abstract class LateRaidGunnerEntity extends Monster implements RangedAtta
             return;
         }
         LivingEntity target = this.getTarget();
-        if (target != null && this.getSensing().hasLineOfSight(target)) {
+        if (target instanceof Player && this.getSensing().hasLineOfSight(target)) {
             AABB alertArea = AABB.ofSize(this.position(), ALERT_RANGE_XZ * 2.0D, ALERT_RANGE_Y * 2.0D, ALERT_RANGE_XZ * 2.0D);
             this.level().getEntitiesOfClass(this.getClass(), alertArea, EntitySelector.NO_SPECTATORS)
                     .stream()

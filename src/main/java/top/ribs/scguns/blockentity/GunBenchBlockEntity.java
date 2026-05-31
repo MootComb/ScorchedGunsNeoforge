@@ -4,7 +4,10 @@ package top.ribs.scguns.blockentity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -45,8 +48,23 @@ public class GunBenchBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        // Load inventory from NBT
+        this.inventory.clearContent();
+        if (tag.contains("Items", Tag.TAG_LIST)) {
+            NonNullList<ItemStack> items = NonNullList.withSize(this.inventory.getContainerSize(), ItemStack.EMPTY);
+            ContainerHelper.loadAllItems(tag, items, registries);
+            for (int i = 0; i < items.size(); i++) {
+                if (i != GunBenchMenu.SLOT_OUTPUT) {
+                    this.inventory.setItem(i, items.get(i));
+                }
+            }
+            return;
+        }
+
+        // Legacy 1.20/early-port format.
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+            if (i == GunBenchMenu.SLOT_OUTPUT) {
+                continue;
+            }
             CompoundTag itemTag = tag.getCompound("Item" + i);
             if (!itemTag.isEmpty()) {
                 this.inventory.setItem(i, ItemStack.parseOptional(registries, itemTag));
@@ -57,15 +75,13 @@ public class GunBenchBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        // Save inventory to NBT
+        NonNullList<ItemStack> items = NonNullList.withSize(this.inventory.getContainerSize(), ItemStack.EMPTY);
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
-            ItemStack itemstack = this.inventory.getItem(i);
-            CompoundTag itemTag = new CompoundTag();
-            if (!itemstack.isEmpty()) {
-                itemstack.save(registries, itemTag);
+            if (i != GunBenchMenu.SLOT_OUTPUT) {
+                items.set(i, this.inventory.getItem(i));
             }
-            tag.put("Item" + i, itemTag);
         }
+        ContainerHelper.saveAllItems(tag, items, registries);
     }
 
     public SimpleContainer getInventory() {
@@ -74,6 +90,9 @@ public class GunBenchBlockEntity extends BlockEntity implements MenuProvider {
 
     public void dropContents(Player player) {
         for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
+            if (i == GunBenchMenu.SLOT_OUTPUT) {
+                continue;
+            }
             ItemStack itemstack = this.inventory.getItem(i);
             if (!itemstack.isEmpty()) {
                 if (player != null) {

@@ -9,15 +9,7 @@
   "heatRequirement": "heated",
   "ingredients": [
     {
-      "type": "neoforge:compound",
-      "ingredients": [
-        {
-          "item": "minecraft:iron_ingot"
-        },
-        {
-          "item": "minecraft:raw_iron"
-        }
-      ]
+      "tag": "scguns:create/iron_materials"
     },
     {
       "tag": "c:dusts/saltpeter"

@@ -8,29 +8,13 @@
   ],
   "ingredients": [
     {
-      "type": "neoforge:compound",
-      "ingredients": [
-        {
-          "item": "scguns:sulfur_chunk"
-        },
-        {
-          "tag": "c:dusts/sulfur"
-        }
-      ]
+      "tag": "scguns:create/sulfur_materials"
     },
     {
       "item": "minecraft:sculk"
     },
     {
-      "type": "neoforge:compound",
-      "ingredients": [
-        {
-          "item": "scguns:raw_phosphor"
-        },
-        {
-          "tag": "c:dusts/phosphorus"
-        }
-      ]
+      "tag": "scguns:create/phosphorus_materials"
     },
     {
       "item": "minecraft:charcoal"

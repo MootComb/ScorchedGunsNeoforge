@@ -8,11 +8,14 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import top.ribs.scguns.Reference;
 import top.ribs.scguns.item.animated.ExoSuitItem;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -41,6 +44,9 @@ public class ExoSuitEffectsHandler {
     private static final UUID BOOTS_TOUGHNESS_UUID = UUID.fromString("6ba7b819-9dad-11d1-80b4-00c04fd430c8");
     private static final UUID BOOTS_KNOCKBACK_UUID = UUID.fromString("6ba7b81a-9dad-11d1-80b4-00c04fd430c8");
     private static final UUID BOOTS_SPEED_UUID = UUID.fromString("6ba7b81b-9dad-11d1-80b4-00c04fd430c8");
+    private static final Set<UUID> EXOSUIT_NIGHT_VISION_PLAYERS = new HashSet<>();
+    private static final Set<UUID> EXOSUIT_JUMP_PLAYERS = new HashSet<>();
+    private static final Set<UUID> EXOSUIT_WATER_BREATHING_PLAYERS = new HashSet<>();
 
     /**
      * Applies all effects from equipped ExoSuit pieces
@@ -118,23 +124,20 @@ public class ExoSuitEffectsHandler {
         removeAttributeModifier(player, Attributes.KNOCKBACK_RESISTANCE, BOOTS_KNOCKBACK_UUID);
         removeAttributeModifier(player, Attributes.MOVEMENT_SPEED, BOOTS_SPEED_UUID);
 
-        if (player.hasEffect(MobEffects.NIGHT_VISION)) {
-            MobEffectInstance effect = player.getEffect(MobEffects.NIGHT_VISION);
-            if (effect != null && effect.getDuration() > 50 && effect.getDuration() <= 400) {
-                player.removeEffect(MobEffects.NIGHT_VISION);
-            }
+        removeTrackedEffect(player, MobEffects.NIGHT_VISION, EXOSUIT_NIGHT_VISION_PLAYERS, 400);
+        removeTrackedEffect(player, MobEffects.JUMP, EXOSUIT_JUMP_PLAYERS, 200);
+        removeTrackedEffect(player, MobEffects.WATER_BREATHING, EXOSUIT_WATER_BREATHING_PLAYERS, 200);
+    }
+
+    private static void removeTrackedEffect(Player player, Holder<MobEffect> effectHolder, Set<UUID> trackedPlayers, int maxDuration) {
+        if (!trackedPlayers.remove(player.getUUID())) {
+            return;
         }
-        if (player.hasEffect(MobEffects.JUMP)) {
-            MobEffectInstance effect = player.getEffect(MobEffects.JUMP);
-            if (effect != null && effect.getDuration() > 50 && effect.getDuration() <= 200) {
-                player.removeEffect(MobEffects.JUMP);
-            }
-        }
-        if (player.hasEffect(MobEffects.WATER_BREATHING)) {
-            MobEffectInstance effect = player.getEffect(MobEffects.WATER_BREATHING);
-            if (effect != null && effect.getDuration() > 60 && effect.getDuration() <= 200) {
-                player.removeEffect(MobEffects.WATER_BREATHING);
-            }
+
+        MobEffectInstance effect = player.getEffect(effectHolder);
+        if (effect != null && effect.getDuration() <= maxDuration && !effect.isAmbient()
+                && !effect.isVisible() && !effect.showIcon()) {
+            player.removeEffect(effectHolder);
         }
     }
 
@@ -179,6 +182,7 @@ public class ExoSuitEffectsHandler {
                 MobEffectInstance currentNightVision = player.getEffect(MobEffects.NIGHT_VISION);
                 if (currentNightVision == null || currentNightVision.getDuration() < 40) {
                     player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 400, 0, false, false, false));
+                    EXOSUIT_NIGHT_VISION_PLAYERS.add(player.getUUID());
                 }
             }
         }
@@ -189,6 +193,7 @@ public class ExoSuitEffectsHandler {
                 MobEffectInstance currentJump = player.getEffect(MobEffects.JUMP);
                 if (currentJump == null || currentJump.getDuration() < 40) {
                     player.addEffect(new MobEffectInstance(MobEffects.JUMP, 200, amplifier, false, false, false));
+                    EXOSUIT_JUMP_PLAYERS.add(player.getUUID());
                 }
             }
         }
@@ -196,6 +201,7 @@ public class ExoSuitEffectsHandler {
             MobEffectInstance currentWaterBreathing = player.getEffect(MobEffects.WATER_BREATHING);
             if (currentWaterBreathing == null || currentWaterBreathing.getDuration() < 60) {
                 player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 200, 0, false, false, false));
+                EXOSUIT_WATER_BREATHING_PLAYERS.add(player.getUUID());
             }
         }
     }

@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +21,7 @@ import top.ribs.scguns.init.ModItems;
 import top.ribs.scguns.init.ModSounds;
 
 public class TurretProjectileEntity extends AbstractArrow {
+    private float armorPenetration;
 
     public TurretProjectileEntity(EntityType<? extends AbstractArrow> type, Level world) {
         super(type, world);
@@ -88,12 +88,16 @@ public class TurretProjectileEntity extends AbstractArrow {
 
     @Override
     protected void onHitEntity(EntityHitResult pResult) {
-        super.onHitEntity(pResult);
         Entity entity = pResult.getEntity();
         if (entity instanceof LivingEntity livingEntity) {
             float damageAmount = (float) this.getBaseDamage();
-            int damage = Mth.ceil(damageAmount);
-            if (livingEntity.hurt(this.damageSources().arrow(this, this.getOwner()), damage)) {
+            if (this.armorPenetration > 0.0F) {
+                float armorValue = livingEntity.getArmorValue();
+                float effectiveArmor = Math.max(0.0F, armorValue - this.armorPenetration);
+                float bypassedArmorFraction = (armorValue - effectiveArmor) / 25.0F;
+                damageAmount += damageAmount * bypassedArmorFraction;
+            }
+            if (livingEntity.hurt(this.damageSources().arrow(this, this.getOwner()), damageAmount)) {
                 if (livingEntity.isAlive()) {
                     this.doPostHurtEffects(livingEntity);
                 }
@@ -154,6 +158,7 @@ public class TurretProjectileEntity extends AbstractArrow {
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putDouble("TurretDamage", this.getBaseDamage());
+        compound.putFloat("ArmorPenetration", this.armorPenetration);
     }
 
     @Override
@@ -161,6 +166,9 @@ public class TurretProjectileEntity extends AbstractArrow {
         super.readAdditionalSaveData(compound);
         if (compound.contains("TurretDamage")) {
             this.setBaseDamage(compound.getDouble("TurretDamage"));
+        }
+        if (compound.contains("ArmorPenetration")) {
+            this.armorPenetration = compound.getFloat("ArmorPenetration");
         }
     }
 
@@ -172,6 +180,14 @@ public class TurretProjectileEntity extends AbstractArrow {
     @Override
     public void setAsInsidePortal(Portal portal, BlockPos pos) {
         this.discard();
+    }
+
+    public float getArmorPenetration() {
+        return this.armorPenetration;
+    }
+
+    public void setArmorPenetration(float armorPenetration) {
+        this.armorPenetration = armorPenetration;
     }
 
     public enum BulletType {

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "scguns:raw_phosphor",
+    "#c:dusts/phosphorus",
+    "#c:raw_materials/phosphorus"
+  ]
+}

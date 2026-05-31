@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "scguns:raw_anthralite",
+    "scguns:anthralite_ingot",
+    "#c:dusts/anthralite",
+    "#c:raw_materials/anthralite"
+  ]
+}

@@ -8,15 +8,7 @@
   ],
   "ingredients": [
     {
-      "type": "neoforge:compound",
-      "ingredients": [
-        {
-          "item": "scguns:sulfur_chunk"
-        },
-        {
-          "tag": "c:dusts/sulfur"
-        }
-      ]
+      "tag": "scguns:create/sulfur_materials"
     },
     {
       "tag": "c:dusts/saltpeter"

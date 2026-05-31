@@ -1272,6 +1272,8 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         private int impactEffectAmplifier = 0;
         @Optional
         private float impactEffectChance = 1.0F;
+        @Optional
+        private boolean isSoulFire;
 
         @Override
         public CompoundTag serializeNBT(HolderLookup.Provider registries) {
@@ -1304,6 +1306,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             }
             tag.putBoolean("EjectDuringReload", this.ejectDuringReload);
             tag.putBoolean("FiresArrows", this.firesArrows);
+            tag.putBoolean("IsSoulFire", this.isSoulFire);
             if (this.impactEffect != null) {
                 tag.putString("ImpactEffect", this.impactEffect.toString());
                 tag.putInt("ImpactEffectDuration", this.impactEffectDuration);
@@ -1379,6 +1382,9 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             if (tag.contains("FiresArrows", Tag.TAG_ANY_NUMERIC)) {
                 this.firesArrows = tag.getBoolean("FiresArrows");
             }
+            if (tag.contains("IsSoulFire", Tag.TAG_ANY_NUMERIC)) {
+                this.isSoulFire = tag.getBoolean("IsSoulFire");
+            }
             if (tag.contains("ImpactEffect", Tag.TAG_STRING)) {
                 this.impactEffect = ResourceLocation.parse(tag.getString("ImpactEffect"));
                 this.impactEffectDuration = tag.getInt("ImpactEffectDuration");
@@ -1417,6 +1423,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             if (this.casingParticle != null) object.addProperty("casingParticle", this.casingParticle.toString());
             if (this.ejectDuringReload) object.addProperty("ejectDuringReload", true);
             if (this.firesArrows) object.addProperty("firesArrows", true);
+            if (this.isSoulFire) object.addProperty("isSoulFire", true);
             if (this.impactEffect != null) {
                 object.addProperty("impactEffect", this.impactEffect.toString());
                 if (this.impactEffectDuration != 100)
@@ -1451,6 +1458,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             projectile.casingParticle = this.casingParticle;
             projectile.ejectDuringReload = this.ejectDuringReload;
             projectile.firesArrows = this.firesArrows;
+            projectile.isSoulFire = this.isSoulFire;
             projectile.impactEffect = this.impactEffect;
             projectile.impactEffectDuration = this.impactEffectDuration;
             projectile.impactEffectAmplifier = this.impactEffectAmplifier;
@@ -1482,6 +1490,10 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
 
         public boolean firesArrows() {
             return this.firesArrows;
+        }
+
+        public boolean isSoulFire() {
+            return this.isSoulFire;
         }
 
         /**
@@ -2907,6 +2919,21 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    public static void setAttachment(ItemStack gun, IAttachment.Type type, ItemStack attachmentStack, HolderLookup.Provider registries) {
+        if (attachmentStack.isEmpty()) {
+            removeAttachmentTag(gun, type.getTagKey());
+            return;
+        }
+
+        CompoundTag compound = getOrCreateStackTag(gun);
+        CompoundTag attachments = compound.contains("Attachments", Tag.TAG_COMPOUND)
+                ? compound.getCompound("Attachments")
+                : new CompoundTag();
+        attachments.put(type.getTagKey(), attachmentStack.save(registries, new CompoundTag()));
+        compound.put("Attachments", attachments);
+        setStackTag(gun, compound);
     }
 
     @Nullable

@@ -492,71 +492,33 @@ public class GunEventBus {
     public static void damageAttachments(ItemStack stack, Level level, Player player) {
         if (!player.getAbilities().instabuild && Config.COMMON.gameplay.enableAttachmentDamage.get()) {
             if (stack.getItem() instanceof GunItem) {
-
-                // Scope
-                ItemStack scopeStack = Gun.getAttachment(IAttachment.Type.SCOPE, stack);
-                if (Gun.hasAttachmentEquipped(stack, IAttachment.Type.SCOPE) && scopeStack.isDamageableItem()) {
-                    int maxDamage = scopeStack.getMaxDamage();
-                    int currentDamage = scopeStack.getDamageValue();
-                    if (currentDamage == (maxDamage - 1)) {
-                        level.playSound(player, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
-                        Gun.removeAttachment(stack, "Scope");
-                    } else {
-                        scopeStack.hurtAndBreak(1, player, null);
-                    }
-                }
-
-                // Barrel
-                ItemStack barrelStack = Gun.getAttachment(IAttachment.Type.BARREL, stack);
-                if (Gun.hasAttachmentEquipped(stack, IAttachment.Type.BARREL) && barrelStack.isDamageableItem()) {
-                    int maxDamage = barrelStack.getMaxDamage();
-                    int currentDamage = barrelStack.getDamageValue();
-                    if (currentDamage == (maxDamage - 1)) {
-                        level.playSound(player, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
-                        Gun.removeAttachment(stack, "Barrel");
-                    } else {
-                        barrelStack.hurtAndBreak(1, player, null);
-                    }
-                }
-
-                // Stock
-                ItemStack stockStack = Gun.getAttachment(IAttachment.Type.STOCK, stack);
-                if (Gun.hasAttachmentEquipped(stack, IAttachment.Type.STOCK) && stockStack.isDamageableItem()) {
-                    int maxDamage = stockStack.getMaxDamage();
-                    int currentDamage = stockStack.getDamageValue();
-                    if (currentDamage == (maxDamage - 1)) {
-                        level.playSound(player, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
-                        Gun.removeAttachment(stack, "Stock");
-                    } else {
-                        stockStack.hurtAndBreak(1, player, null);
-                    }
-                }
-                ///Magazine
-                ItemStack magazineStack = Gun.getAttachment(IAttachment.Type.MAGAZINE, stack);
-                if (Gun.hasAttachmentEquipped(stack, IAttachment.Type.MAGAZINE) && magazineStack.isDamageableItem()) {
-                    int maxDamage = magazineStack.getMaxDamage();
-                    int currentDamage = magazineStack.getDamageValue();
-                    if (currentDamage == (maxDamage - 1)) {
-                        level.playSound(player, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
-                        Gun.removeAttachment(stack, "Magazine");
-                    } else {
-                        magazineStack.hurtAndBreak(1, player, null);
-                    }
-                }
-
-                // Under Barrel
-                ItemStack underBarrelStack = Gun.getAttachment(IAttachment.Type.UNDER_BARREL, stack);
-                if (Gun.hasAttachmentEquipped(stack, IAttachment.Type.UNDER_BARREL) && underBarrelStack.isDamageableItem()) {
-                    int maxDamage = underBarrelStack.getMaxDamage();
-                    int currentDamage = underBarrelStack.getDamageValue();
-                    if (currentDamage == (maxDamage - 1)) {
-                        level.playSound(player, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
-                        Gun.removeAttachment(stack, "Under_Barrel");
-                    } else {
-                        underBarrelStack.hurtAndBreak(1, player, null);
-                    }
-                }
+                damageAttachment(stack, level, player, IAttachment.Type.SCOPE);
+                damageAttachment(stack, level, player, IAttachment.Type.BARREL);
+                damageAttachment(stack, level, player, IAttachment.Type.STOCK);
+                damageAttachment(stack, level, player, IAttachment.Type.MAGAZINE);
+                damageAttachment(stack, level, player, IAttachment.Type.UNDER_BARREL);
             }
+        }
+    }
+
+    private static void damageAttachment(ItemStack gunStack, Level level, Player player, IAttachment.Type type) {
+        if (!Gun.hasAttachmentEquipped(gunStack, type)) {
+            return;
+        }
+
+        ItemStack attachmentStack = Gun.getAttachment(type, gunStack);
+        if (!attachmentStack.isDamageableItem()) {
+            return;
+        }
+
+        int maxDamage = attachmentStack.getMaxDamage();
+        int currentDamage = attachmentStack.getDamageValue();
+        if (currentDamage >= maxDamage - 1) {
+            level.playSound(player, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
+            Gun.removeAttachment(gunStack, type.getTagKey());
+        } else {
+            attachmentStack.hurtAndBreak(1, player, null);
+            Gun.setAttachment(gunStack, type, attachmentStack, player.registryAccess());
         }
     }
 

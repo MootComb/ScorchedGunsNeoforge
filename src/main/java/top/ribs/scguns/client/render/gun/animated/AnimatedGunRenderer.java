@@ -128,6 +128,28 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
             this.sprintIntensity = Mth.approach(this.sprintIntensity, intensity, 0.1F);
         }
     }
+
+    private static ItemDisplayContext getEffectiveDisplayContext(ItemStack stack, ItemDisplayContext transformType, Minecraft client) {
+        if (stack.getItem() instanceof AnimatedGunItem
+                && transformType == ItemDisplayContext.NONE
+                && client.options.getCameraType() == CameraType.FIRST_PERSON) {
+            return client.options.mainHand().get() == HumanoidArm.LEFT
+                    ? ItemDisplayContext.FIRST_PERSON_LEFT_HAND
+                    : ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
+        }
+        return transformType;
+    }
+
+    private static boolean isFirstPersonHand(ItemDisplayContext displayContext) {
+        return displayContext == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                || displayContext == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+    }
+
+    private static boolean isRightHandDisplay(ItemDisplayContext displayContext) {
+        return displayContext == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                || displayContext == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+    }
+
     @SubscribeEvent
     public void onGunFire(GunFireEvent.Post event) {
         if (event.isClient() && event.getShooter() instanceof Player player) {
@@ -145,21 +167,17 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
                              int packedLight, int packedOverlay) {
 
 
-        this.currentDisplayContext = transformType;
+        Minecraft client = Minecraft.getInstance();
+        this.currentDisplayContext = getEffectiveDisplayContext(stack, transformType, client);
         this.currentRenderStack = stack;
         this.bufferSource = bufferSource;
 
 
-
-        if (stack.getItem() instanceof AnimatedGunItem) {
-            if (transformType == ItemDisplayContext.NONE &&
-                    Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                this.currentDisplayContext = ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
-            }
-        }
-        Minecraft client = Minecraft.getInstance();
         Player player = client.player;
-        boolean right = player == null || (Minecraft.getInstance().options.mainHand().get() == HumanoidArm.RIGHT
+        boolean actualFirstPersonHand = isFirstPersonHand(transformType);
+        boolean right = isFirstPersonHand(this.currentDisplayContext)
+                ? isRightHandDisplay(this.currentDisplayContext)
+                : player == null || (client.options.mainHand().get() == HumanoidArm.RIGHT
                 ? player.getUsedItemHand() == InteractionHand.MAIN_HAND
                 : player.getUsedItemHand() == InteractionHand.OFF_HAND);
         ItemStack overrideModel = ItemStack.EMPTY;
@@ -170,17 +188,20 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
 
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(overrideModel.isEmpty() ? stack : overrideModel, client.level, player, 0);
-        float scaleX = model.getTransforms().firstPersonRightHand.scale.x();
-        float scaleY = model.getTransforms().firstPersonRightHand.scale.y();
-        float scaleZ = model.getTransforms().firstPersonRightHand.scale.z();
-        float translateX = model.getTransforms().firstPersonRightHand.translation.x();
-        float translateY = model.getTransforms().firstPersonRightHand.translation.y();
-        float translateZ = model.getTransforms().firstPersonRightHand.translation.z();
+        var firstPersonTransform = this.currentDisplayContext == ItemDisplayContext.FIRST_PERSON_LEFT_HAND
+                ? model.getTransforms().firstPersonLeftHand
+                : model.getTransforms().firstPersonRightHand;
+        float scaleX = firstPersonTransform.scale.x();
+        float scaleY = firstPersonTransform.scale.y();
+        float scaleZ = firstPersonTransform.scale.z();
+        float translateX = firstPersonTransform.translation.x();
+        float translateY = firstPersonTransform.translation.y();
+        float translateZ = firstPersonTransform.translation.z();
 //        if (stack.getItem() instanceof AnimatedGunItem && transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
 //            poseStack.translate(0.0, -0.5, 0.0);
 //        }
 
-        if (player != null && stack.getItem() instanceof AnimatedGunItem && transformType == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+        if (player != null && stack.getItem() instanceof AnimatedGunItem && actualFirstPersonHand) {
             Gun modifiedGun = ((GunItem) stack.getItem()).getModifiedGun(stack);
             if (AimingHandler.get().getNormalisedAdsProgress() > 0.0 && modifiedGun.canAimDownSight()) {
                 double xOffset = translateX;
@@ -217,16 +238,7 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
                     }
                 }
 
-                float side;
-                if (Minecraft.getInstance().options.mainHand().get() == HumanoidArm.RIGHT) {
-                    player.getOffhandItem().getItem();
-                }
-
-                if (Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT) {
-                    player.getOffhandItem().getItem();
-                }
-
-                side = 1.0F;
+                float side = right ? 1.0F : -1.0F;
                 double time = AimingHandler.get().getNormalisedAdsProgress();
                 double transition = PropertyHelper.getSightAnimations(stack, modifiedGun).getSightCurve().apply(time);
                 poseStack.translate(-0.56 * (double) side * transition, 0.52 * transition, 0.72 * transition);
@@ -239,7 +251,7 @@ public class AnimatedGunRenderer extends GeoItemRenderer<AnimatedGunItem> implem
             this.applyAimingTransforms(poseStack, stack, modifiedGun, translateX, translateY, translateZ, offset);
             this.applySwayTransforms(poseStack, modifiedGun, stack, localPlayer, translateX, translateY, translateZ, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
             if (ShootingHandler.get().isShooting() && !GunModifierHelper.isSilencedFire(stack)) {
-                this.renderMuzzleFlash(Minecraft.getInstance().player, poseStack, bufferSource, stack, ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
+                this.renderMuzzleFlash(Minecraft.getInstance().player, poseStack, bufferSource, stack, this.currentDisplayContext, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
             }
         }
 

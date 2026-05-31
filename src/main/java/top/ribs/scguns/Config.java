@@ -495,7 +495,7 @@ public class Config
                 ).defineInRange("eliteChance", 0.2, 0.0, 1.0);
                 this.gunnerMobInaccuracyMultiplier = builder.comment(
                         "Multiplier for extra aim inaccuracy used by hostile gunner and raid mobs.",
-                        "1.0 keeps the previous behavior, values above 1.0 make mobs less accurate, values below 1.0 make mobs more accurate.",
+                        "1.0 keeps the base mob weapon spread, values above 1.0 make mobs less accurate, values below 1.0 make mobs more accurate.",
                         "This does not change player weapon spread or gun JSON values."
                 ).defineInRange("gunnerMobInaccuracyMultiplier", 1.5, 0.0, 10.0);
             }

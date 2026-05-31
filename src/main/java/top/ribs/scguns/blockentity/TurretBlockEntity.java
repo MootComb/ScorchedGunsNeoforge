@@ -444,6 +444,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         projectile.setPos(muzzlePos.x, muzzlePos.y, muzzlePos.z);
         projectile.shoot(direction.x, direction.y, direction.z, (float) this.config.getCombat().getProjectileSpeed(), 0.0F);
         projectile.setBaseDamage(this.getScaledDamage(ammoType.getDamage()) + damageModifier);
+        projectile.setArmorPenetration(ammoType.getArmorPenetration());
         actionLevel.addFreshEntity(projectile);
     }
 
@@ -457,6 +458,7 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
             projectile.setPos(muzzlePos.x, muzzlePos.y, muzzlePos.z);
             projectile.shoot(spreadDirection.x, spreadDirection.y, spreadDirection.z, (float) this.config.getCombat().getProjectileSpeed(), 0.0F);
             projectile.setBaseDamage(pelletDamage);
+            projectile.setArmorPenetration(ammoType.getArmorPenetration());
             actionLevel.addFreshEntity(projectile);
         }
     }
