@@ -411,6 +411,10 @@ public class ShotballProjectileEntity extends ProjectileEntity {
     private void sendBounceTrailUpdate() {
         if (this.shooter instanceof ServerPlayer player) {
             Gun.Projectile projectileProps = this.getProjectile();
+            if (projectileProps.shouldHideProjectile() || projectileProps.shouldHideTrail()) {
+                return;
+            }
+
             ProjectileEntity[] bounceArray = {this};
 
             ParticleOptions data = GunEnchantmentHelper.getParticle(player.getMainHandItem());

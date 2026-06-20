@@ -1610,5 +1610,6 @@
   "commands.scguns.raid.list_none": "No hay asaltos activos.",
   "commands.scguns.raid.list_header": "Asaltos activos:",
   "commands.scguns.raid.list_entry": "  - %s | Secuaces: %s | Duración: %s segundos.",
-  "commands.scguns.requires_player": "Necesita un jugador."
+  "commands.scguns.requires_player": "Necesita un jugador.",
+  "subtitle.scguns.distant_fire": "Disparo distante"
 }

@@ -1,14 +1,13 @@
 package top.ribs.scguns.network.message;
 
 import com.mrcrayfish.framework.api.network.MessageContext;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import top.ribs.scguns.item.BlueprintItem;
+import top.ribs.scguns.util.BlueprintRecipeData;
 
 public class C2SMessageSetBlueprintRecipe
 {
@@ -43,7 +42,7 @@ public class C2SMessageSetBlueprintRecipe
                 ItemStack blueprint = player.getItemInHand(message.hand);
 
                 if (blueprint.getItem() instanceof BlueprintItem) {
-                    CustomData.update(DataComponents.CUSTOM_DATA, blueprint, tag -> tag.putString("ActiveRecipe", message.recipeId));
+                    BlueprintRecipeData.saveActiveRecipe(blueprint, message.recipeId);
                 }
             }
         });

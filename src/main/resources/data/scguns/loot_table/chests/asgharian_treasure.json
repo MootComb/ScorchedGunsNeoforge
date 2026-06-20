@@ -279,13 +279,8 @@
         },
         {
           "type": "minecraft:item",
-          "name": "scguns:iron_blueprint",
+          "name": "scguns:diamond_steel_flare",
           "weight": 1
-        },
-        {
-          "type": "minecraft:item",
-          "name": "scguns:diamond_steel_blueprint",
-          "weight": 2
         },
         {
           "type": "minecraft:item",

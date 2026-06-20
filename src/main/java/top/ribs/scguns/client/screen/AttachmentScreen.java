@@ -227,11 +227,16 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
         graphics.fill(scaledX, currentY + 8, scaledX + this.font.width(gunName), currentY + 9, 0xFFFFFFFF);
         currentY += (int) ((lineHeight + 3) / scale);
 
+        Gun.WeaponType weaponType = general.getWeaponType();
+        if (weaponType != null) {
+            drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.weapon_type").getString(), Component.translatable("desc.scguns." + weaponType.id()).getString());
+            currentY += (int) (lineHeight / scale);
+        }
         drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.damage").getString(), formatOne(getDisplayDamage(gunStack, projectile)));
         currentY += (int) (lineHeight / scale);
         drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.critical_chance").getString(), formatOne(GunModifierHelper.getCriticalChance(gunStack) * 100.0F) + "%");
         currentY += (int) (lineHeight / scale);
-        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.critical_multiplier").getString(), formatOne(Config.COMMON.gameplay.criticalDamageMultiplier.get().floatValue()) + "x");
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.critical_multiplier").getString(), formatOne(projectile.getCritDamageMultiplier()) + "x");
         currentY += (int) (lineHeight / scale);
         drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.armor_penetration").getString(), formatOne(GunEnchantmentHelper.getPuncturingArmorBypass(gunStack)));
         currentY += (int) (lineHeight / scale);
@@ -258,7 +263,10 @@ public class AttachmentScreen extends AbstractContainerScreen<AttachmentContaine
         currentY += (int) (lineHeight / scale);
         drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.recoil_angle").getString(), formatOne(general.getRecoilAngle()));
         currentY += (int) (lineHeight / scale);
-        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.falloff_range").getString(), Component.translatable("info.scguns.falloff_none").getString());
+        String falloffRange = projectile.hasDamageFalloff()
+                ? formatOne(projectile.getDamageFalloffStart()) + " - " + formatOne(projectile.getDamageFalloffEnd())
+                : Component.translatable("info.scguns.falloff_none").getString();
+        drawStatLine(graphics, scaledX, currentY, Component.translatable("info.scguns.falloff_range").getString(), falloffRange);
 
         graphics.pose().popPose();
     }

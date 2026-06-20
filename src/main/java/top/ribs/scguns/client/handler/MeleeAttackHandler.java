@@ -245,10 +245,10 @@ public class MeleeAttackHandler {
         tag.putLong(MELEE_COOLDOWN_TAG, currentTime + cooldownTicks);
         setStackTag(heldItem, tag);
     }
-    private static void performMeleeAttackOnTarget(ServerPlayer player, LivingEntity target, boolean isBanzaiAttack) {
+    private static boolean performMeleeAttackOnTarget(ServerPlayer player, LivingEntity target, boolean isBanzaiAttack) {
         ItemStack heldItem = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (!(heldItem.getItem() instanceof GunItem gunItem)) {
-            return;
+            return false;
         }
 
         float baseDamage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
@@ -272,9 +272,11 @@ public class MeleeAttackHandler {
         }
 
         if (isBanzaiAttack) {
+            boolean damaged = false;
             List<LivingEntity> targets = findTargetsInArea(player, 2.5);
             for (LivingEntity aoeTarget : targets) {
                 if (aoeTarget.hurt(damageSource, attackDamage)) {
+                    damaged = true;
                     spawnSuccessfulHitParticles(player, aoeTarget);
 
                     player.level().playSound(
@@ -293,6 +295,7 @@ public class MeleeAttackHandler {
                     triggerBanzaiImpactIfNecessary(heldItem);
                 }
             }
+            return damaged;
         } else {
             LivingEntity raycastTarget = raycastForMeleeAttack(player, heldItem);
             if (raycastTarget != null && raycastTarget.hurt(damageSource, attackDamage)) {
@@ -301,8 +304,10 @@ public class MeleeAttackHandler {
                 applyKnockback(player, raycastTarget, heldItem);
                 applySpecialEnchantmentsFromBayonet(heldItem, raycastTarget, player, gunItem);
                 triggerBanzaiImpactIfNecessary(heldItem);
+                return true;
             }
         }
+        return false;
     }
     private static void spawnSuccessfulHitParticles(ServerPlayer player, LivingEntity target) {
         Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.5, 0);
@@ -399,10 +404,14 @@ public class MeleeAttackHandler {
         List<LivingEntity> targets = findTargetsInArea(player, BANZAI_AOE_RADIUS);
         if (!targets.isEmpty()) {
             playerData.putLong(BANZAI_DAMAGE_COOLDOWN_TAG, currentTime + BANZAI_DAMAGE_COOLDOWN_TICKS);
+            boolean damagedAnyTarget = false;
             for (LivingEntity target : targets) {
                 if (target != player) {
-                    performMeleeAttackOnTarget(player, target, true);
+                    damagedAnyTarget |= performMeleeAttackOnTarget(player, target, true);
                 }
+            }
+            if (damagedAnyTarget) {
+                damageGunAndAttachments(currentHeldItem, player);
             }
         }
     }

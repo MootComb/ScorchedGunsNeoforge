@@ -37,6 +37,7 @@ import top.ribs.scguns.client.CustomGunManager;
 import top.ribs.scguns.client.audio.GunShotSound;
 import top.ribs.scguns.client.handler.BeamHandler;
 import top.ribs.scguns.client.handler.BulletTrailRenderingHandler;
+import top.ribs.scguns.client.handler.DistantGunSoundHandler;
 import top.ribs.scguns.client.handler.GunRenderingHandler;
 import top.ribs.scguns.client.handler.HUDRenderHandler;
 import top.ribs.scguns.client.particle.BloodParticle;
@@ -237,6 +238,16 @@ public class ClientPlayHandler {
                     mc.level.getRandom()));
         }
     }
+    public static void handleMessageDistantGunSound(S2CMessageDistantGunSound message) {
+        DistantGunSoundHandler.get().queue(
+                message.getId(),
+                message.getCategory(),
+                message.getSourcePos(),
+                message.getVolume(),
+                message.getPitch(),
+                message.getDelayTicks()
+        );
+    }
     public static void handleBeamPenetration(S2CMessageBeamPenetration message) {
         Minecraft minecraft = Minecraft.getInstance();
         Level level = minecraft.level;
@@ -317,9 +328,11 @@ public class ClientPlayHandler {
             int shooterId = message.getShooterId();
             boolean enchanted = message.isEnchanted();
             ParticleOptions data = message.getParticleData();
+            boolean visible = message.isVisible();
+            double trailThickness = message.getTrailThickness();
             for(int i = 0; i < message.getCount(); i++)
             {
-                BulletTrailRenderingHandler.get().add(new BulletTrail(entityIds[i], positions[i], motions[i], item, trailColor, trailLengthMultiplier, life, gravity, shooterId, enchanted, data));
+                BulletTrailRenderingHandler.get().add(new BulletTrail(entityIds[i], positions[i], motions[i], item, trailColor, trailLengthMultiplier, life, gravity, shooterId, enchanted, data, visible, trailThickness));
             }
         }
     }

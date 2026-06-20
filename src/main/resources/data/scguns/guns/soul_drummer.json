@@ -1,4 +1,4 @@
-﻿{
+{
   "display": {
     "flash": {
       "size": 1.0,
@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": true,
+    "weaponType": "smg",
     "fireMode": "scguns:automatic",
     "gripType": "scguns:one_handed",
     "rate": 2,

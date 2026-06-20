@@ -1002,12 +1002,13 @@ public class GunRenderingHandler {
         poseStack.translate(-0.5, -0.5, 0);
         float minU = weapon.isEnchanted() ? 0.5F : 0.0F;
         float maxU = weapon.isEnchanted() ? 1.0F : 0.5F;
-        Matrix4f matrix = poseStack.last().pose();
+        PoseStack.Pose pose = poseStack.last();
+        Matrix4f matrix = pose.pose();
         VertexConsumer builder = buffer.getBuffer(GunRenderType.getMuzzleFlash(flashTexture));
-        builder.addVertex(matrix, 0, 0, 0).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(maxU, 1.0F).setLight(15728880);
-        builder.addVertex(matrix, 1, 0, 0).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(minU, 1.0F).setLight(15728880);
-        builder.addVertex(matrix, 1, 1, 0).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(minU, 0).setLight(15728880);
-        builder.addVertex(matrix, 0, 1, 0).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(maxU, 0).setLight(15728880);
+        emitMuzzleFlashVertex(builder, pose, matrix, 0, 0, 0, maxU, 1.0F);
+        emitMuzzleFlashVertex(builder, pose, matrix, 1, 0, 0, minU, 1.0F);
+        emitMuzzleFlashVertex(builder, pose, matrix, 1, 1, 0, minU, 0);
+        emitMuzzleFlashVertex(builder, pose, matrix, 0, 1, 0, maxU, 0);
         poseStack.popPose();
         poseStack.pushPose();
         poseStack.translate(weaponOrigin.x * 0.0625, weaponOrigin.y * 0.0625, weaponOrigin.z * 0.0625);
@@ -1024,15 +1025,26 @@ public class GunRenderingHandler {
 
         poseStack.translate(-0.5, -0.5, 0);
 
-        matrix = poseStack.last().pose();
+        pose = poseStack.last();
+        matrix = pose.pose();
         builder = buffer.getBuffer(GunRenderType.getMuzzleFlash(flashTexture));
-        builder.addVertex(matrix, 0, 0, 0).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(maxU, 1.0F).setLight(15728880);
-        builder.addVertex(matrix, 1, 0, 0).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(minU, 1.0F).setLight(15728880);
-        builder.addVertex(matrix, 1, 1, 0).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(minU, 0).setLight(15728880);
-        builder.addVertex(matrix, 0, 1, 0).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(maxU, 0).setLight(15728880);
+        emitMuzzleFlashVertex(builder, pose, matrix, 0, 0, 0, maxU, 1.0F);
+        emitMuzzleFlashVertex(builder, pose, matrix, 1, 0, 0, minU, 1.0F);
+        emitMuzzleFlashVertex(builder, pose, matrix, 1, 1, 0, minU, 0);
+        emitMuzzleFlashVertex(builder, pose, matrix, 0, 1, 0, maxU, 0);
 
         poseStack.popPose();
     }
+
+    private static void emitMuzzleFlashVertex(VertexConsumer builder, PoseStack.Pose pose, Matrix4f matrix, float x, float y, float z, float u, float v) {
+        builder.addVertex(matrix, x, y, z)
+                .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(LightTexture.FULL_BRIGHT)
+                .setNormal(pose, 0.0F, 0.0F, 1.0F);
+    }
+
     private void spawnParticles(Gun.Display.Flash flash, LivingEntity entity) {
         if (entity == null || !entity.level().isClientSide())
             return;

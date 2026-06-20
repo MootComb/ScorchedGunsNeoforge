@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": false,
+    "weaponType": "special",
     "fireMode": "scguns:semi_automatic",
     "gripType": "scguns:mini_gun_3",
     "baseGripType": "scguns:mini_gun_3",

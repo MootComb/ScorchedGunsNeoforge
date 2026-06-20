@@ -279,16 +279,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "scguns:iron_blueprint",
-          "weight": 1
-        },
-        {
-          "type": "minecraft:item",
-          "name": "scguns:treated_brass_blueprint",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -300,6 +290,34 @@
             }
           ],
           "name": "scguns:blueprint_scrap"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:diamond_steel_flare"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:treated_brass_flare"
         }
       ],
       "rolls": 2

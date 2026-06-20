@@ -31,12 +31,11 @@ public class ReloadFOVHandler {
     public static void onComputeFOV(ComputeFovModifierEvent event) {
         Player player = event.getPlayer();
         ItemStack mainHand = player.getMainHandItem();
-        ItemStack offHand = player.getOffhandItem();
 
-        boolean holdingGun = (mainHand.getItem() instanceof GunItem) || (offHand.getItem() instanceof GunItem);
+        boolean holdingGun = mainHand.getItem() instanceof GunItem;
         boolean isReloading = ModSyncedDataKeys.RELOADING.getValue(player);
 
-        if (wasReloading && !holdingGun) {
+        if (!holdingGun) {
             wasReloading = false;
             reloadEndCooldown = 0;
             return;

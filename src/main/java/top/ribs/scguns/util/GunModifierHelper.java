@@ -108,6 +108,32 @@ public class GunModifierHelper
         return speed;
     }
 
+    public static float getModifiedDamageFalloffStart(ItemStack weapon, float distance)
+    {
+        for(int i = 0; i < IAttachment.Type.values().length; i++)
+        {
+            IGunModifier[] modifiers = getModifiers(weapon, IAttachment.Type.values()[i]);
+            for(IGunModifier modifier : modifiers)
+            {
+                distance = modifier.modifyDamageFalloffStart(distance);
+            }
+        }
+        return distance;
+    }
+
+    public static float getModifiedDamageFalloffEnd(ItemStack weapon, float distance)
+    {
+        for(int i = 0; i < IAttachment.Type.values().length; i++)
+        {
+            IGunModifier[] modifiers = getModifiers(weapon, IAttachment.Type.values()[i]);
+            for(IGunModifier modifier : modifiers)
+            {
+                distance = modifier.modifyDamageFalloffEnd(distance);
+            }
+        }
+        return distance;
+    }
+
     public static float getFireSoundVolume(ItemStack weapon)
     {
         float volume = 1.0F;

@@ -123,6 +123,12 @@ public class ShootingHandler
         else if(event.isUseItem()) {
             ItemStack heldItem = player.getMainHandItem();
             if(heldItem.getItem() instanceof GunItem gunItem) {
+                if(event.getHand() == InteractionHand.OFF_HAND && player.getOffhandItem().getItem() instanceof GunItem) {
+                    event.setCanceled(true);
+                    event.setSwingHand(false);
+                    return;
+                }
+
                 if(event.getHand() == InteractionHand.MAIN_HAND) {
                     Gun modifiedGun = gunItem.getModifiedGun(heldItem);
                     GripType gripType = modifiedGun.getGeneral().getGripType(heldItem);

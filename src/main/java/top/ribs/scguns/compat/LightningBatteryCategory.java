@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import top.ribs.scguns.Reference;
+import top.ribs.scguns.blockentity.LightningBatteryBlockEntity;
 import top.ribs.scguns.client.screen.LightningBatteryRecipe;
 import top.ribs.scguns.init.ModBlocks;
 
@@ -89,7 +90,7 @@ public class LightningBatteryCategory implements IRecipeCategory<RecipeHolder<Li
 
     private void drawEnergyBar(GuiGraphics guiGraphics, LightningBatteryRecipe recipe) {
         int energyRequired = recipe.getEnergyUse();
-        int maxEnergy = 64000; // Assuming 64000 is the max energy capacity
+        int maxEnergy = LightningBatteryBlockEntity.MAX_ENERGY;
         int barHeight = 42; // Height of the energy bar in the texture
         int energyHeight = (int) (energyRequired * barHeight / (float) maxEnergy);
 

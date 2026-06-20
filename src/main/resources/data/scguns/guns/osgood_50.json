@@ -1,4 +1,4 @@
-﻿{
+{
   "display": {
     "flash": {
       "size": 0.8,
@@ -8,6 +8,7 @@
     }
   },
   "general": {
+    "weaponType": "pistol",
     "fireMode": "scguns:semi_automatic",
     "gripType": "scguns:one_handed",
     "rate": 8,

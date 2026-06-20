@@ -359,6 +359,11 @@ public class GunModifiers
         public double modifyAimDownSightSpeed(double speed) {
             return speed * 1.05F;
         }
+
+        @Override
+        public float criticalChance() {
+            return 0.05F;
+        }
     };
     public static final IGunModifier BUMP_STOCK_MODIFIER = new IGunModifier() {
         @Override
@@ -394,12 +399,22 @@ public class GunModifiers
         public float recoilModifier() {
             return 0.95F;
         }
+
+        @Override
+        public float modifyDamageFalloffStart(float distance) {
+            return distance * 1.1F;
+        }
+
+        @Override
+        public float modifyDamageFalloffEnd(float distance) {
+            return distance * 1.1F;
+        }
     };
 
     public static final IGunModifier EXTENDED_BARREL_MODIFIER = new IGunModifier() {
         @Override
         public double modifyProjectileSpeed(double speed) {
-            return speed * 1.25;
+            return speed * 1.15;
         }
 
         @Override
@@ -409,17 +424,27 @@ public class GunModifiers
 
         @Override
         public float recoilModifier(ItemStack weapon) {
-            return isCarbineCandidate(weapon) ? 0.9F : 1.15F;
+            return isCarbineCandidate(weapon) ? 0.7F : 1.25F;
         }
 
         @Override
         public float kickModifier(ItemStack weapon) {
-            return isCarbineCandidate(weapon) ? 0.95F : 1.2F;
+            return isCarbineCandidate(weapon) ? 0.85F : 1.2F;
         }
 
         @Override
         public float modifyProjectileDamage(float damage) {
             return damage * 1.1F;
+        }
+
+        @Override
+        public float modifyDamageFalloffStart(float distance) {
+            return distance * 1.25F;
+        }
+
+        @Override
+        public float modifyDamageFalloffEnd(float distance) {
+            return distance * 1.25F;
         }
 
         private boolean isCarbineCandidate(ItemStack weapon) {
@@ -467,7 +492,7 @@ public class GunModifiers
 
         @Override
         public int modifyAmmoCapacity(int baseCapacity) {
-            return (int) (baseCapacity * 2.25);
+            return (int) (baseCapacity * 2.0);
         }
 
         @Override
@@ -488,7 +513,7 @@ public class GunModifiers
     public static final IGunModifier SPEED_MAG_MODIFIER = new IGunModifier() {
         @Override
         public double modifyReloadSpeed(double reloadSpeed) {
-            return reloadSpeed * 0.45;
+            return reloadSpeed * 0.65;
         }
 
         @Override

@@ -1,4 +1,4 @@
-﻿{
+{
   "display": {
     "flash": {
       "size": 1.5,
@@ -15,6 +15,7 @@
     }
   },
   "general": {
+    "weaponType": "lmg",
     "fireMode": "scguns:automatic",
     "gripType": "scguns:mini_gun",
     "baseGripType": "scguns:mini_gun",

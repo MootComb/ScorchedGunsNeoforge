@@ -93,6 +93,9 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ITEM_GRENADE_PIN = register("item.grenade.pin");
     public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_STUN_GRENADE_EXPLOSION = register("entity.stun_grenade.explosion");
     public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_STUN_GRENADE_RING = register("entity.stun_grenade.ring");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DISTANT_GUNSHOT_LIGHT = register("item.distant_gunshot.light");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DISTANT_GUNSHOT_HEAVY = register("item.distant_gunshot.heavy");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DISTANT_GUNSHOT_EDGE = register("item.distant_gunshot.edge");
     public static final DeferredHolder<SoundEvent, SoundEvent> SCAMP_HURT = register("entity.scamp.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> SCAMP_DIE = register("entity.scamp.die");
     public static final DeferredHolder<SoundEvent, SoundEvent> DISSIDENT_HURT = register("entity.dissident.hurt");

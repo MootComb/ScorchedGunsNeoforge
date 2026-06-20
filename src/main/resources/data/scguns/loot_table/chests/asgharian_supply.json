@@ -248,11 +248,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "scguns:diamond_steel_blueprint",
-          "weight": 3
-        },
-        {
-          "type": "minecraft:item",
           "functions": [
             {
               "function": "minecraft:set_damage",
@@ -267,6 +262,20 @@
           ],
           "name": "scguns:anthralite_leggings",
           "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 2,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:diamond_steel_flare"
         },
         {
           "type": "minecraft:item",

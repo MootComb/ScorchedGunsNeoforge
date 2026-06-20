@@ -1,6 +1,7 @@
 package top.ribs.scguns.client.handler;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -113,28 +114,32 @@ public class CrosshairHandler {
         int scaledHeight = mc.getWindow().getGuiScaledHeight();
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
 
-        if (HUDRenderHandler.isRenderingHitMarker()) {
-            Crosshair hitMarker = new SpecialHitMarker();
-            hitMarker.render(mc, stack, scaledWidth, scaledHeight, partialTick);
-        }
+        try {
+            if (HUDRenderHandler.isRenderingHitMarker()) {
+                Crosshair hitMarker = new SpecialHitMarker();
+                hitMarker.render(mc, stack, scaledWidth, scaledHeight, partialTick);
+            }
 
-        Crosshair crosshair = this.getCurrentCrosshair();
-        if (AimingHandler.get().getNormalisedAdsProgress() > 0.5 && mc.options.getCameraType().isFirstPerson()) {
+            Crosshair crosshair = this.getCurrentCrosshair();
+            if (AimingHandler.get().getNormalisedAdsProgress() > 0.5 && mc.options.getCameraType().isFirstPerson()) {
+                event.setCanceled(true);
+                return;
+            }
+
+            if (crosshair == null || crosshair.isDefault()) {
+                return;
+            }
+
             event.setCanceled(true);
-            return;
+
+            if (mc.player.getUseItem().getItem() == Items.SHIELD)
+                return;
+
+            crosshair.render(mc, stack, scaledWidth, scaledHeight, partialTick);
+        } finally {
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            stack.popPose();
         }
-
-        if (crosshair == null || crosshair.isDefault()) {
-            return;
-        }
-
-        event.setCanceled(true);
-
-        if (mc.player.getUseItem().getItem() == Items.SHIELD)
-            return;
-
-        crosshair.render(mc, stack, scaledWidth, scaledHeight, partialTick);
-        stack.popPose();
     }
 
     @SubscribeEvent

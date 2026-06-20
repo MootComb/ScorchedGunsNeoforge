@@ -3,6 +3,7 @@
   },
   "general": {
     "alwaysSpread": false,
+    "weaponType": "special",
     "fireMode": "scguns:semi_automatic",
     "gripType": "scguns:two_handed",
     "baseGripType": "scguns:two_handed",

@@ -44,8 +44,11 @@ import top.ribs.scguns.init.ModSounds;
 import top.ribs.scguns.init.ModTags;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 public class ScampTankEntity extends Monster implements RangedAttackMob {
 
@@ -194,6 +197,8 @@ public class ScampTankEntity extends Monster implements RangedAttackMob {
         super.die(pCause);
 
         if (!this.level().isClientSide) {
+            this.bossEvent.removeAllPlayers();
+
             SupplyScampEntity supplyScamp = new SupplyScampEntity(ModEntities.SUPPLY_SCAMP.get(), this.level());
             supplyScamp.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
             supplyScamp.setPersistenceRequired();
@@ -562,14 +567,7 @@ public class ScampTankEntity extends Monster implements RangedAttackMob {
                 }
             }
 
-            for (ServerPlayer player : Objects.requireNonNull(this.level().getServer()).getPlayerList().getPlayers()) {
-                double distance = this.distanceToSqr(player);
-                if (distance < DETECTION_RANGE * DETECTION_RANGE && this.isAlive()) {
-                    this.bossEvent.addPlayer(player);
-                } else {
-                    this.bossEvent.removePlayer(player);
-                }
-            }
+            updateBossBarPlayers();
 
             if (repositionCooldown > 0) {
                 repositionCooldown--;
@@ -595,6 +593,38 @@ public class ScampTankEntity extends Monster implements RangedAttackMob {
             }
         }
     }
+
+    private void updateBossBarPlayers() {
+        if (!this.isAlive()) {
+            this.bossEvent.removeAllPlayers();
+            return;
+        }
+
+        List<ServerPlayer> onlinePlayers = Objects.requireNonNull(this.level().getServer()).getPlayerList().getPlayers();
+        Set<UUID> onlinePlayerIds = new HashSet<>();
+        for (ServerPlayer player : onlinePlayers) {
+            onlinePlayerIds.add(player.getUUID());
+        }
+
+        for (ServerPlayer player : new HashSet<>(this.bossEvent.getPlayers())) {
+            if (!onlinePlayerIds.contains(player.getUUID()) || !shouldShowBossBarTo(player)) {
+                this.bossEvent.removePlayer(player);
+            }
+        }
+
+        for (ServerPlayer player : onlinePlayers) {
+            if (shouldShowBossBarTo(player)) {
+                this.bossEvent.addPlayer(player);
+            }
+        }
+    }
+
+    private boolean shouldShowBossBarTo(ServerPlayer player) {
+        return player.isAlive()
+                && !player.isSpectator()
+                && this.distanceToSqr(player) < DETECTION_RANGE * DETECTION_RANGE;
+    }
+
     private void handleThirdPhase() {
         if (isRegeneratingThirdPhase && regenerationTicksThirdPhase > 0) {
             float currentHealth = this.getHealth();

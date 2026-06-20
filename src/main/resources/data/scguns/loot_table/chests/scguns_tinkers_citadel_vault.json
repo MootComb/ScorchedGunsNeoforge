@@ -5,18 +5,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "scguns:diamond_steel_blueprint"
-        },
-        {
-          "type": "minecraft:item",
-          "name": "scguns:treated_brass_blueprint"
-        },
-        {
-          "type": "minecraft:item",
-          "name": "scguns:iron_blueprint"
-        },
-        {
-          "type": "minecraft:item",
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -28,6 +16,62 @@
             }
           ],
           "name": "scguns:blueprint_scrap"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 2,
+                "max": 3,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:iron_flare"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 2,
+                "max": 3,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:wrecker_flare"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 2,
+                "max": 3,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:treated_brass_flare"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 2,
+                "max": 3,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "scguns:diamond_steel_flare"
         }
       ]
     }

@@ -16,6 +16,7 @@
   "general": {
     "hasCameraShake": false,
     "alwaysSpread": false,
+    "weaponType": "laser",
     "fireMode": "scguns:semi_beam",
     "beamColor": "#ff0000",
     "secondaryBeamColor": "#e66363",

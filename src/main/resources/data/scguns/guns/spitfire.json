@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": true,
+    "weaponType": "flamethrower",
     "fireMode": "scguns:automatic",
     "gripType": "scguns:mini_gun",
     "baseGripType": "scguns:mini_gun",
@@ -36,7 +37,8 @@
     "life": 12,
     "size": 0.1,
     "speed": 1.8,
-    "trailLengthMultiplier": 2.0
+    "trailLengthMultiplier": 1.0,
+    "hideProjectile": true
   },
   "reloads": {
     "emptyMagTimer": 10,

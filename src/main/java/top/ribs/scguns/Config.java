@@ -784,6 +784,12 @@ public class Config
         public final ModConfigSpec.DoubleValue ringVolume;
         public final ModConfigSpec.DoubleValue gunShotMaxDistance;
         public final ModConfigSpec.DoubleValue reloadMaxDistance;
+        public final ModConfigSpec.BooleanValue enableDistantGunshots;
+        public final ModConfigSpec.DoubleValue distantGunShotMaxDistance;
+        public final ModConfigSpec.DoubleValue distantGunShotVolumeMultiplier;
+        public final ModConfigSpec.IntValue distantGunShotThrottleTicks;
+        public final ModConfigSpec.DoubleValue distantGunShotSpeedOfSoundBlocksPerSecond;
+        public final ModConfigSpec.IntValue distantGunShotMaxDelayTicks;
         public final ModConfigSpec.BooleanValue enableCameraRecoil;
         public final ModConfigSpec.IntValue cooldownThreshold;
         public final Experimental experimental;
@@ -806,6 +812,12 @@ public class Config
                 {
                     this.gunShotMaxDistance = builder.comment("The maximum distance weapons can be heard by players.").defineInRange("gunShotMaxDistance", 100, 0, Double.MAX_VALUE);
                     this.reloadMaxDistance = builder.comment("The maximum distance reloading can be heard by players.").defineInRange("reloadMaxDistance", 24, 0, Double.MAX_VALUE);
+                    this.enableDistantGunshots = builder.comment("If true, players outside the normal gunshot radius can hear delayed distant gunshot reports.").define("enableDistantGunshots", true);
+                    this.distantGunShotMaxDistance = builder.comment("The maximum distance distant unsilenced gunshots can be heard by players.").defineInRange("distantGunShotMaxDistance", 640.0, 0.0, Double.MAX_VALUE);
+                    this.distantGunShotVolumeMultiplier = builder.comment("Volume multiplier for the distant gunshot layer.").defineInRange("distantGunShotVolumeMultiplier", 2.5, 0.0, 10.0);
+                    this.distantGunShotThrottleTicks = builder.comment("Minimum ticks between distant gunshot packets from the same source to the same listener. Helps automatic weapons stay cheap on servers.").defineInRange("distantGunShotThrottleTicks", 8, 0, 200);
+                    this.distantGunShotSpeedOfSoundBlocksPerSecond = builder.comment("Speed used to delay distant gunshot reports. Minecraft blocks are treated as meters.").defineInRange("distantGunShotSpeedOfSoundBlocksPerSecond", 343.0, 1.0, Double.MAX_VALUE);
+                    this.distantGunShotMaxDelayTicks = builder.comment("Maximum client delay for distant gunshot reports in ticks.").defineInRange("distantGunShotMaxDelayTicks", 80, 0, 400);
                 }
                 builder.pop();
 

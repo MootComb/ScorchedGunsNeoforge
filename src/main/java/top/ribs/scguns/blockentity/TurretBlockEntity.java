@@ -58,6 +58,7 @@ import top.ribs.scguns.block.PlayerTurretTargetingBlock;
 import top.ribs.scguns.block.RangeModuleBlock;
 import top.ribs.scguns.block.ShellCatcherModuleBlock;
 import top.ribs.scguns.block.TurretTargetingBlock;
+import top.ribs.scguns.common.DistantGunSoundRouter;
 import top.ribs.scguns.common.Turret;
 import top.ribs.scguns.common.TurretManager;
 import top.ribs.scguns.entity.projectile.turret.TurretProjectileEntity;
@@ -436,6 +437,16 @@ public abstract class TurretBlockEntity extends BlockEntity implements MenuProvi
         PacketHandler.getPlayChannel().sendToNearbyPlayers(
                 () -> LevelLocation.create(serverLevel, muzzlePos.x, muzzlePos.y, muzzlePos.z, radius),
                 message
+        );
+        DistantGunSoundRouter.send(
+                serverLevel,
+                muzzlePos,
+                SoundSource.BLOCKS,
+                0.7F,
+                0.7F,
+                -1,
+                false,
+                radius
         );
     }
 

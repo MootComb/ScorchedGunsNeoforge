@@ -1,15 +1,13 @@
 package top.ribs.scguns.network.message;
 
 import com.mrcrayfish.framework.api.network.MessageContext;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import top.ribs.scguns.item.BlueprintItem;
+import top.ribs.scguns.util.BlueprintRecipeData;
 
 public class C2SMessageClearBlueprintRecipe
 {
@@ -41,16 +39,7 @@ public class C2SMessageClearBlueprintRecipe
                 ItemStack blueprint = player.getItemInHand(message.hand);
 
                 if (blueprint.getItem() instanceof BlueprintItem) {
-                    CompoundTag tag = blueprint.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-                    if (tag.contains("ActiveRecipe")) {
-                        tag.remove("ActiveRecipe");
-
-                        if (tag.isEmpty()) {
-                            blueprint.remove(DataComponents.CUSTOM_DATA);
-                        } else {
-                            blueprint.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-                        }
-                    }
+                    BlueprintRecipeData.clearActiveRecipe(blueprint);
                 }
             }
         });

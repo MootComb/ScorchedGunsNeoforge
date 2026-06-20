@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": false,
+    "weaponType": "pistol",
     "fireMode": "scguns:automatic",
     "gripType": "scguns:one_handed",
     "rate": 8,

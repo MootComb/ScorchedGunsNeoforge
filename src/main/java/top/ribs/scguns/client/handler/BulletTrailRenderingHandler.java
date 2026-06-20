@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -112,6 +113,10 @@ public class BulletTrailRenderingHandler
         if(entity == null || trail.isDead())
             return;
 
+        Entity shooter = trail.getShooter();
+        if(mc.options.getCameraType().isFirstPerson() && shooter instanceof Player player && player.isLocalPlayer())
+            return;
+
         poseStack.pushPose();
 
         Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
@@ -131,9 +136,9 @@ public class BulletTrailRenderingHandler
         float green = (float) (trail.getTrailColor() >> 8 & 255) / 255.0F;
         float blue = (float) (trail.getTrailColor() & 255) / 255.0F;
         float alpha = 0.3F;
+        float trailWidth = (float) (0.035F * trail.getTrailThickness());
 
         // Prevents the trail length from being longer than the distance to shooter
-        Entity shooter = trail.getShooter();
         if(shooter != null)
         {
             trailLength = (float) Math.min(trailLength, shooter.getEyePosition(deltaTicks).distanceTo(new Vec3(bulletX,bulletY, bulletZ)));
@@ -146,12 +151,12 @@ public class BulletTrailRenderingHandler
         {
             RenderType bulletType = GunRenderType.getBulletTrail();
             VertexConsumer builder = renderTypeBuffer.getBuffer(bulletType);
-            builder.addVertex(matrix4f, 0, 0, -0.035F).setColor(red, green, blue, alpha).setLight(15728880);
-            builder.addVertex(matrix4f, 0, 0, 0.035F).setColor(red, green, blue, alpha).setLight(15728880);
+            builder.addVertex(matrix4f, 0, 0, -trailWidth).setColor(red, green, blue, alpha).setLight(15728880);
+            builder.addVertex(matrix4f, 0, 0, trailWidth).setColor(red, green, blue, alpha).setLight(15728880);
             builder.addVertex(matrix4f, 0, -trailLength, 0).setColor(red, green, blue, alpha).setLight(15728880);
             builder.addVertex(matrix4f, 0, -trailLength, 0).setColor(red, green, blue, alpha).setLight(15728880);
-            builder.addVertex(matrix4f, -0.035F, 0, 0).setColor(red, green, blue, alpha).setLight(15728880);
-            builder.addVertex(matrix4f, 0.035F, 0, 0).setColor(red, green, blue, alpha).setLight(15728880);
+            builder.addVertex(matrix4f, -trailWidth, 0, 0).setColor(red, green, blue, alpha).setLight(15728880);
+            builder.addVertex(matrix4f, trailWidth, 0, 0).setColor(red, green, blue, alpha).setLight(15728880);
             builder.addVertex(matrix4f, 0, -trailLength, 0).setColor(red, green, blue, alpha).setLight(15728880);
             builder.addVertex(matrix4f, 0, -trailLength, 0).setColor(red, green, blue, alpha).setLight(15728880);
             Minecraft.getInstance().renderBuffers().bufferSource().endBatch(bulletType);

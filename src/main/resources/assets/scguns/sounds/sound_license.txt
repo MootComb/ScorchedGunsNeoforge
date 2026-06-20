@@ -1,2 +1,8 @@
 All sounds are licensed under Creative Commons 0
 https://creativecommons.org/publicdomain/zero/1.0/
+
+Distant gunshot MVP sounds:
+- Source: OpenGameArt, "25 CC0 bang / firework sfx" by qubodup
+- License: CC0 1.0 Universal
+- URL: https://opengameart.org/content/25-cc0-bang-firework-sfx
+- Files used: bang_05.ogg, cannon_02.ogg, shot_02.ogg

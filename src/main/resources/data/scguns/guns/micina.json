@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": false,
+    "weaponType": "magnum",
     "fireMode": "scguns:burst",
     "burstAmount": 2,
     "burstCooldown": 9,

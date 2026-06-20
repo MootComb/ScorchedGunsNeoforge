@@ -331,6 +331,27 @@ public class ReloadTracker {
         }
     }
 
+    private static void clearReloadData(ItemStack stack) {
+        CompoundTag tag = getCustomData(stack);
+        if (tag == null) {
+            return;
+        }
+        tag.remove("IsReloading");
+        tag.remove("scguns:IsReloading");
+        tag.remove("InCriticalReloadPhase");
+        tag.remove("scguns:ReloadState");
+        tag.remove("scguns:IsPlayingReloadStop");
+        tag.remove("scguns:PausedDuringReload");
+        setCustomData(stack, tag);
+    }
+
+    private static void clearReloadData(Player player) {
+        for (ItemStack itemStack : player.getInventory().items) {
+            clearReloadData(itemStack);
+        }
+        clearReloadData(player.getOffhandItem());
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         Player player = event.getEntity();
@@ -339,87 +360,90 @@ public class ReloadTracker {
         }
         if (ModSyncedDataKeys.RELOADING.getValue(player)) {
             ItemStack heldItem = player.getMainHandItem();
-            if (heldItem.getItem() instanceof GunItem gunItem) {
-                Gun gun = gunItem.getModifiedGun(heldItem);
+            if (!(heldItem.getItem() instanceof GunItem gunItem)) {
+                RELOAD_TRACKER_MAP.remove(player);
+                ModSyncedDataKeys.RELOADING.setValue(player, false);
+                ModSyncedDataKeys.AIMING.setValue(player, false);
+                clearReloadData(player);
+                return;
+            }
 
-                if (gun.getReloads().getReloadType() != ReloadType.MANUAL) {
-                    CompoundTag tag = getOrCreateCustomData(heldItem);
-                    if (tag.getBoolean("scguns:PausedDuringReload")) {
-                        RELOAD_TRACKER_MAP.remove(player);
-                        ModSyncedDataKeys.RELOADING.setValue(player, false);
-                        tag.remove("IsReloading");
-                        tag.remove("scguns:PausedDuringReload");
-                        setCustomData(heldItem, tag);
-                        return;
-                    }
-                }
+            Gun gun = gunItem.getModifiedGun(heldItem);
 
+            if (gun.getReloads().getReloadType() != ReloadType.MANUAL) {
                 CompoundTag tag = getOrCreateCustomData(heldItem);
-
-                if (!(heldItem.getItem().getClass().getPackageName().startsWith("top.ribs.scguns"))) {
-                    return;
-                }
-
-                ReloadTracker tracker = RELOAD_TRACKER_MAP.get(player);
-
-                boolean needsNewTracker = false;
-                if (tracker == null) {
-                    needsNewTracker = true;
-                } else {
-                    ItemStack currentWeapon = player.getInventory().getSelected();
-                    int currentSlot = player.getInventory().selected;
-
-                    if (tracker.slot != currentSlot ||
-                            currentWeapon.isEmpty() ||
-                            currentWeapon.getItem() != tracker.stack.getItem()) {
-                        RELOAD_TRACKER_MAP.remove(player);
-                        ModSyncedDataKeys.RELOADING.setValue(player, false);
-                        tag.remove("IsReloading");
-                        tag.remove("scguns:IsReloading");
-                        tag.remove("InCriticalReloadPhase");
-                        tag.remove("scguns:ReloadState");
-                        if (heldItem.getItem() instanceof AnimatedGunItem) {
-                            tag.putString("scguns:ReloadState", "STOPPING");
-                            tag.putBoolean("scguns:IsPlayingReloadStop", true);
-                            PacketHandler.getPlayChannel().sendToPlayer(() -> (ServerPlayer) player, new S2CMessageStopReload());
-                        }
-                        setCustomData(heldItem, tag);
-                        return;
-                    }
-                }
-
-                if (needsNewTracker) {
-                    if (!(player.getInventory().getSelected().getItem() instanceof GunItem)) {
-                        ModSyncedDataKeys.RELOADING.setValue(player, false);
-                        return;
-                    }
-
-                    tracker = new ReloadTracker(player);
-                    RELOAD_TRACKER_MAP.put(player, tracker);
-                }
-                boolean weaponFull = tracker.isWeaponFull(player);
-                boolean hasNoAmmo = tracker.hasNoAmmo(player);
-                if (weaponFull || hasNoAmmo) {
+                if (tag.getBoolean("scguns:PausedDuringReload")) {
                     RELOAD_TRACKER_MAP.remove(player);
                     ModSyncedDataKeys.RELOADING.setValue(player, false);
                     tag.remove("IsReloading");
+                    tag.remove("scguns:PausedDuringReload");
+                    setCustomData(heldItem, tag);
+                    return;
+                }
+            }
+
+            CompoundTag tag = getOrCreateCustomData(heldItem);
+
+            if (!(heldItem.getItem().getClass().getPackageName().startsWith("top.ribs.scguns"))) {
+                return;
+            }
+
+            ReloadTracker tracker = RELOAD_TRACKER_MAP.get(player);
+
+            boolean needsNewTracker = false;
+            if (tracker == null) {
+                needsNewTracker = true;
+            } else {
+                ItemStack currentWeapon = player.getInventory().getSelected();
+                int currentSlot = player.getInventory().selected;
+
+                if (tracker.slot != currentSlot ||
+                        currentWeapon.isEmpty() ||
+                        currentWeapon.getItem() != tracker.stack.getItem()) {
+                    RELOAD_TRACKER_MAP.remove(player);
+                    ModSyncedDataKeys.RELOADING.setValue(player, false);
+                    clearReloadData(tracker.stack);
+                    tag.remove("IsReloading");
                     tag.remove("scguns:IsReloading");
-                    if (player.getMainHandItem().getItem() instanceof AnimatedGunItem) {
+                    tag.remove("InCriticalReloadPhase");
+                    tag.remove("scguns:ReloadState");
+                    if (heldItem.getItem() instanceof AnimatedGunItem) {
                         tag.putString("scguns:ReloadState", "STOPPING");
                         tag.putBoolean("scguns:IsPlayingReloadStop", true);
                         PacketHandler.getPlayChannel().sendToPlayer(() -> (ServerPlayer) player, new S2CMessageStopReload());
                     }
                     setCustomData(heldItem, tag);
+                    return;
                 }
+            }
+
+            if (needsNewTracker) {
+                if (!(player.getInventory().getSelected().getItem() instanceof GunItem)) {
+                    ModSyncedDataKeys.RELOADING.setValue(player, false);
+                    return;
+                }
+
+                tracker = new ReloadTracker(player);
+                RELOAD_TRACKER_MAP.put(player, tracker);
+            }
+            boolean weaponFull = tracker.isWeaponFull(player);
+            boolean hasNoAmmo = tracker.hasNoAmmo(player);
+            if (weaponFull || hasNoAmmo) {
+                RELOAD_TRACKER_MAP.remove(player);
+                ModSyncedDataKeys.RELOADING.setValue(player, false);
+                tag.remove("IsReloading");
+                tag.remove("scguns:IsReloading");
+                if (player.getMainHandItem().getItem() instanceof AnimatedGunItem) {
+                    tag.putString("scguns:ReloadState", "STOPPING");
+                    tag.putBoolean("scguns:IsPlayingReloadStop", true);
+                    PacketHandler.getPlayChannel().sendToPlayer(() -> (ServerPlayer) player, new S2CMessageStopReload());
+                }
+                setCustomData(heldItem, tag);
             }
         } else {
             RELOAD_TRACKER_MAP.remove(player);
             ItemStack heldItem = player.getMainHandItem();
-            CompoundTag tag = getCustomData(heldItem);
-            if (tag != null) {
-                tag.remove("IsReloading");
-                setCustomData(heldItem, tag);
-            }
+            clearReloadData(heldItem);
         }
     }
 

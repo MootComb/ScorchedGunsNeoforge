@@ -622,6 +622,30 @@
       }
     ]
   },
+  "item.distant_gunshot.light": {
+    "subtitle": "subtitle.scguns.distant_fire",
+    "sounds": [
+      {
+        "name": "scguns:item/distant_gunshot/light"
+      }
+    ]
+  },
+  "item.distant_gunshot.heavy": {
+    "subtitle": "subtitle.scguns.distant_fire",
+    "sounds": [
+      {
+        "name": "scguns:item/distant_gunshot/heavy"
+      }
+    ]
+  },
+  "item.distant_gunshot.edge": {
+    "subtitle": "subtitle.scguns.distant_fire",
+    "sounds": [
+      {
+        "name": "scguns:item/distant_gunshot/edge"
+      }
+    ]
+  },
   "item.bazooka.fire": {
     "subtitle": "subtitle.scguns.fire",
     "sounds": [

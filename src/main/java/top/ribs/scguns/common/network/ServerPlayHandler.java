@@ -229,11 +229,15 @@ public class ServerPlayHandler {
             projectileEntity.tick();
         }
 
-        if (projectileProps.isVisible()) {
+        if (!projectileProps.shouldHideProjectile()) {
             sendProjectileTrail(player, spawnedProjectiles, projectileProps);
         }
     }
     private static void sendProjectileTrail(ServerPlayer player, ProjectileEntity[] projectiles, Gun.Projectile projectileProps) {
+        if (projectileProps.shouldHideTrail()) {
+            return;
+        }
+
         double spawnX = player.getX();
         double spawnY = player.getY() + 1.0;
         double spawnZ = player.getZ();
@@ -266,6 +270,16 @@ public class ServerPlayHandler {
         PacketHandler.getPlayChannel().sendToNearbyPlayers(
                 () -> LevelLocation.create(player.serverLevel(), posX, posY, posZ, radius),
                 messageSound);
+        DistantGunSoundRouter.send(
+                player.serverLevel(),
+                new Vec3(posX, posY, posZ),
+                SoundSource.PLAYERS,
+                volume,
+                pitch,
+                player.getId(),
+                GunModifierHelper.isSilencedFire(heldItem),
+                radius
+        );
     }
     private static void handleBeamWeapon(ServerPlayer player, ItemStack heldItem, Gun modifiedGun) {
         UUID playerId = player.getUUID();

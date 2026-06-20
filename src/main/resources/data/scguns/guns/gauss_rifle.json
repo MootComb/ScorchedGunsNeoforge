@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": true,
+    "weaponType": "plasma",
     "fireMode": "scguns:pulse",
     "fireTimer": 30,
     "gripType": "scguns:two_handed",

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import top.ribs.scguns.client.screen.BlueprintScreen;
 import top.ribs.scguns.network.PacketHandler;
 import top.ribs.scguns.network.message.C2SMessageClearBlueprintRecipe;
+import top.ribs.scguns.util.BlueprintRecipeData;
 
 import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
@@ -74,7 +75,7 @@ public class BlueprintItem extends Item {
                 .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
 
         if (context.level() != null && context.level().isClientSide) {
-            String activeRecipeName = BlueprintScreen.getActiveRecipeName(pStack);
+            String activeRecipeName = BlueprintRecipeData.getActiveRecipeName(pStack, context.level());
             if (activeRecipeName != null) {
                 pTooltipComponents.add(Component.translatable("item.scguns.blueprint.tooltip.active_recipe", activeRecipeName)
                         .withStyle(ChatFormatting.GREEN, ChatFormatting.ITALIC));

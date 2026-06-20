@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import top.ribs.scguns.Config;
+import top.ribs.scguns.common.DistantGunSoundRouter;
 import top.ribs.scguns.common.FireMode;
 import top.ribs.scguns.entity.weapon.ScGunsWeapon;
 import top.ribs.scguns.item.GunItem;
@@ -29,6 +30,8 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
     private static final double MIN_MAX_ATTACK_RANGE = 8.0D;
     private static final double MAX_MAX_ATTACK_RANGE = 48.0D;
     private static final double CLOSE_STOP_RANGE_SQR = 36.0D;
+    private static final double NAVIGATION_TARGET_RECALC_DISTANCE_SQR = 4.0D;
+    private static final int NAVIGATION_RECALC_INTERVAL = 10;
     private static final String MOB_GUN_KEY = "scguns:MobGun";
     private static final String VIVENTRUM_MOB_GUN_KEY = "scguns:ViventrumMobGun";
 
@@ -39,6 +42,10 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
     private int burstTimer;
     private int remainingBursts;
     private int reloadTime;
+    private int navigationUpdateCooldown;
+    private double lastNavigationTargetX = Double.NaN;
+    private double lastNavigationTargetY = Double.NaN;
+    private double lastNavigationTargetZ = Double.NaN;
     private boolean reloading;
     private ScGunsWeapon weapon;
     private ItemStack cachedStack = ItemStack.EMPTY;
@@ -68,6 +75,7 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         remainingBursts = 0;
         burstTimer = 0;
         reloadTime = 0;
+        resetNavigationThrottle();
         reloading = false;
     }
 
@@ -78,6 +86,7 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         remainingBursts = 0;
         burstTimer = 0;
         reloadTime = 0;
+        resetNavigationThrottle();
         reloading = false;
     }
 
@@ -99,11 +108,7 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         boolean canSee = shooter.getSensing().hasLineOfSight(target);
         seeTime = canSee ? seeTime + 1 : 0;
 
-        if (distance < CLOSE_STOP_RANGE_SQR) {
-            shooter.getNavigation().stop();
-        } else {
-            shooter.getNavigation().moveTo(target, getCombatMoveSpeed());
-        }
+        updateCombatNavigation(target, distance);
 
         shooter.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
@@ -168,6 +173,52 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         }
         weapon = null;
         return false;
+    }
+
+    private void updateCombatNavigation(LivingEntity target, double distanceSqr) {
+        if (distanceSqr < CLOSE_STOP_RANGE_SQR) {
+            if (!shooter.getNavigation().isDone()) {
+                shooter.getNavigation().stop();
+            }
+            resetNavigationThrottle();
+            rememberNavigationTarget(target);
+            return;
+        }
+
+        if (navigationUpdateCooldown > 0) {
+            navigationUpdateCooldown--;
+        }
+
+        if (navigationUpdateCooldown > 0 && !shooter.getNavigation().isDone() && !hasNavigationTargetMoved(target)) {
+            return;
+        }
+
+        shooter.getNavigation().moveTo(target, getCombatMoveSpeed());
+        rememberNavigationTarget(target);
+        navigationUpdateCooldown = NAVIGATION_RECALC_INTERVAL + shooter.getRandom().nextInt(5);
+    }
+
+    private boolean hasNavigationTargetMoved(LivingEntity target) {
+        if (Double.isNaN(lastNavigationTargetX)) {
+            return true;
+        }
+        double dx = target.getX() - lastNavigationTargetX;
+        double dy = target.getY() - lastNavigationTargetY;
+        double dz = target.getZ() - lastNavigationTargetZ;
+        return dx * dx + dy * dy + dz * dz > NAVIGATION_TARGET_RECALC_DISTANCE_SQR;
+    }
+
+    private void rememberNavigationTarget(LivingEntity target) {
+        lastNavigationTargetX = target.getX();
+        lastNavigationTargetY = target.getY();
+        lastNavigationTargetZ = target.getZ();
+    }
+
+    private void resetNavigationThrottle() {
+        navigationUpdateCooldown = 0;
+        lastNavigationTargetX = Double.NaN;
+        lastNavigationTargetY = Double.NaN;
+        lastNavigationTargetZ = Double.NaN;
     }
 
     private void shoot(LivingEntity target) {
@@ -306,6 +357,16 @@ public class GunAttackGoal<T extends PathfinderMob> extends Goal {
         PacketHandler.getPlayChannel().sendToNearbyPlayers(
                 () -> LevelLocation.create(serverLevel, posX, posY, posZ, radius),
                 messageSound
+        );
+        DistantGunSoundRouter.send(
+                serverLevel,
+                new net.minecraft.world.phys.Vec3(posX, posY, posZ),
+                SoundSource.HOSTILE,
+                volume,
+                pitch,
+                shooter.getId(),
+                GunModifierHelper.isSilencedFire(stack),
+                radius
         );
     }
 }

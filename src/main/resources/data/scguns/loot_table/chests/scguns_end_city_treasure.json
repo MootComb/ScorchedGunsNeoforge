@@ -19,10 +19,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "scguns:end_blueprint"
-        },
-        {
-          "type": "minecraft:item",
           "functions": [
             {
               "function": "minecraft:set_count",

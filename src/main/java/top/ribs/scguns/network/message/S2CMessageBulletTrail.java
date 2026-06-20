@@ -33,6 +33,8 @@ public class S2CMessageBulletTrail
     private int shooterId;
     private boolean enchanted;
     private ParticleOptions particleData;
+    private boolean visible;
+    private double trailThickness;
 
     public S2CMessageBulletTrail() {}
 
@@ -56,9 +58,11 @@ public class S2CMessageBulletTrail
         this.gravity = spawnedProjectiles[0].getModifiedGravity(); //It's possible that projectiles have different gravity
         this.shooterId = shooterId;
         this.particleData = particleData;
+        this.visible = !projectileProps.shouldHideTrail();
+        this.trailThickness = projectileProps.getTrailThickness();
     }
 
-    public S2CMessageBulletTrail(int[] entityIds, Vec3[] positions, Vec3[] motions, ItemStack item, int trailColor, double trailLengthMultiplier, int life, double gravity, int shooterId, boolean enchanted, ParticleOptions particleData)
+    public S2CMessageBulletTrail(int[] entityIds, Vec3[] positions, Vec3[] motions, ItemStack item, int trailColor, double trailLengthMultiplier, int life, double gravity, int shooterId, boolean enchanted, ParticleOptions particleData, boolean visible, double trailThickness)
     {
         this.entityIds = entityIds;
         this.positions = positions;
@@ -71,6 +75,8 @@ public class S2CMessageBulletTrail
         this.shooterId = shooterId;
         this.enchanted = enchanted;
         this.particleData = particleData;
+        this.visible = visible;
+        this.trailThickness = trailThickness;
     }
     private static void encode(RegistryFriendlyByteBuf buffer, S2CMessageBulletTrail message)
     {
@@ -89,6 +95,8 @@ public class S2CMessageBulletTrail
         buffer.writeInt(message.shooterId);
         buffer.writeBoolean(message.enchanted);
         ParticleTypes.STREAM_CODEC.encode(buffer, message.particleData);
+        buffer.writeBoolean(message.visible);
+        buffer.writeDouble(message.trailThickness);
     }
     private static S2CMessageBulletTrail decode(RegistryFriendlyByteBuf buffer)
     {
@@ -110,7 +118,9 @@ public class S2CMessageBulletTrail
         int shooterId = buffer.readInt();
         boolean enchanted = buffer.readBoolean();
         ParticleOptions particleData = ParticleTypes.STREAM_CODEC.decode(buffer);
-        return new S2CMessageBulletTrail(entityIds, positions, motions, item, trailColor, trailLengthMultiplier, life, gravity,shooterId, enchanted, particleData);
+        boolean visible = buffer.readBoolean();
+        double trailThickness = buffer.readDouble();
+        return new S2CMessageBulletTrail(entityIds, positions, motions, item, trailColor, trailLengthMultiplier, life, gravity,shooterId, enchanted, particleData, visible, trailThickness);
     }
     public static void handle(S2CMessageBulletTrail message, MessageContext context)
     {
@@ -176,5 +186,15 @@ public class S2CMessageBulletTrail
     public ParticleOptions getParticleData()
     {
         return this.particleData;
+    }
+
+    public boolean isVisible()
+    {
+        return this.visible;
+    }
+
+    public double getTrailThickness()
+    {
+        return this.trailThickness;
     }
 }

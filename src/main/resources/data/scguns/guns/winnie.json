@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": true,
+    "weaponType": "rifle",
     "fireMode": "scguns:semi_automatic",
     "gripType": "scguns:two_handed",
     "baseGripType": "scguns:two_handed",
@@ -50,9 +51,12 @@
     "damage": 8,
     "ejectsCasing": true,
     "gravity": false,
-    "item": "scguns:standard_copper_round",
+    "item": "scguns:compact_copper_round",
     "casingType": "scguns:medium_copper_casing",
     "casingParticle": "scguns:copper_casing",
+    "damageFalloffStart": 22,
+    "damageFalloffEnd": 55,
+    "damageFalloffMinMultiplier": 0.7,
     "life": 50,
     "size": 1.0,
     "speed": 6.0,
@@ -61,7 +65,7 @@
   "reloads": {
     "emptyMagTimer": 50,
     "maxAmmo": 8,
-    "reloadItem": "scguns:standard_copper_round",
+    "reloadItem": "scguns:compact_copper_round",
     "reloadTimer": 22,
     "reloadType": "scguns:manual"
   },

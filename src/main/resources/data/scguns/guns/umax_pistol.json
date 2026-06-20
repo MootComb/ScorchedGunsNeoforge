@@ -3,6 +3,7 @@
   },
   "general": {
     "alwaysSpread": false,
+    "weaponType": "pistol",
     "fireMode": "scguns:semi_automatic",
     "gripType": "scguns:one_handed",
     "rate": 8,
@@ -43,7 +44,8 @@
     "life": 40,
     "size": 1.0,
     "speed": 6.0,
-    "trailLengthMultiplier": 0.2
+    "trailLengthMultiplier": 0.2,
+    "trailThickness": 0.5
   },
   "reloads": {
     "emptyMagTimer": 30,

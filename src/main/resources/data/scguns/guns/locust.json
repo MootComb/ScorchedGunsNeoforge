@@ -1,4 +1,4 @@
-﻿{
+{
   "display": {
     "flash": {
       "size": 1.3,
@@ -14,6 +14,7 @@
   },
   "general": {
     "alwaysSpread": false,
+    "weaponType": "rifle",
     "fireMode": "scguns:burst",
     "burstAmount": 3,
     "burstCooldown": 10,

@@ -46,6 +46,7 @@ public class PacketHandler
                 .registerPlayMessage("c2s_shooting", C2SMessageShooting.class, C2SMessageShooting.STREAM_CODEC, C2SMessageShooting::handle, PacketFlow.SERVERBOUND)
                 .registerPlayMessage("c2s_stop_beam", C2SMessageStopBeam.class, C2SMessageStopBeam.STREAM_CODEC, C2SMessageStopBeam::handle, PacketFlow.SERVERBOUND)
                 .registerPlayMessage("s2c_gun_sound", S2CMessageGunSound.class, S2CMessageGunSound.STREAM_CODEC, S2CMessageGunSound::handle, PacketFlow.CLIENTBOUND)
+                .registerPlayMessage("s2c_distant_gun_sound", S2CMessageDistantGunSound.class, S2CMessageDistantGunSound.STREAM_CODEC, S2CMessageDistantGunSound::handle, PacketFlow.CLIENTBOUND)
                 .registerPlayMessage("s2c_dual_wield_shot_count", S2CMessageDualWieldShotCount.class, S2CMessageDualWieldShotCount.STREAM_CODEC, S2CMessageDualWieldShotCount::handle, PacketFlow.CLIENTBOUND)
                 .registerPlayMessage("s2c_melee_attack", S2CMessageMeleeAttack.class, S2CMessageMeleeAttack.STREAM_CODEC, S2CMessageMeleeAttack::handle, PacketFlow.CLIENTBOUND)
                 .registerPlayMessage("s2c_hot_barrel_sync", S2CMessageHotBarrelSync.class, S2CMessageHotBarrelSync.STREAM_CODEC, S2CMessageHotBarrelSync::handle, PacketFlow.CLIENTBOUND)

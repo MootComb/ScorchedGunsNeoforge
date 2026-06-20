@@ -3,6 +3,7 @@
   },
   "general": {
     "alwaysSpread": true,
+    "weaponType": "heavy",
     "fireMode": "scguns:automatic",
     "gripType": "scguns:mini_gun_5",
     "baseGripType": "scguns:mini_gun_5",
@@ -35,7 +36,8 @@
     "life": 50,
     "size": 1.0,
     "speed": 4.0,
-    "trailLengthMultiplier": 0.2
+    "trailLengthMultiplier": 0.2,
+    "trailThickness": 0.5
   },
   "reloads": {
     "emptyMagTimer": 10,

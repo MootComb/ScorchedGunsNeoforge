@@ -101,6 +101,18 @@ public class SkyCarrierEntity extends FlyingMob implements Enemy {
     public void tick() {
         super.tick();
 
+        if (this.isDeadOrDying() || !this.isAlive()) {
+            if (!this.level().isClientSide()) {
+                this.setPhasing(false);
+                this.shootCooldown = Math.max(this.shootCooldown, 20);
+            }
+            int currentTimer = this.entityData.get(MUZZLE_FLASH_TIMER);
+            if (currentTimer > 0) {
+                this.entityData.set(MUZZLE_FLASH_TIMER, currentTimer - 1);
+            }
+            return;
+        }
+
         // Handle phasing logic
         if (!this.level().isClientSide() && this.isPhasing()) {
             handlePhasing();
@@ -228,22 +240,24 @@ public class SkyCarrierEntity extends FlyingMob implements Enemy {
 
     private void fireProjectile() {
         LivingEntity target = this.getTarget();
-        if (target != null) {
-            double turretOffsetHeight = 0.4;
-            double turretOffsetBack = 0.4;
-            double spawnHeight = this.getY() + this.getBbHeight() + turretOffsetHeight;
-            double spawnX = this.getX() - Math.sin(Math.toRadians(this.getYRot())) * turretOffsetBack;
-            double spawnZ = this.getZ() + Math.cos(Math.toRadians(this.getYRot())) * turretOffsetBack;
-            BrassBoltEntity brassBolt = new BrassBoltEntity(this.level(), this);
-            brassBolt.setPos(spawnX, spawnHeight, spawnZ);
-            double dx = target.getX() - spawnX;
-            double dy = target.getEyeY() - spawnHeight + 0.1;
-            double dz = target.getZ() - spawnZ;
-            brassBolt.shoot(dx, dy, dz, 3.0f, 2.0f);
-            this.level().addFreshEntity(brassBolt);
-            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.BRUISER_SILENCED_FIRE.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
-            this.triggerMuzzleFlash();
+        if (this.isDeadOrDying() || !this.isAlive() || target == null || !target.isAlive()) {
+            return;
         }
+
+        double turretOffsetHeight = 0.4;
+        double turretOffsetBack = 0.4;
+        double spawnHeight = this.getY() + this.getBbHeight() + turretOffsetHeight;
+        double spawnX = this.getX() - Math.sin(Math.toRadians(this.getYRot())) * turretOffsetBack;
+        double spawnZ = this.getZ() + Math.cos(Math.toRadians(this.getYRot())) * turretOffsetBack;
+        BrassBoltEntity brassBolt = new BrassBoltEntity(this.level(), this);
+        brassBolt.setPos(spawnX, spawnHeight, spawnZ);
+        double dx = target.getX() - spawnX;
+        double dy = target.getEyeY() - spawnHeight + 0.1;
+        double dz = target.getZ() - spawnZ;
+        brassBolt.shoot(dx, dy, dz, 3.0f, 2.0f);
+        this.level().addFreshEntity(brassBolt);
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.BRUISER_SILENCED_FIRE.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+        this.triggerMuzzleFlash();
     }
 
     private static class SkyCarrierMoveControl extends MoveControl {
@@ -266,6 +280,11 @@ public class SkyCarrierEntity extends FlyingMob implements Enemy {
 
         @Override
         public void tick() {
+            if (this.skyCarrier.isDeadOrDying() || !this.skyCarrier.isAlive()) {
+                this.skyCarrier.setDeltaMovement(Vec3.ZERO);
+                return;
+            }
+
             if (this.skyCarrier.isPhasing()) {
                 return;
             }
@@ -354,7 +373,7 @@ public class SkyCarrierEntity extends FlyingMob implements Enemy {
 
         @Override
         public boolean canUse() {
-            return !this.skyCarrier.isPhasing() && --this.tickDelay <= 0;
+            return this.skyCarrier.isAlive() && !this.skyCarrier.isDeadOrDying() && !this.skyCarrier.isPhasing() && --this.tickDelay <= 0;
         }
 
         @Override
@@ -386,7 +405,8 @@ public class SkyCarrierEntity extends FlyingMob implements Enemy {
 
         @Override
         public boolean canUse() {
-            return !this.skyCarrier.isPhasing() && this.skyCarrier.getTarget() != null;
+            LivingEntity target = this.skyCarrier.getTarget();
+            return this.skyCarrier.isAlive() && !this.skyCarrier.isDeadOrDying() && !this.skyCarrier.isPhasing() && target != null && target.isAlive();
         }
 
         @Override
@@ -397,7 +417,7 @@ public class SkyCarrierEntity extends FlyingMob implements Enemy {
         @Override
         public void tick() {
             LivingEntity target = this.skyCarrier.getTarget();
-            if (target != null) {
+            if (target != null && target.isAlive() && !this.skyCarrier.isDeadOrDying()) {
                 Vec3 targetPos = new Vec3(target.getX(), target.getY(), target.getZ());
                 Vec3 ourPos = new Vec3(this.skyCarrier.getX(), this.skyCarrier.getY(), this.skyCarrier.getZ());
                 Vec3 vectorToTarget = targetPos.subtract(ourPos).normalize();

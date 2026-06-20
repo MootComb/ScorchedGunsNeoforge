@@ -4,6 +4,42 @@ All notable public changes to Scorched Guns are recorded in this file.
 
 ## Unreleased
 
+## 1.5 - 2026-06-11
+
+### Added
+
+- Added optional Create Aeronautics Shield Generator compatibility so Scorched Guns bullets and beam traces are stopped by active force fields instead of passing through protected ships.
+- Added an MVP distant gunshot audio layer for unsilenced gunfire, with delayed and distance-faded reports beyond the normal loaded-chunk listening range using new CC0 distant shot sound assets.
+
+### Fixed
+
+- Fixed dual-wield one-handed gun handling so right-clicking with a Scorched Guns firearm in both main hand and offhand no longer lets the offhand gun run vanilla item-use logic, preventing creative inventory duplication and survival server disconnects.
+- Fixed Banzai charge hits not consuming weapon and bayonet attachment durability while regular bayonet melee did.
+- Fixed Lightning Battery capacity being lower than the redstone block to plasma block recipe requirement, making that recipe impossible even with a fully charged battery.
+- Fixed Supply Crates dropping three crate blocks when broken with Silk Touch because the Silk Touch block drop was incorrectly inside the three-roll ammo loot pool.
+- Fixed muzzle flash rendering emitting incomplete vertices, which could crash clients with `Missing elements in vertex: UV1, Normal` in Sodium, ImmediatelyFast, and vanilla buffer flush paths.
+- Reduced dedicated-server pathfinding spikes from gunner and raid mobs by throttling path recalculations instead of rebuilding navigation every tick.
+- Fixed ADS/FOV jitter after cancelling a reload by swapping away from a gun and re-equipping it before the reload state fully cleared.
+- Fixed headshot hit markers while aiming down sights leaking render state into the vanilla HUD, which could tint the hotbar red.
+- Fixed Winnie using the same ammunition as Winnie Millend; Winnie now uses Compact Copper Rounds and has its rifle type and falloff stats restored.
+- Fixed Wooden Stock and Long Scope missing their intended critical chance bonuses.
+- Fixed per-gun critical damage multipliers such as Red Raydar's 25x crit multiplier not being applied.
+- Fixed gun type names and damage falloff ranges not displaying correctly in gun tooltips and the attachment screen.
+- Fixed ExoSuit upgrade/core visual state desync on dedicated servers by saving upgrade slots directly into the edited suit item and preserving power states during upgrade sync.
+- Restored upstream bullet tracer visibility, hidden-projectile behavior, and per-gun tracer thickness settings for firearm projectile visuals.
+- Fixed local first-person bullet trails rendering over the player's own shots after the projectile visual parity pass.
+- Fixed belt Curios rendering so Scorched Guns ammo boxes and pouches follow the player's body orientation instead of using a detached fixed transform.
+- Fixed a dedicated-server Gun Bench autocrafting crash caused by server menu logic loading the client-only Blueprint screen class.
+- Fixed Scamp Panzer boss bars lingering after a nearby player dies and respawns during the fight.
+- Fixed the new distant gunshot audio layer so long-range unsilenced shots are sent to eligible listeners and play as positional mono sounds with proper distance falloff.
+- Fixed Scorched Guns loot progression tables so structure, vanilla-injection, entity and villager-gift loot follow upstream flare/scrap progression instead of bypassing raids with direct blueprint drops.
+- Restored upstream attachment stats for extended magazines, speed magazines, light stocks, muzzle brakes and extended barrels, including attachment-based projectile falloff range modifiers.
+- Fixed Sky Carriers being able to fire one final projectile while already playing their death animation.
+
+### Changed
+
+- Raised the public version to `1.5`.
+
 ## 1.4.4.1 - 2026-05-31
 
 ### Fixed

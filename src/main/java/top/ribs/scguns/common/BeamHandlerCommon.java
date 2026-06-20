@@ -27,6 +27,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import top.ribs.scguns.Config;
 import top.ribs.scguns.compat.SableBlockInteraction;
+import top.ribs.scguns.compat.ShieldGeneratorCompat;
 import top.ribs.scguns.init.ModTags;
 
 import java.util.*;
@@ -141,7 +142,8 @@ public class BeamHandlerCommon {
                         ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter);
                 BlockHitResult blockHit = nearestBlockHit(currentPos,
                         world.clip(blockContext),
-                        SableBlockInteraction.clipSubLevels(world, blockContext));
+                        SableBlockInteraction.clipSubLevels(world, blockContext),
+                        ShieldGeneratorCompat.clip(world, blockContext));
 
                 if (blockHit.getType() == HitResult.Type.MISS) {
                     EntityHitResult entityHit = rayTraceEntities(world, shooter, currentPos, nextEndVec);
@@ -182,14 +184,22 @@ public class BeamHandlerCommon {
             ));
         }
 
-        private static BlockHitResult nearestBlockHit(Vec3 start, BlockHitResult fallback, BlockHitResult candidate) {
-            if (candidate == null || candidate.getType() == HitResult.Type.MISS) {
-                return fallback;
+        private static BlockHitResult nearestBlockHit(Vec3 start, BlockHitResult fallback, BlockHitResult... candidates) {
+            BlockHitResult nearest = fallback;
+            double nearestDistance = fallback == null || fallback.getType() == HitResult.Type.MISS
+                    ? Double.MAX_VALUE
+                    : start.distanceToSqr(fallback.getLocation());
+            for (BlockHitResult candidate : candidates) {
+                if (candidate == null || candidate.getType() == HitResult.Type.MISS) {
+                    continue;
+                }
+                double distance = start.distanceToSqr(candidate.getLocation());
+                if (nearest == null || nearest.getType() == HitResult.Type.MISS || distance < nearestDistance) {
+                    nearest = candidate;
+                    nearestDistance = distance;
+                }
             }
-            if (fallback == null || fallback.getType() == HitResult.Type.MISS) {
-                return candidate;
-            }
-            return start.distanceToSqr(candidate.getLocation()) < start.distanceToSqr(fallback.getLocation()) ? candidate : fallback;
+            return nearest;
         }
 
         private static boolean isGlassBlock(BlockState state) {

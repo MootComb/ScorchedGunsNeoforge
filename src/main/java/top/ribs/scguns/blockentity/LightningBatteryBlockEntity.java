@@ -34,7 +34,7 @@ import top.ribs.scguns.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
 public class LightningBatteryBlockEntity extends BlockEntity implements MenuProvider {
-    private static final int MAX_ENERGY = 32000;
+    public static final int MAX_ENERGY = 64000;
 
     public final ItemStackHandler itemHandler = new ItemStackHandler(2) {
         @Override

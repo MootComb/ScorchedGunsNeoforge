@@ -3,6 +3,7 @@
   },
   "general": {
     "alwaysSpread": true,
+    "weaponType": "shotgun",
     "fireMode": "scguns:pulse",
     "fireTimer": 30,
     "gripType": "scguns:two_handed_shotgun",
@@ -45,7 +46,8 @@
     "life": 50,
     "size": 1.0,
     "speed": 4.0,
-    "trailLengthMultiplier": 0.2
+    "trailLengthMultiplier": 0.2,
+    "trailThickness": 0.5
   },
   "reloads": {
     "emptyMagTimer": 30,

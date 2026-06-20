@@ -79,6 +79,16 @@ public interface IGunModifier
         return damage;
     }
 
+    default float modifyDamageFalloffStart(float distance)
+    {
+        return distance;
+    }
+
+    default float modifyDamageFalloffEnd(float distance)
+    {
+        return distance;
+    }
+
     /**
      * Modify the speed of the projectile.
      *

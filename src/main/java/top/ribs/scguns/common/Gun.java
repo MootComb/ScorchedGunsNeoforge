@@ -45,6 +45,7 @@ import top.ribs.scguns.init.ModEnchantments;
 import top.ribs.scguns.item.*;
 import top.ribs.scguns.item.attachment.IAttachment;
 import top.ribs.scguns.item.attachment.impl.Scope;
+import top.ribs.scguns.util.GunModifierHelper;
 import top.ribs.scguns.util.GunJsonUtil;
 import top.ribs.scguns.util.SuperBuilder;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -288,7 +289,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
     }
 
     public static Projectile getLoadedProjectile(ItemStack stack, Gun gun) {
-        return gun.getProjectileForItem(getLoadedProjectileItem(stack, gun));
+        return getModifiedProjectile(stack, gun.getProjectileForItem(getLoadedProjectileItem(stack, gun)));
     }
 
     public static Item getSelectedProjectileItem(ItemStack stack, Gun gun) {
@@ -296,7 +297,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
     }
 
     public static Projectile getSelectedProjectile(ItemStack stack, Gun gun) {
-        return gun.getProjectileForItem(getSelectedProjectileItem(stack, gun));
+        return getModifiedProjectile(stack, gun.getProjectileForItem(getSelectedProjectileItem(stack, gun)));
     }
 
     public static Item getDisplayProjectileItem(ItemStack stack, Gun gun) {
@@ -304,7 +305,14 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
     }
 
     public static Projectile getDisplayProjectile(ItemStack stack, Gun gun) {
-        return gun.getProjectileForItem(getDisplayProjectileItem(stack, gun));
+        return getModifiedProjectile(stack, gun.getProjectileForItem(getDisplayProjectileItem(stack, gun)));
+    }
+
+    private static Projectile getModifiedProjectile(ItemStack stack, Projectile source) {
+        Projectile projectile = source.copy();
+        projectile.damageFalloffStart = GunModifierHelper.getModifiedDamageFalloffStart(stack, projectile.damageFalloffStart);
+        projectile.damageFalloffEnd = GunModifierHelper.getModifiedDamageFalloffEnd(stack, projectile.damageFalloffEnd);
+        return projectile;
     }
 
     private static void setProjectileItem(ItemStack stack, Gun gun, Item item, String key) {
@@ -414,8 +422,31 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         }
     }
 
+    public enum WeaponType {
+        pistol,
+        magnum,
+        smg,
+        rifle,
+        lmg,
+        shotgun,
+        sniper,
+        heavy,
+        flamethrower,
+        shock,
+        plasma,
+        laser,
+        special;
+
+        public String id() {
+            return this.name();
+        }
+    }
+
     public static class General implements INBTSerializable<CompoundTag> {
 
+        @Optional
+        @Nullable
+        private WeaponType weaponType;
         @Ignored
         private FireMode fireMode = FireMode.SEMI_AUTO;
         @Optional
@@ -501,6 +532,9 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
 
         public CompoundTag serializeNBT() {
             CompoundTag tag = new CompoundTag();
+            if (this.weaponType != null) {
+                tag.putString("WeaponType", this.weaponType.id());
+            }
             tag.putString("FireMode", this.fireMode.id().toString());
             tag.putInt("BurstAmount", this.burstAmount);
             tag.putInt("BurstCooldown", this.burstCooldown);
@@ -562,6 +596,13 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         }
 
         public void deserializeNBT(CompoundTag tag) {
+            if (tag.contains("WeaponType", Tag.TAG_STRING)) {
+                try {
+                    this.weaponType = WeaponType.valueOf(tag.getString("WeaponType"));
+                } catch (IllegalArgumentException ignored) {
+                    this.weaponType = null;
+                }
+            }
             if (tag.contains("FireMode", Tag.TAG_STRING)) {
                 this.fireMode = FireMode.getType(ResourceLocation.tryParse(tag.getString("FireMode")));
             }
@@ -698,6 +739,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
 
             JsonObject object = new JsonObject();
             if (this.infiniteAmmo) object.addProperty("infiniteAmmo", true);
+            if (this.weaponType != null) object.addProperty("weaponType", this.weaponType.id());
             object.addProperty("fireMode", this.fireMode.id().toString());
             if (this.burstAmount != 0) object.addProperty("burstAmount", this.burstAmount);
             if (this.burstCooldown != 0) object.addProperty("burstCooldown", this.burstCooldown);
@@ -783,6 +825,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
          */
         public General copy() {
             General general = new General();
+            general.weaponType = this.weaponType;
             general.fireMode = this.fireMode;
             general.burstAmount = this.burstAmount;
             general.burstCooldown = this.burstCooldown;
@@ -847,6 +890,8 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         public boolean isRevolver() {
             return this.isRevolver;
         }
+        @Nullable
+        public WeaponType getWeaponType() {return this.weaponType;}
         public float getCriticalChance() {return this.criticalChance;}
         public boolean hasCameraShake() {
             return this.hasCameraShake;
@@ -1251,9 +1296,17 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
         @Optional
         private float damageFalloffMinMultiplier = 1.0F;
         @Optional
+        private float critDamageMultiplier = -1.0F;
+        @Optional
         private int trailColor = 0xFFD289;
         @Optional
         private double trailLengthMultiplier = 1.0;
+        @Optional
+        private boolean hideTrail;
+        @Optional
+        private boolean hideProjectile;
+        @Optional
+        private double trailThickness = 1.0;
         @Optional
         @Nullable
         private ResourceLocation casingParticle;
@@ -1296,8 +1349,14 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             tag.putFloat("DamageFalloffStart", this.damageFalloffStart);
             tag.putFloat("DamageFalloffEnd", this.damageFalloffEnd);
             tag.putFloat("DamageFalloffMinMultiplier", this.damageFalloffMinMultiplier);
+            if (this.critDamageMultiplier > 0.0F) {
+                tag.putFloat("CritDamageMultiplier", this.critDamageMultiplier);
+            }
             tag.putInt("TrailColor", this.trailColor);
             tag.putDouble("TrailLengthMultiplier", this.trailLengthMultiplier);
+            tag.putBoolean("HideTrail", this.hideTrail);
+            tag.putBoolean("HideProjectile", this.hideProjectile);
+            tag.putDouble("TrailThickness", this.trailThickness);
             if (this.casingType != null) {
                 tag.putString("CasingType", this.casingType.toString());
             }
@@ -1367,11 +1426,23 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             if (tag.contains("DamageFalloffMinMultiplier", Tag.TAG_ANY_NUMERIC)) {
                 this.damageFalloffMinMultiplier = tag.getFloat("DamageFalloffMinMultiplier");
             }
+            if (tag.contains("CritDamageMultiplier", Tag.TAG_ANY_NUMERIC)) {
+                this.critDamageMultiplier = tag.getFloat("CritDamageMultiplier");
+            }
             if (tag.contains("TrailColor", Tag.TAG_ANY_NUMERIC)) {
                 this.trailColor = tag.getInt("TrailColor");
             }
             if (tag.contains("TrailLengthMultiplier", Tag.TAG_ANY_NUMERIC)) {
                 this.trailLengthMultiplier = tag.getDouble("TrailLengthMultiplier");
+            }
+            if (tag.contains("HideTrail", Tag.TAG_ANY_NUMERIC)) {
+                this.hideTrail = tag.getBoolean("HideTrail");
+            }
+            if (tag.contains("HideProjectile", Tag.TAG_ANY_NUMERIC)) {
+                this.hideProjectile = tag.getBoolean("HideProjectile");
+            }
+            if (tag.contains("TrailThickness", Tag.TAG_ANY_NUMERIC)) {
+                this.trailThickness = tag.getDouble("TrailThickness");
             }
             if (tag.contains("CasingParticle", Tag.TAG_STRING)) {
                 this.casingParticle = ResourceLocation.parse(tag.getString("CasingParticle"));
@@ -1416,9 +1487,16 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
                 object.addProperty("damageFalloffEnd", this.damageFalloffEnd);
                 object.addProperty("damageFalloffMinMultiplier", this.damageFalloffMinMultiplier);
             }
+            if (this.critDamageMultiplier > 0.0F) {
+                object.addProperty("critDamageMultiplier", this.critDamageMultiplier);
+            }
             if (this.trailColor != 0xFFFF00) object.addProperty("trailColor", this.trailColor);
             if (this.trailLengthMultiplier != 1.0)
                 object.addProperty("trailLengthMultiplier", this.trailLengthMultiplier);
+            if (this.hideProjectile) object.addProperty("hideProjectile", true);
+            if (this.hideTrail) object.addProperty("hideTrail", true);
+            if (this.trailThickness != 1.0)
+                object.addProperty("trailThickness", this.trailThickness);
             if (this.casingType != null) object.addProperty("casingType", this.casingType.toString());
             if (this.casingParticle != null) object.addProperty("casingParticle", this.casingParticle.toString());
             if (this.ejectDuringReload) object.addProperty("ejectDuringReload", true);
@@ -1452,8 +1530,12 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             projectile.damageFalloffStart = this.damageFalloffStart;
             projectile.damageFalloffEnd = this.damageFalloffEnd;
             projectile.damageFalloffMinMultiplier = this.damageFalloffMinMultiplier;
+            projectile.critDamageMultiplier = this.critDamageMultiplier;
             projectile.trailColor = this.trailColor;
             projectile.trailLengthMultiplier = this.trailLengthMultiplier;
+            projectile.hideTrail = this.hideTrail;
+            projectile.hideProjectile = this.hideProjectile;
+            projectile.trailThickness = this.trailThickness;
             projectile.casingType = this.casingType;
             projectile.casingParticle = this.casingParticle;
             projectile.ejectDuringReload = this.ejectDuringReload;
@@ -1588,6 +1670,10 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
             return this.damageFalloffMinMultiplier;
         }
 
+        public float getCritDamageMultiplier() {
+            return this.critDamageMultiplier > 0.0F ? this.critDamageMultiplier : top.ribs.scguns.Config.COMMON.gameplay.criticalDamageMultiplier.get().floatValue();
+        }
+
         /**
          * @return The color of the projectile trail in rgba integer format
          */
@@ -1600,6 +1686,18 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu {
          */
         public double getTrailLengthMultiplier() {
             return this.trailLengthMultiplier;
+        }
+
+        public boolean shouldHideTrail() {
+            return this.hideTrail;
+        }
+
+        public boolean shouldHideProjectile() {
+            return this.hideProjectile;
+        }
+
+        public double getTrailThickness() {
+            return this.trailThickness;
         }
 
         public void setDamage(float v) {

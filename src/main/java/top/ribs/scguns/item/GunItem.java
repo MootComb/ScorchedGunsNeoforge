@@ -11,8 +11,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
@@ -54,6 +57,15 @@ public class GunItem extends Item implements IColored, IMeta {
 
     public Gun getGun() {
         return this.gun;
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (hand == InteractionHand.OFF_HAND && player.getMainHandItem().getItem() instanceof GunItem) {
+            return InteractionResultHolder.fail(stack);
+        }
+        return InteractionResultHolder.pass(stack);
     }
 
     @Nullable
@@ -113,6 +125,12 @@ public class GunItem extends Item implements IColored, IMeta {
         tooltip.add(Component.translatable("info.scguns.damage")
                 .append(": ").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(baseDamage) + additionalDamageText).withStyle(ChatFormatting.WHITE)));
+        Gun.WeaponType weaponType = modifiedGun.getGeneral().getWeaponType();
+        if (weaponType != null) {
+            tooltip.add(Component.translatable("info.scguns.weapon_type").withStyle(ChatFormatting.GRAY)
+                    .append(": ")
+                    .append(Component.translatable("desc.scguns." + weaponType.id()).withStyle(ChatFormatting.WHITE)));
+        }
         if (!advantage.equals(ModTags.Entities.NONE.location())) {
             tooltip.add(Component.translatable("info.scguns.advantage").withStyle(ChatFormatting.GRAY)
                     .append(Component.translatable("advantage." + advantage).withStyle(ChatFormatting.GOLD)));

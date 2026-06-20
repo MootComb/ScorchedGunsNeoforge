@@ -50,6 +50,7 @@ public class SpecialHitMarker extends Crosshair {
         buffer.addVertex(matrix, 0, 0, 0).setUv(0, 0).setColor(1.0F, 1.0F, 1.0F, alpha);
         BufferUploader.drawWithShader(buffer.buildOrThrow());
 
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         stack.popPose();
     }
 }

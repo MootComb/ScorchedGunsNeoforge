@@ -59,6 +59,7 @@ import top.ribs.scguns.common.*;
 import top.ribs.scguns.common.Gun.Projectile;
 import top.ribs.scguns.Config;
 import top.ribs.scguns.compat.SableBlockInteraction;
+import top.ribs.scguns.compat.ShieldGeneratorCompat;
 import top.ribs.scguns.effect.RocketExplosion;
 import top.ribs.scguns.config.ProjectileAdvantageConfig;
 import top.ribs.scguns.init.*;
@@ -603,6 +604,11 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
             return;
         }
 
+        if (ShieldGeneratorCompat.isShieldHit(result)) {
+            this.remove(RemovalReason.KILLED);
+            return;
+        }
+
         if (result instanceof BlockHitResult blockHitResult) {
             if (blockHitResult.getType() == HitResult.Type.MISS) {
                 return;
@@ -1067,7 +1073,8 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
     float getCriticalDamage(ItemStack weapon, RandomSource rand, float damage) {
         float chance = GunModifierHelper.getCriticalChance(weapon);
         if (rand.nextFloat() < chance) {
-            return (float) (damage * Config.COMMON.gameplay.criticalDamageMultiplier.get());
+            float multiplier = this.projectile != null ? this.projectile.getCritDamageMultiplier() : Config.COMMON.gameplay.criticalDamageMultiplier.get().floatValue();
+            return damage * multiplier;
         }
         return damage;
     }
@@ -1114,7 +1121,7 @@ public class ProjectileEntity extends Entity implements IEntityWithComplexSpawn 
             Vec3 Vector3d = rayTraceContext.getFrom().subtract(rayTraceContext.getTo());
             return BlockHitResult.miss(rayTraceContext.getTo(), Direction.getNearest(Vector3d.x, Vector3d.y, Vector3d.z), BlockPos.containing(rayTraceContext.getTo()));
         });
-        return nearestBlockHit(context.getFrom(), normalResult, clipIncludeShipsIfAvailable(world, context), clipSableSubLevelsIfAvailable(world, context, ignorePredicate));
+        return nearestBlockHit(context.getFrom(), normalResult, clipIncludeShipsIfAvailable(world, context), clipSableSubLevelsIfAvailable(world, context, ignorePredicate), ShieldGeneratorCompat.clip(world, context));
     }
 
     @Nullable

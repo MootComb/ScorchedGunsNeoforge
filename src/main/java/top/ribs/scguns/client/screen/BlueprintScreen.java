@@ -6,9 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +14,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
@@ -24,6 +21,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import top.ribs.scguns.network.PacketHandler;
 import top.ribs.scguns.network.message.C2SMessageSetBlueprintRecipe;
+import top.ribs.scguns.util.BlueprintRecipeData;
 
 import java.util.*;
 
@@ -505,34 +503,15 @@ public class BlueprintScreen extends Screen {
     }
 
     private void saveActiveRecipe(ItemStack blueprint, ResourceLocation recipeId) {
-        CustomData.update(DataComponents.CUSTOM_DATA, blueprint, tag -> tag.putString("ActiveRecipe", recipeId.toString()));
+        BlueprintRecipeData.saveActiveRecipe(blueprint, recipeId);
     }
 
     public static ResourceLocation getActiveRecipe(ItemStack blueprint) {
-        CustomData customData = blueprint.get(DataComponents.CUSTOM_DATA);
-        if (customData != null && !customData.isEmpty()) {
-            CompoundTag tag = customData.copyTag();
-            if (tag.contains("ActiveRecipe")) {
-                String recipeIdString = tag.getString("ActiveRecipe");
-                return ResourceLocation.parse(recipeIdString);
-            }
-        }
-        return null;
+        return BlueprintRecipeData.getActiveRecipe(blueprint);
     }
 
     public static String getActiveRecipeName(ItemStack blueprint) {
-        ResourceLocation recipeId = getActiveRecipe(blueprint);
-        if (recipeId == null) return null;
-
         Level level = Minecraft.getInstance().level;
-        if (level == null) return null;
-
-        Optional<RecipeHolder<GunBenchRecipe>> recipe = level.getRecipeManager()
-                .getAllRecipesFor(GunBenchRecipe.Type.INSTANCE)
-                .stream()
-                .filter(r -> r.id().equals(recipeId))
-                .findFirst();
-
-        return recipe.map(gunBenchRecipe -> gunBenchRecipe.value().getResultItem(level.registryAccess()).getDisplayName().getString()).orElse(null);
+        return BlueprintRecipeData.getActiveRecipeName(blueprint, level);
     }
 }

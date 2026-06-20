@@ -12,7 +12,8 @@ public class Attachments
             .modifiers(
                     GunModifiers.LONG_SCOPE_SENSITIVITY_COMPENSATION,
                     GunModifiers.SLOWER_ADS,
-                    GunModifiers.LONG_SCOPE_RECOIL_REDUCTION
+                    GunModifiers.LONG_SCOPE_RECOIL_REDUCTION,
+                    GunModifiers.REFLEX_SIGHT_CRIT_BONUS
             )
             .build();
 

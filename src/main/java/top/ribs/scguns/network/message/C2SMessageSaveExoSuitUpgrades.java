@@ -65,7 +65,7 @@ public class C2SMessageSaveExoSuitUpgrades
                 ItemStack menuArmorPiece = menu.getArmorPiece();
 
                 if (!menuArmorPiece.isEmpty() && menuArmorPiece.getItem() instanceof ExoSuitItem exoSuit) {
-                    CompoundTag upgradeData = getCompoundTag(message);
+                    CompoundTag upgradeData = getCompoundTag(message, ExoSuitData.getUpgradeData(menuArmorPiece));
 
                     ExoSuitData.setUpgradeData(menuArmorPiece, upgradeData);
 
@@ -73,6 +73,7 @@ public class C2SMessageSaveExoSuitUpgrades
                     ItemStack equippedPiece = serverPlayer.getItemBySlot(armorSlot);
 
                     if (!equippedPiece.isEmpty() && equippedPiece.getItem() instanceof ExoSuitItem) {
+                        upgradeData = getCompoundTag(message, ExoSuitData.getUpgradeData(equippedPiece));
                         ExoSuitData.setUpgradeData(equippedPiece, upgradeData);
                         serverPlayer.setItemSlot(armorSlot, equippedPiece);
 
@@ -98,8 +99,8 @@ public class C2SMessageSaveExoSuitUpgrades
         context.setHandled(true);
     }
 
-    private static @NotNull CompoundTag getCompoundTag(C2SMessageSaveExoSuitUpgrades message) {
-        CompoundTag upgradeData = new CompoundTag();
+    private static @NotNull CompoundTag getCompoundTag(C2SMessageSaveExoSuitUpgrades message, CompoundTag existingData) {
+        CompoundTag upgradeData = existingData.copy();
         ListTag upgradeList = new ListTag();
 
         for (int i = 0; i < message.upgradeStacks.size(); i++) {

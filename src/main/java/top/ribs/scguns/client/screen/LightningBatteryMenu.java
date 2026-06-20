@@ -136,10 +136,10 @@ public class LightningBatteryMenu extends AbstractContainerMenu {
     }
 
     public int getEnergy() {
-        return data.get(2);
+        return blockEntity.getEnergy();
     }
 
     public int getMaxEnergy() {
-        return data.get(3);
+        return blockEntity.getMaxEnergy();
     }
 }

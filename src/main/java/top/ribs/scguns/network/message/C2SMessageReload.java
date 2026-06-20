@@ -47,6 +47,11 @@ public class C2SMessageReload
                 ItemStack heldItem = player.getMainHandItem();
                 if (!(heldItem.getItem() instanceof GunItem) ||
                         !heldItem.getItem().getClass().getPackageName().startsWith("top.ribs.scguns")) {
+                    if (!message.reload) {
+                        ModSyncedDataKeys.RELOADING.setValue(player, false);
+                        ModSyncedDataKeys.AIMING.setValue(player, false);
+                        clearReloadData(player);
+                    }
                     return;
                 }
 
@@ -70,14 +75,13 @@ public class C2SMessageReload
                     if (gun.getReloads().getReloadType() != ReloadType.MANUAL && inCriticalPhase) {
                         return;
                     }
-                    ModSyncedDataKeys.RELOADING.setValue(player, false);
-                    tag.remove("IsReloading");
-                    tag.remove("scguns:IsReloading");
-                    tag.remove("InCriticalReloadPhase");
-                    tag.remove("scguns:ReloadState");
-                    if (gun.getReloads().getReloadType() == ReloadType.MANUAL &&
+                    boolean shouldPlayManualStop = gun.getReloads().getReloadType() == ReloadType.MANUAL &&
                             tag.getBoolean("scguns:IsReloading") &&
-                            !tag.getBoolean("scguns:IsPlayingReloadStop")) {
+                            !tag.getBoolean("scguns:IsPlayingReloadStop");
+                    ModSyncedDataKeys.RELOADING.setValue(player, false);
+                    clearReloadData(player);
+                    tag = getCustomData(heldItem);
+                    if (shouldPlayManualStop) {
                         tag.putBoolean("scguns:IsPlayingReloadStop", true);
                         tag.putString("scguns:ReloadState", "STOPPING");
                         ReloadHandler.loaded(player);
@@ -103,5 +107,26 @@ public class C2SMessageReload
         } else {
             stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         }
+    }
+
+    private static void clearReloadData(ServerPlayer player) {
+        for (ItemStack itemStack : player.getInventory().items) {
+            clearReloadData(itemStack);
+        }
+        clearReloadData(player.getOffhandItem());
+    }
+
+    private static void clearReloadData(ItemStack stack) {
+        CompoundTag tag = getCustomData(stack);
+        if (tag.isEmpty()) {
+            return;
+        }
+        tag.remove("IsReloading");
+        tag.remove("scguns:IsReloading");
+        tag.remove("InCriticalReloadPhase");
+        tag.remove("scguns:ReloadState");
+        tag.remove("scguns:IsPlayingReloadStop");
+        tag.remove("scguns:PausedDuringReload");
+        setCustomData(stack, tag);
     }
 }

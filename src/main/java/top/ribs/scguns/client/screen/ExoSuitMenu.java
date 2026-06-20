@@ -52,6 +52,7 @@ public class ExoSuitMenu extends AbstractContainerMenu {
             ExoSuitMenu.this.slotsChanged(null);
 
             if (slot >= UPGRADE_SLOT_1 && slot <= UPGRADE_SLOT_4) {
+                saveUpgradesToArmorPiece();
                 saveUpgradesToServer();
             }
         }
@@ -122,6 +123,7 @@ public class ExoSuitMenu extends AbstractContainerMenu {
     @Override
     public void removed(@NotNull Player player) {
         super.removed(player);
+        saveUpgradesToArmorPiece();
         if (player.level().isClientSide) {
             saveUpgradesToServer();
         }
@@ -148,6 +150,29 @@ public class ExoSuitMenu extends AbstractContainerMenu {
 
     public ItemStack getArmorPiece() {
         return exosuitInventory.getStackInSlot(ARMOR_SLOT);
+    }
+
+    private void saveUpgradesToArmorPiece() {
+        ItemStack armorPiece = getArmorPiece();
+        if (armorPiece.isEmpty() || !(armorPiece.getItem() instanceof ExoSuitItem)) {
+            return;
+        }
+
+        CompoundTag upgradeData = ExoSuitData.getUpgradeData(armorPiece);
+        ListTag upgradeList = new ListTag();
+
+        for (int slot = UPGRADE_SLOT_1; slot <= UPGRADE_SLOT_4; slot++) {
+            ItemStack upgradeStack = this.exosuitInventory.getStackInSlot(slot);
+            if (!upgradeStack.isEmpty()) {
+                CompoundTag slotTag = new CompoundTag();
+                slotTag.putInt("Slot", slot - UPGRADE_SLOT_1);
+                slotTag.put("Item", upgradeStack.save(player.level().registryAccess(), new CompoundTag()));
+                upgradeList.add(slotTag);
+            }
+        }
+
+        upgradeData.put("Upgrades", upgradeList);
+        ExoSuitData.setUpgradeData(armorPiece, upgradeData);
     }
 
     public int getAvailableUpgradeSlots() {

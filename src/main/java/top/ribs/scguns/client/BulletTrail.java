@@ -33,9 +33,11 @@ public class BulletTrail
     private WeakReference<Entity> shooter;
     private final boolean enchanted;
     private final ParticleOptions particleData;
+    private final boolean visible;
+    private final double trailThickness;
     private float size;
 
-    public BulletTrail(int entityId, Vec3 position, Vec3 motion, ItemStack item, int trailColor, double trailMultiplier, int maxAge, double gravity, int shooterId, boolean enchanted, ParticleOptions particleData)
+    public BulletTrail(int entityId, Vec3 position, Vec3 motion, ItemStack item, int trailColor, double trailMultiplier, int maxAge, double gravity, int shooterId, boolean enchanted, ParticleOptions particleData, boolean visible, double trailThickness)
     {
         this.entityId = entityId;
         this.position = position;
@@ -48,6 +50,8 @@ public class BulletTrail
         this.shooterId = shooterId;
         this.enchanted = enchanted;
         this.particleData = particleData;
+        this.visible = visible;
+        this.trailThickness = trailThickness;
         this.updateYawPitch();
     }
 
@@ -135,6 +139,11 @@ public class BulletTrail
         return this.trailLengthMultiplier;
     }
 
+    public double getTrailThickness()
+    {
+        return this.trailThickness;
+    }
+
     public int getShooterId()
     {
         return this.shooterId;
@@ -177,8 +186,7 @@ public class BulletTrail
 
     public boolean isTrailVisible()
     {
-        Entity entity = Minecraft.getInstance().getCameraEntity();
-        return entity != null && entity.getId() != this.shooterId;
+        return this.visible;
     }
 
     @Override

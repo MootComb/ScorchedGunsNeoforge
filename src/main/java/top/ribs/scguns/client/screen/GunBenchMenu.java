@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 import top.ribs.scguns.item.BlueprintItem;
+import top.ribs.scguns.util.BlueprintRecipeData;
 
 import java.util.Optional;
 
@@ -116,7 +117,7 @@ public class GunBenchMenu extends AbstractContainerMenu {
                 return;
             }
 
-            ResourceLocation activeRecipeId = BlueprintScreen.getActiveRecipe(blueprintStack);
+            ResourceLocation activeRecipeId = BlueprintRecipeData.getActiveRecipe(blueprintStack);
             if (activeRecipeId == null) {
                 return;
             }

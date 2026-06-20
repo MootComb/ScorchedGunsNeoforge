@@ -1,4 +1,4 @@
-﻿{
+{
   "display": {
     "flash": {
       "size": 1.0,
@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": false,
+    "weaponType": "magnum",
     "fireMode": "scguns:semi_automatic",
     "gripType": "scguns:one_handed",
     "rate": 12,

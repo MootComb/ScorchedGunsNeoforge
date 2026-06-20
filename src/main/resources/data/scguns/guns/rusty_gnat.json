@@ -9,6 +9,7 @@
   },
   "general": {
     "alwaysSpread": false,
+    "weaponType": "smg",
     "fireMode": "scguns:automatic",
     "gripType": "scguns:two_handed_smg",
     "baseGripType": "scguns:two_handed_smg",
