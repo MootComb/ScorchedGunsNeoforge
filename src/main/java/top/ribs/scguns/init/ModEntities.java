@@ -168,7 +168,7 @@ public class ModEntities
     public static class SpawnBlocker
     {
         @SubscribeEvent
-        public static void onMobSpawn(MobSpawnEvent.FinalizeSpawn event)
+        public static void onMobSpawn(MobSpawnEvent event)
         {
             Entity entity = event.getEntity();
             if (entity instanceof CogMinionEntity ||
