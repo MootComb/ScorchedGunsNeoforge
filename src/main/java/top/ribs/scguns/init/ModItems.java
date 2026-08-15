@@ -175,12 +175,6 @@ public class ModItems {
         }
     }
 
-    /**
-     * Creates either an AirGunItem or EnergyGunItem based on whether Create is loaded
-     * @param durability The durability for both gun types
-     * @param energyCapacity The energy capacity (only used for EnergyGunItem)
-     * @return The appropriate GunItem instance
-     */
     private static GunItem createGunItem(int durability, int energyCapacity) {
         Item.Properties properties = new Item.Properties().stacksTo(1).durability(durability);
 
@@ -194,12 +188,12 @@ public class ModItems {
     public static final DeferredItem<AnimatedGunItem> M3_CARABINE = REGISTER.register("m3_carabine",
             () -> new AnimatedGunItem(
                     new Item.Properties().stacksTo(1).durability(800),
-                    "m3_carabine",                               // Model path
-                    ModSounds.MAG_OUT.get(),        // Reload sound mag out
-                    ModSounds.MAG_IN.get(),         // Reload sound mag in
-                    ModSounds.RELOAD_END.get(),           // Reload sound end
-                    ModSounds.COPPER_GUN_JAM.get(),      // Ejector sound pull
-                    ModSounds.COPPER_GUN_JAM.get()    // Ejector sound release
+                    "m3_carabine",
+                    ModSounds.MAG_OUT.get(),
+                    ModSounds.MAG_IN.get(),
+                    ModSounds.RELOAD_END.get(),
+                    ModSounds.COPPER_GUN_JAM.get(),
+                    ModSounds.COPPER_GUN_JAM.get()
             )
     );
     public static final DeferredItem<AnimatedGunItem> M3_MARKSMAN = REGISTER.register("m3_marksman",
@@ -2076,38 +2070,33 @@ public class ModItems {
     public static final DeferredItem<Item> VIVENTRUM_PACKAGE = REGISTER.register("viventrum_package", () -> new ViventrumPackageItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<Item> COG_LOCATOR = REGISTER.register("cog_locator", () -> new CogLocatorItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<Item> THE_PACT = REGISTER.register("the_pact", () -> new ThePactItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
-    // Mobs
-    public static final DeferredItem<Item> COG_MINION_SPAWN_EGG = REGISTER.register("cog_minion_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.COG_MINION, 0x76501f, 0x7f8080, new Item.Properties()));
-    public static final DeferredItem<Item> COG_KNIGHT_SPAWN_EGG = REGISTER.register("cog_knight_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.COG_KNIGHT, 0xf7cb6c, 0xbf8e55, new Item.Properties()));
-    public static final DeferredItem<Item> TRAUMA_UNIT_SPAWN_EGG = REGISTER.register("trauma_unit_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.TRAUMA_UNIT, 0xf7cb6c, 0xF2ECEB, new Item.Properties()));
-    public static final DeferredItem<Item> SKY_CARRIER_SPAWN_EGG = REGISTER.register("sky_carrier_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SKY_CARRIER, 0xffeb8c, 0x4f4f4f, new Item.Properties()));
+    // Mobs - SPAWN EGGS FOR HOSTILE MOBS ARE COMMENTED OUT
     public static final DeferredItem<Item> SUPPLY_SCAMP_SPAWN_EGG = REGISTER.register("supply_scamp_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SUPPLY_SCAMP, 0xffeb8c, 0x9f9b93, new Item.Properties()));
-    public static final DeferredItem<Item> REDCOAT_SPAWN_EGG = REGISTER.register("redcoat_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.REDCOAT, 0xa02727, 0x74913a, new Item.Properties()));
-    public static final DeferredItem<Item> DISSIDENT_SPAWN_EGG = REGISTER.register("dissident_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.DISSIDENT, 0x202428, 0xab6621, new Item.Properties()));
-    public static final DeferredItem<Item> HIVE_SPAWN_EGG = REGISTER.register("hive_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.HIVE, 0x9c9a9a, 0x474545, new Item.Properties()));
-    public static final DeferredItem<Item> SWARM_SPAWN_EGG = REGISTER.register("swarm_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SWARM, 0x535050, 0x151515, new Item.Properties()));
-    public static final DeferredItem<Item> HORNLIN_SPAWN_EGG = REGISTER.register("hornlin_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.HORNLIN, 0xa2593a, 0x9c3f69, new Item.Properties()));
-    public static final DeferredItem<Item> ZOMBIFIED_HORNLIN_SPAWN_EGG = REGISTER.register("zombified_hornlin_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.ZOMBIFIED_HORNLIN, 0xe67973, 0x9c3f69, new Item.Properties()));
-    public static final DeferredItem<Item> BLUNDERER_SPAWN_EGG = REGISTER.register("blunderer_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.BLUNDERER, 0x32663c, 0x98a2a2, new Item.Properties()));
-    public static final DeferredItem<Item> ADJUDICATOR_SPAWN_EGG = REGISTER.register("adjudicator_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.ADJUDICATOR, 0x202428, 0xd7d7d7, new Item.Properties()));
-    public static final DeferredItem<Item> SUBJUGATOR_SPAWN_EGG = REGISTER.register("subjugator_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SUBJUGATOR, 0x2b2440, 0x8a6be8, new Item.Properties()));
-    public static final DeferredItem<Item> FINFORCER_SPAWN_EGG = REGISTER.register("finforcer_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.FINFORCER, 0x202428, 0x2f9fa8, new Item.Properties()));
-    public static final DeferredItem<Item> PRAETOR_SPAWN_EGG = REGISTER.register("praetor_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.PRAETOR, 0x202428, 0xd0b36a, new Item.Properties()));
-    public static final DeferredItem<Item> MOTHER_GHAST_SPAWN_EGG = REGISTER.register("mother_ghast_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.MOTHER_GHAST, 0xf7cb6c, 0x4f4f4f, new Item.Properties()));
     public static final DeferredItem<Item> VIVENTRUM_SPAWN_EGG = REGISTER.register("viventrum_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.VIVENTRUM, 0x202428, 0xd0d0d0, new Item.Properties()));
-    public static final DeferredItem<Item> SULFURHEAD_SPAWN_EGG = REGISTER.register("sulfurhead_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SULFURHEAD, 0x3f3a29, 0xd6c341, new Item.Properties()));
-    public static final DeferredItem<Item> THE_MERCHANT_SPAWN_EGG = REGISTER.register("the_merchant_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.THE_MERCHANT, 0x202428, 0x8b5a2b, new Item.Properties()));
     public static final DeferredItem<Item> SIGNAL_BEACON_SPAWN_EGG = REGISTER.register("signal_beacon_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SIGNAL_BEACON, 0xf7cb6c, 0xED1127, new Item.Properties()));
-    public static final DeferredItem<Item> SCAMP_TANK_SPAWN_EGG = REGISTER.register("scamp_tank_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SCAMP_TANK, 0xffeb8c, 0x4f4f4f, new Item.Properties()));
-    public static final DeferredItem<Item> SCAMPLER_SPAWN_EGG = REGISTER.register("scampler_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SCAMPLER, 0xffeb8c, 0xa02727, new Item.Properties()));
+    // public static final DeferredItem<Item> COG_MINION_SPAWN_EGG = REGISTER.register("cog_minion_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.COG_MINION, 0x76501f, 0x7f8080, new Item.Properties()));
+    // public static final DeferredItem<Item> COG_KNIGHT_SPAWN_EGG = REGISTER.register("cog_knight_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.COG_KNIGHT, 0xf7cb6c, 0xbf8e55, new Item.Properties()));
+    // public static final DeferredItem<Item> TRAUMA_UNIT_SPAWN_EGG = REGISTER.register("trauma_unit_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.TRAUMA_UNIT, 0xf7cb6c, 0xF2ECEB, new Item.Properties()));
+    // public static final DeferredItem<Item> SKY_CARRIER_SPAWN_EGG = REGISTER.register("sky_carrier_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SKY_CARRIER, 0xffeb8c, 0x4f4f4f, new Item.Properties()));
+    // public static final DeferredItem<Item> REDCOAT_SPAWN_EGG = REGISTER.register("redcoat_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.REDCOAT, 0xa02727, 0x74913a, new Item.Properties()));
+    // public static final DeferredItem<Item> DISSIDENT_SPAWN_EGG = REGISTER.register("dissident_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.DISSIDENT, 0x202428, 0xab6621, new Item.Properties()));
+    // public static final DeferredItem<Item> HIVE_SPAWN_EGG = REGISTER.register("hive_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.HIVE, 0x9c9a9a, 0x474545, new Item.Properties()));
+    // public static final DeferredItem<Item> SWARM_SPAWN_EGG = REGISTER.register("swarm_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SWARM, 0x535050, 0x151515, new Item.Properties()));
+    // public static final DeferredItem<Item> HORNLIN_SPAWN_EGG = REGISTER.register("hornlin_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.HORNLIN, 0xa2593a, 0x9c3f69, new Item.Properties()));
+    // public static final DeferredItem<Item> ZOMBIFIED_HORNLIN_SPAWN_EGG = REGISTER.register("zombified_hornlin_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.ZOMBIFIED_HORNLIN, 0xe67973, 0x9c3f69, new Item.Properties()));
+    // public static final DeferredItem<Item> BLUNDERER_SPAWN_EGG = REGISTER.register("blunderer_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.BLUNDERER, 0x32663c, 0x98a2a2, new Item.Properties()));
+    // public static final DeferredItem<Item> ADJUDICATOR_SPAWN_EGG = REGISTER.register("adjudicator_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.ADJUDICATOR, 0x202428, 0xd7d7d7, new Item.Properties()));
+    // public static final DeferredItem<Item> SUBJUGATOR_SPAWN_EGG = REGISTER.register("subjugator_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SUBJUGATOR, 0x2b2440, 0x8a6be8, new Item.Properties()));
+    // public static final DeferredItem<Item> FINFORCER_SPAWN_EGG = REGISTER.register("finforcer_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.FINFORCER, 0x202428, 0x2f9fa8, new Item.Properties()));
+    // public static final DeferredItem<Item> PRAETOR_SPAWN_EGG = REGISTER.register("praetor_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.PRAETOR, 0x202428, 0xd0b36a, new Item.Properties()));
+    // public static final DeferredItem<Item> MOTHER_GHAST_SPAWN_EGG = REGISTER.register("mother_ghast_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.MOTHER_GHAST, 0xf7cb6c, 0x4f4f4f, new Item.Properties()));
+    // public static final DeferredItem<Item> SULFURHEAD_SPAWN_EGG = REGISTER.register("sulfurhead_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SULFURHEAD, 0x3f3a29, 0xd6c341, new Item.Properties()));
+    // public static final DeferredItem<Item> THE_MERCHANT_SPAWN_EGG = REGISTER.register("the_merchant_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.THE_MERCHANT, 0x202428, 0x8b5a2b, new Item.Properties()));
+    // public static final DeferredItem<Item> SCAMP_TANK_SPAWN_EGG = REGISTER.register("scamp_tank_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SCAMP_TANK, 0xffeb8c, 0x4f4f4f, new Item.Properties()));
+    // public static final DeferredItem<Item> SCAMPLER_SPAWN_EGG = REGISTER.register("scampler_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SCAMPLER, 0xffeb8c, 0xa02727, new Item.Properties()));
     public static void register(IEventBus eventBus) {
         REGISTER.register(eventBus);
     }
 
 
 }
-
-
-
-
-
