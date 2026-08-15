@@ -1,13 +1,15 @@
 package top.ribs.scguns.init;
 
 import net.minecraft.core.registries.Registries;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import top.ribs.scguns.Reference;
@@ -21,9 +23,6 @@ import top.ribs.scguns.entity.throwable.*;
 
 import java.util.function.BiFunction;
 
-/**
- * Author: MrCrayfish
- */
 public class ModEntities
 {
     public static final DeferredRegister<EntityType<?>> REGISTER = DeferredRegister.create(Registries.ENTITY_TYPE, Reference.MOD_ID);
@@ -164,9 +163,37 @@ public class ModEntities
                 .setShouldReceiveVelocityUpdates(false)
                 .build(id));
     }
+
+    @EventBusSubscriber(modid = Reference.MOD_ID)
+    public static class SpawnBlocker
+    {
+        @SubscribeEvent
+        public static void onMobSpawn(MobSpawnEvent.FinalizeSpawn event)
+        {
+            Entity entity = event.getEntity();
+            if (entity instanceof CogMinionEntity ||
+                entity instanceof CogKnightEntity ||
+                entity instanceof SkyCarrierEntity ||
+                entity instanceof HiveEntity ||
+                entity instanceof SwarmEntity ||
+                entity instanceof RedcoatEntity ||
+                entity instanceof DissidentEntity ||
+                entity instanceof HornlinEntity ||
+                entity instanceof ZombifiedHornlinEntity ||
+                entity instanceof TheMerchantEntity ||
+                entity instanceof BlundererEntity ||
+                entity instanceof AdjudicatorEntity ||
+                entity instanceof SubjugatorEntity ||
+                entity instanceof FinforcerEntity ||
+                entity instanceof PraetorEntity ||
+                entity instanceof MotherGhastEntity ||
+                entity instanceof SulfurheadEntity ||
+                entity instanceof TraumaUnitEntity ||
+                entity instanceof ScampTankEntity ||
+                entity instanceof ScamplerEntity)
+            {
+                event.setCanceled(true);
+            }
+        }
+    }
 }
-
-
-
-
-
