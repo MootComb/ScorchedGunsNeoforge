@@ -48,7 +48,7 @@ jobs:
     - name: Find JAR file
       id: find_jar
       run: |
-        JAR_FILE=$(find projects/youer/build/libs/ -name "*-server.jar" | head -1)
+        JAR_FILE=$(find build/libs/ -name "*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -1)
         echo "JAR_PATH=$JAR_FILE" >> $GITHUB_OUTPUT
         echo "JAR_NAME=$(basename $JAR_FILE)" >> $GITHUB_OUTPUT
         echo "Found JAR: $JAR_FILE"
@@ -56,15 +56,15 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v6
       with:
-        name: Youer-${{ steps.get_version.outputs.VERSION }}-server
-        path: projects/youer/build/libs/*-server.jar
+        name: ScorchedGuns-${{ steps.get_version.outputs.VERSION }}-server
+        path: build/libs/*.jar
         retention-days: 30
     
     - name: Create Release
       if: github.event_name == 'push' && github.ref == 'refs/heads/1.21.1'
       uses: softprops/action-gh-release@v2
       with:
-        name: "Youer v${{ steps.get_version.outputs.VERSION }} (Build #${{ github.run_number }})"
+        name: "ScorchedGuns v${{ steps.get_version.outputs.VERSION }} (Build #${{ github.run_number }})"
         tag_name: "build-${{ github.run_number }}"
         draft: false
         prerelease: false
