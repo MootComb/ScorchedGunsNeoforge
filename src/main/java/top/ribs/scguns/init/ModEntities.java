@@ -169,7 +169,7 @@ public class ModEntities
     public static class SpawnBlocker
     {
         @SubscribeEvent
-        public static void onMobSpawn(MobSpawnEvent event)
+        public static void onMobSpawn(MobSpawnEvent.FinalizeSpawn event)
         {
             Entity entity = event.getEntity();
             if (entity instanceof CogMinionEntity ||
@@ -193,7 +193,7 @@ public class ModEntities
                 entity instanceof ScampTankEntity ||
                 entity instanceof ScamplerEntity)
             {
-                event.setResult(MobSpawnEvent.Result.DENY);
+                event.setCanceled(true);
             }
         }
     }
