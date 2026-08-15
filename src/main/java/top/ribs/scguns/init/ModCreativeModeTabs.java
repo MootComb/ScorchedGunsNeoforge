@@ -667,10 +667,6 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModBlocks.MOB_TRAP.get());
                         pOutput.accept(ModBlocks.FELIX_MEMORIAL.get());
 
-                        // Only peaceful spawn eggs
-                        pOutput.accept(ModItems.SUPPLY_SCAMP_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.VIVENTRUM_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.SIGNAL_BEACON_SPAWN_EGG.get());
                     })
                     .build());
 
