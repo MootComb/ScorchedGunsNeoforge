@@ -1,9 +1,12 @@
 package top.ribs.scguns.event;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import top.ribs.scguns.Reference;
 import top.ribs.scguns.entity.monster.*;
 
@@ -14,6 +17,7 @@ import java.util.Set;
 public class RemoveExistingMobsHandler 
 {
     private static final Set<Class<?>> MOB_CLASSES = new HashSet<>();
+    private static boolean firstTick = true;
 
     static {
         MOB_CLASSES.add(CogMinionEntity.class);
@@ -60,6 +64,26 @@ public class RemoveExistingMobsHandler
         if (isScorchedGunsMob(entity))
         {
             entity.remove(Entity.RemovalReason.DISCARDED);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Pre event)
+    {
+        if (!firstTick)
+        {
+            return;
+        }
+        firstTick = false;
+
+        ServerLevel level = event.getServer().overworld();
+        
+        for (Entity entity : level.getAllEntities())
+        {
+            if (isScorchedGunsMob(entity))
+            {
+                entity.remove(Entity.RemovalReason.DISCARDED);
+            }
         }
     }
 }
