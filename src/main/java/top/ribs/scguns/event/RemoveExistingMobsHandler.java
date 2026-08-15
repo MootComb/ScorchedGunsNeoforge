@@ -1,11 +1,9 @@
 package top.ribs.scguns.event;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import top.ribs.scguns.Reference;
 import top.ribs.scguns.entity.monster.*;
 
@@ -53,26 +51,6 @@ public class RemoveExistingMobsHandler
             }
         }
         return false;
-    }
-
-    @SubscribeEvent
-    public static void onMobSpawn(MobSpawnEvent.FinalizeSpawn event)
-    {
-        Entity entity = event.getEntity();
-        if (isScorchedGunsMob(entity))
-        {
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onMobSpawnCheck(MobSpawnEvent.SpawnPlacementCheck event)
-    {
-        Entity entity = event.getEntity();
-        if (isScorchedGunsMob(entity))
-        {
-            event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.fail());
-        }
     }
 
     @SubscribeEvent
