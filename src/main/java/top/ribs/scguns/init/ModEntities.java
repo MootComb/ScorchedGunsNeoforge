@@ -85,7 +85,7 @@ public class ModEntities
                     .setUpdateInterval(1)
                     .setShouldReceiveVelocityUpdates(true)
                     .build("raid_flare"));
-    /* Mobs */
+
     public static final DeferredHolder<EntityType<?>, EntityType<CogMinionEntity>> COG_MINION = REGISTER.register("cog_minion", () -> EntityType.Builder.of(CogMinionEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("cog_minion"));
     public static final DeferredHolder<EntityType<?>, EntityType<CogKnightEntity>> COG_KNIGHT = REGISTER.register("cog_knight", () -> EntityType.Builder.of(CogKnightEntity::new, MobCategory.MONSTER).sized(0.8F, 2.2F).build("cog_knight"));
     public static final DeferredHolder<EntityType<?>, EntityType<SkyCarrierEntity>> SKY_CARRIER = REGISTER.register("sky_carrier", () -> EntityType.Builder.of(SkyCarrierEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).build("sky_carrier"));
@@ -140,6 +140,7 @@ public class ModEntities
                     .setUpdateInterval(1)
                     .setShouldReceiveVelocityUpdates(true)
                     .build("scamp_rocket"));
+
     private static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> registerBasic(String id, BiFunction<EntityType<T>, Level, T> function)
     {
         return REGISTER.register(id, () -> EntityType.Builder.of(function::apply, MobCategory.MISC)
@@ -192,7 +193,7 @@ public class ModEntities
                 entity instanceof ScampTankEntity ||
                 entity instanceof ScamplerEntity)
             {
-                event.setCanceled(true);
+                event.setResult(MobSpawnEvent.Result.DENY);
             }
         }
     }
