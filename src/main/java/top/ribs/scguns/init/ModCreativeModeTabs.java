@@ -425,30 +425,6 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModItems.OCEAN_FLARE.get());
                         pOutput.accept(ModItems.SCULK_FLARE.get());
 
-//                        pOutput.accept(ModItems.UNFINISHED_COMPACT_COPPER_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_STANDARD_COPPER_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_RAMROD_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_HOG_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_COMPACT_ADVANCED_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_ADVANCED_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_KRAHG_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_BEOWULF_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_GIBBS_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_SHOTGUN_SHELL.get());
-//                        pOutput.accept(ModItems.UNFINISHED_BEARPACK_SHELL.get());
-//                        pOutput.accept(ModItems.UNFINISHED_ENERGY_CELL.get());
-//                        pOutput.accept(ModItems.UNFINISHED_SCULK_CELL.get());
-//                        pOutput.accept(ModItems.UNFINISHED_SHULKSHOT.get());
-//                        pOutput.accept(ModItems.UNFINISHED_MICROJET.get());
-//                        pOutput.accept(ModItems.UNFINISHED_ROCKET.get());
-//                        pOutput.accept(ModItems.UNFINISHED_HE_GRENADE_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_FIRE_GRENADE_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_GAS_GRENADE_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_BOUNCY_GRENADE_ROUND.get());
-//                        pOutput.accept(ModItems.UNFINISHED_BLAZE_FUEL.get());
-
-
-
                         pOutput.accept(ModItems.PISTOL_AMMO_BOX.get());
                         pOutput.accept(ModItems.RIFLE_AMMO_BOX.get());
                         pOutput.accept(ModItems.SHOTGUN_AMMO_BOX.get());
@@ -530,7 +506,6 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModItems.NETHERITE_BAYONET.get());
                         pOutput.accept(ModItems.EXTENDED_MAG.get());
                         pOutput.accept(ModItems.SPEED_MAG.get());
-                        // pOutput.accept(ModItems.PLUS_P_MAG.get());
                         CreativeTabHelper.addAllEnchantmentBookVariants(pParameters, pOutput);
                         pOutput.accept(ModItems.MASS_PRODUCTION_MUSIC_DISC.get());
                         pOutput.accept(ModItems.MASS_DESTRUCTION_MUSIC_DISC.get());
@@ -692,31 +667,10 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModBlocks.MOB_TRAP.get());
                         pOutput.accept(ModBlocks.FELIX_MEMORIAL.get());
 
-
-
-                        pOutput.accept(ModItems.COG_KNIGHT_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.TRAUMA_UNIT_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.COG_MINION_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.SKY_CARRIER_SPAWN_EGG.get());
+                        // Only peaceful spawn eggs
                         pOutput.accept(ModItems.SUPPLY_SCAMP_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.DISSIDENT_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.REDCOAT_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.BLUNDERER_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.HORNLIN_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.ZOMBIFIED_HORNLIN_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.HIVE_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.SWARM_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.ADJUDICATOR_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.SUBJUGATOR_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.FINFORCER_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.PRAETOR_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.MOTHER_GHAST_SPAWN_EGG.get());
                         pOutput.accept(ModItems.VIVENTRUM_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.SULFURHEAD_SPAWN_EGG.get());
                         pOutput.accept(ModItems.SIGNAL_BEACON_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.SCAMP_TANK_SPAWN_EGG.get());
-                        pOutput.accept(ModItems.SCAMPLER_SPAWN_EGG.get());
-                       // pOutput.accept(ModItems.THE_MERCHANT_SPAWN_EGG.get());
                     })
                     .build());
 
@@ -777,12 +731,10 @@ public class ModCreativeModeTabs {
             ItemStack stack = new ItemStack(item);
 
             if (item instanceof GunItem gunItem) {
-                // Set full ammo
                 CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt("AmmoCount", gunItem.getGun().getReloads().getMaxAmmo()));
             }
 
             if (item instanceof EnergyGunItem energyGunItem) {
-                // Set full energy
                 CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt("Energy", energyGunItem.getMaxEnergyStored(stack)));
             }
 
@@ -811,7 +763,3 @@ public class ModCreativeModeTabs {
 
 
 }
-
-
-
-
