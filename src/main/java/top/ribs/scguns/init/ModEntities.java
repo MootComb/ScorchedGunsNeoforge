@@ -7,9 +7,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import top.ribs.scguns.Reference;
@@ -86,32 +83,32 @@ public class ModEntities
                     .setShouldReceiveVelocityUpdates(true)
                     .build("raid_flare"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<CogMinionEntity>> COG_MINION = REGISTER.register("cog_minion", () -> EntityType.Builder.of(CogMinionEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("cog_minion"));
-    public static final DeferredHolder<EntityType<?>, EntityType<CogKnightEntity>> COG_KNIGHT = REGISTER.register("cog_knight", () -> EntityType.Builder.of(CogKnightEntity::new, MobCategory.MONSTER).sized(0.8F, 2.2F).build("cog_knight"));
-    public static final DeferredHolder<EntityType<?>, EntityType<SkyCarrierEntity>> SKY_CARRIER = REGISTER.register("sky_carrier", () -> EntityType.Builder.of(SkyCarrierEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).build("sky_carrier"));
-    public static final DeferredHolder<EntityType<?>, EntityType<HiveEntity>> HIVE = REGISTER.register("hive", () -> EntityType.Builder.of(HiveEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("hive"));
-    public static final DeferredHolder<EntityType<?>, EntityType<SwarmEntity>> SWARM = REGISTER.register("swarm", () -> EntityType.Builder.of(SwarmEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("swarm"));
-    public static final DeferredHolder<EntityType<?>, EntityType<RedcoatEntity>> REDCOAT = REGISTER.register("redcoat", () -> EntityType.Builder.of(RedcoatEntity::new, MobCategory.MONSTER).sized(0.6F, 1.95F).build("redcoat"));
+    public static final DeferredHolder<EntityType<?>, EntityType<CogMinionEntity>> COG_MINION = REGISTER.register("cog_minion", () -> EntityType.Builder.of(CogMinionEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).noSummon().build("cog_minion"));
+    public static final DeferredHolder<EntityType<?>, EntityType<CogKnightEntity>> COG_KNIGHT = REGISTER.register("cog_knight", () -> EntityType.Builder.of(CogKnightEntity::new, MobCategory.MONSTER).sized(0.8F, 2.2F).noSummon().build("cog_knight"));
+    public static final DeferredHolder<EntityType<?>, EntityType<SkyCarrierEntity>> SKY_CARRIER = REGISTER.register("sky_carrier", () -> EntityType.Builder.of(SkyCarrierEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).noSummon().build("sky_carrier"));
+    public static final DeferredHolder<EntityType<?>, EntityType<HiveEntity>> HIVE = REGISTER.register("hive", () -> EntityType.Builder.of(HiveEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).noSummon().build("hive"));
+    public static final DeferredHolder<EntityType<?>, EntityType<SwarmEntity>> SWARM = REGISTER.register("swarm", () -> EntityType.Builder.of(SwarmEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).noSummon().build("swarm"));
+    public static final DeferredHolder<EntityType<?>, EntityType<RedcoatEntity>> REDCOAT = REGISTER.register("redcoat", () -> EntityType.Builder.of(RedcoatEntity::new, MobCategory.MONSTER).sized(0.6F, 1.95F).noSummon().build("redcoat"));
     public static final DeferredHolder<EntityType<?>, EntityType<SupplyScampEntity>> SUPPLY_SCAMP = REGISTER.register("supply_scamp", () -> EntityType.Builder.of(SupplyScampEntity::new, MobCategory.CREATURE).sized(1.0F, 1.3F).build("supply_scamp"));
-    public static final DeferredHolder<EntityType<?>, EntityType<DissidentEntity>> DISSIDENT = REGISTER.register("dissident", () -> EntityType.Builder.of(DissidentEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).build("dissident"));
-    public static final DeferredHolder<EntityType<?>, EntityType<HornlinEntity>> HORNLIN = REGISTER.register("hornlin", () -> EntityType.Builder.of(HornlinEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).build("hornlin"));
-    public static final DeferredHolder<EntityType<?>, EntityType<ZombifiedHornlinEntity>> ZOMBIFIED_HORNLIN = REGISTER.register("zombified_hornlin", () -> EntityType.Builder.of(ZombifiedHornlinEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).build("zombified_hornlin"));
+    public static final DeferredHolder<EntityType<?>, EntityType<DissidentEntity>> DISSIDENT = REGISTER.register("dissident", () -> EntityType.Builder.of(DissidentEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).noSummon().build("dissident"));
+    public static final DeferredHolder<EntityType<?>, EntityType<HornlinEntity>> HORNLIN = REGISTER.register("hornlin", () -> EntityType.Builder.of(HornlinEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).noSummon().build("hornlin"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ZombifiedHornlinEntity>> ZOMBIFIED_HORNLIN = REGISTER.register("zombified_hornlin", () -> EntityType.Builder.of(ZombifiedHornlinEntity::new, MobCategory.MONSTER).sized(1.4F, 1.7F).noSummon().build("zombified_hornlin"));
     public static final DeferredHolder<EntityType<?>, EntityType<TheMerchantEntity>> THE_MERCHANT = REGISTER.register("the_merchant", () ->
             EntityType.Builder.of((EntityType<TheMerchantEntity> entityType, Level level) -> new TheMerchantEntity(entityType, level), MobCategory.MONSTER)
-                    .sized(1.5F, 2.25F)
+                    .sized(1.5F, 2.25F).noSummon()
                     .build("the_merchant"));
-    public static final DeferredHolder<EntityType<?>, EntityType<BlundererEntity>> BLUNDERER = REGISTER.register("blunderer", () -> EntityType.Builder.of(BlundererEntity::new, MobCategory.MONSTER).sized(0.8F, 1.7F).build("blunderer"));
-    public static final DeferredHolder<EntityType<?>, EntityType<AdjudicatorEntity>> ADJUDICATOR = REGISTER.register("adjudicator", () -> EntityType.Builder.of(AdjudicatorEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("adjudicator"));
-    public static final DeferredHolder<EntityType<?>, EntityType<SubjugatorEntity>> SUBJUGATOR = REGISTER.register("subjugator", () -> EntityType.Builder.of(SubjugatorEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("subjugator"));
-    public static final DeferredHolder<EntityType<?>, EntityType<FinforcerEntity>> FINFORCER = REGISTER.register("finforcer", () -> EntityType.Builder.of(FinforcerEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).build("finforcer"));
-    public static final DeferredHolder<EntityType<?>, EntityType<PraetorEntity>> PRAETOR = REGISTER.register("praetor", () -> EntityType.Builder.of(PraetorEntity::new, MobCategory.MONSTER).sized(1.2F, 2.8F).build("praetor"));
-    public static final DeferredHolder<EntityType<?>, EntityType<MotherGhastEntity>> MOTHER_GHAST = REGISTER.register("mother_ghast", () -> EntityType.Builder.of(MotherGhastEntity::new, MobCategory.MONSTER).sized(4.0F, 4.0F).fireImmune().clientTrackingRange(10).build("mother_ghast"));
+    public static final DeferredHolder<EntityType<?>, EntityType<BlundererEntity>> BLUNDERER = REGISTER.register("blunderer", () -> EntityType.Builder.of(BlundererEntity::new, MobCategory.MONSTER).sized(0.8F, 1.7F).noSummon().build("blunderer"));
+    public static final DeferredHolder<EntityType<?>, EntityType<AdjudicatorEntity>> ADJUDICATOR = REGISTER.register("adjudicator", () -> EntityType.Builder.of(AdjudicatorEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).noSummon().build("adjudicator"));
+    public static final DeferredHolder<EntityType<?>, EntityType<SubjugatorEntity>> SUBJUGATOR = REGISTER.register("subjugator", () -> EntityType.Builder.of(SubjugatorEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).noSummon().build("subjugator"));
+    public static final DeferredHolder<EntityType<?>, EntityType<FinforcerEntity>> FINFORCER = REGISTER.register("finforcer", () -> EntityType.Builder.of(FinforcerEntity::new, MobCategory.MONSTER).sized(0.8F, 2.0F).noSummon().build("finforcer"));
+    public static final DeferredHolder<EntityType<?>, EntityType<PraetorEntity>> PRAETOR = REGISTER.register("praetor", () -> EntityType.Builder.of(PraetorEntity::new, MobCategory.MONSTER).sized(1.2F, 2.8F).noSummon().build("praetor"));
+    public static final DeferredHolder<EntityType<?>, EntityType<MotherGhastEntity>> MOTHER_GHAST = REGISTER.register("mother_ghast", () -> EntityType.Builder.of(MotherGhastEntity::new, MobCategory.MONSTER).sized(4.0F, 4.0F).fireImmune().clientTrackingRange(10).noSummon().build("mother_ghast"));
     public static final DeferredHolder<EntityType<?>, EntityType<ViventrumEntity>> VIVENTRUM = REGISTER.register("viventrum", () -> EntityType.Builder.of(ViventrumEntity::new, MobCategory.CREATURE).sized(0.8F, 1.2F).build("viventrum"));
-    public static final DeferredHolder<EntityType<?>, EntityType<SulfurheadEntity>> SULFURHEAD = REGISTER.register("sulfurhead", () -> EntityType.Builder.of(SulfurheadEntity::new, MobCategory.MONSTER).sized(0.9F, 1.2F).build("sulfurhead"));
-    public static final DeferredHolder<EntityType<?>, EntityType<TraumaUnitEntity>> TRAUMA_UNIT = REGISTER.register("trauma_unit", () -> EntityType.Builder.of(TraumaUnitEntity::new, MobCategory.MONSTER).sized(0.6F, 1.95F).build("trauma_unit"));
-    public static final DeferredHolder<EntityType<?>, EntityType<ScampTankEntity>> SCAMP_TANK = REGISTER.register("scamp_tank", () -> EntityType.Builder.of(ScampTankEntity::new, MobCategory.MONSTER).sized(5.0F, 4F).build("scamp_tank"));
+    public static final DeferredHolder<EntityType<?>, EntityType<SulfurheadEntity>> SULFURHEAD = REGISTER.register("sulfurhead", () -> EntityType.Builder.of(SulfurheadEntity::new, MobCategory.MONSTER).sized(0.9F, 1.2F).noSummon().build("sulfurhead"));
+    public static final DeferredHolder<EntityType<?>, EntityType<TraumaUnitEntity>> TRAUMA_UNIT = REGISTER.register("trauma_unit", () -> EntityType.Builder.of(TraumaUnitEntity::new, MobCategory.MONSTER).sized(0.6F, 1.95F).noSummon().build("trauma_unit"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ScampTankEntity>> SCAMP_TANK = REGISTER.register("scamp_tank", () -> EntityType.Builder.of(ScampTankEntity::new, MobCategory.MONSTER).sized(5.0F, 4F).noSummon().build("scamp_tank"));
     public static final DeferredHolder<EntityType<?>, EntityType<SignalBeaconEntity>> SIGNAL_BEACON = REGISTER.register("signal_beacon", () -> EntityType.Builder.of(SignalBeaconEntity::new, MobCategory.MISC).sized(1.0F, 1.0F).build("signal_beacon"));
-    public static final DeferredHolder<EntityType<?>, EntityType<ScamplerEntity>> SCAMPLER = REGISTER.register("scampler", () -> EntityType.Builder.of(ScamplerEntity::new, MobCategory.MONSTER).sized(1.0F, 1.0F).build("scampler"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ScamplerEntity>> SCAMPLER = REGISTER.register("scampler", () -> EntityType.Builder.of(ScamplerEntity::new, MobCategory.MONSTER).sized(1.0F, 1.0F).noSummon().build("scampler"));
     public static final DeferredHolder<EntityType<?>, EntityType<BeaconProjectileEntity>> BEACON_PROJECTILE = REGISTER.register("beacon_projectile", () ->
             EntityType.Builder.<BeaconProjectileEntity>of(BeaconProjectileEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
@@ -163,38 +160,5 @@ public class ModEntities
                 .noSave()
                 .setShouldReceiveVelocityUpdates(false)
                 .build(id));
-    }
-
-    @EventBusSubscriber(modid = Reference.MOD_ID)
-    public static class SpawnBlocker
-    {
-        @SubscribeEvent
-        public static void onMobSpawn(MobSpawnEvent.FinalizeSpawn event)
-        {
-            Entity entity = event.getEntity();
-            if (entity instanceof CogMinionEntity ||
-                entity instanceof CogKnightEntity ||
-                entity instanceof SkyCarrierEntity ||
-                entity instanceof HiveEntity ||
-                entity instanceof SwarmEntity ||
-                entity instanceof RedcoatEntity ||
-                entity instanceof DissidentEntity ||
-                entity instanceof HornlinEntity ||
-                entity instanceof ZombifiedHornlinEntity ||
-                entity instanceof TheMerchantEntity ||
-                entity instanceof BlundererEntity ||
-                entity instanceof AdjudicatorEntity ||
-                entity instanceof SubjugatorEntity ||
-                entity instanceof FinforcerEntity ||
-                entity instanceof PraetorEntity ||
-                entity instanceof MotherGhastEntity ||
-                entity instanceof SulfurheadEntity ||
-                entity instanceof TraumaUnitEntity ||
-                entity instanceof ScampTankEntity ||
-                entity instanceof ScamplerEntity)
-            {
-                event.setCanceled(true);
-            }
-        }
     }
 }
